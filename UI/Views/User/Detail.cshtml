@@ -1,0 +1,449 @@
+﻿@{
+    ViewData["Title"] = "Kullanıcı Detay";
+    var userId = ViewBag.UserId;
+}
+
+<style>
+    :root {
+        --lg-primary: #087c8f;
+        --lg-secondary: #6fbd63;
+        --lg-soft: #eef9f5;
+        --lg-dark: #2f3a4a;
+        --lg-muted: #8b95a7;
+    }
+
+    .lymph-page {
+        min-height: calc(100vh - 140px);
+    }
+
+    .lymph-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        padding: 32px;
+        margin-bottom: 28px;
+        background: linear-gradient(135deg, #087c8f 0%, #28a49a 48%, #6fbd63 100%);
+        color: #fff;
+        box-shadow: 0 18px 45px rgba(8, 124, 143, .22);
+    }
+
+        .lymph-hero::after {
+            content: "";
+            position: absolute;
+            right: -70px;
+            top: -80px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .16);
+        }
+
+    .hero-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+        opacity: .92;
+        max-width: 700px;
+        margin-bottom: 0;
+    }
+
+    .hero-logo-mark {
+        width: 86px;
+        height: 86px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, .95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+    }
+
+        .hero-logo-mark img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+        }
+
+    .lg-card {
+        border: 0;
+        border-radius: 26px;
+        background: rgba(255, 255, 255, .92);
+        box-shadow: 0 14px 35px rgba(31, 45, 61, .08);
+        height: 100%;
+    }
+
+    .lg-card-header {
+        padding: 24px 26px 0;
+    }
+
+    .lg-card-body {
+        padding: 24px 26px 26px;
+    }
+
+    .section-title {
+        color: var(--lg-dark);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .section-desc {
+        color: var(--lg-muted);
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .summary-box {
+        border-radius: 22px;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(8,124,143,.08), rgba(111,189,99,.12));
+        border: 1px solid rgba(111,189,99,.18);
+    }
+
+    .summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        background: #fff;
+        color: var(--lg-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        box-shadow: 0 8px 18px rgba(31,45,61,.08);
+    }
+
+    .summary-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--lg-dark);
+        margin-bottom: 0;
+    }
+
+    .summary-label {
+        color: var(--lg-muted);
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+
+    .lg-table {
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .lg-table thead th {
+            border: 0;
+            color: #8b95a7;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 0 18px 8px;
+        }
+
+        .lg-table tbody tr {
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(31, 45, 61, .055);
+        }
+
+        .lg-table tbody td {
+            border: 0;
+            padding: 18px;
+            vertical-align: middle;
+        }
+
+            .lg-table tbody td:first-child {
+                border-top-left-radius: 18px;
+                border-bottom-left-radius: 18px;
+            }
+
+            .lg-table tbody td:last-child {
+                border-top-right-radius: 18px;
+                border-bottom-right-radius: 18px;
+            }
+
+    .detail-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, rgba(8,124,143,.12), rgba(111,189,99,.18));
+        color: var(--lg-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .title-badge {
+        border-radius: 999px;
+        padding: 8px 13px;
+        background: var(--lg-soft);
+        color: var(--lg-primary);
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .empty-box {
+        text-align: center;
+        padding: 34px 18px;
+        color: var(--lg-muted);
+        background: #fbfdff;
+        border-radius: 18px;
+        border: 1px dashed #dce6ef;
+    }
+
+    .btn-back {
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 20px;
+        color: var(--lg-primary);
+        font-weight: 700;
+        background: #fff;
+    }
+
+    @@media(max-width: 768px) {
+        .lymph-page {
+            padding: 24px 16px;
+        }
+
+        .lymph-hero {
+            padding: 24px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<div id="app" class="lymph-page mb-5 mt-1">
+
+    <input type="hidden" id="userId" value="@userId" />
+
+    <div class="lymph-hero">
+        <div class="d-flex justify-content-between align-items-center position-relative">
+            <div>
+                <h1 class="hero-title">Kullanıcı Detayları</h1>
+                <p class="hero-subtitle">
+                    Kullanıcının BKİ ölçümleri ve aerobik egzersiz sürelerini buradan görüntüleyebilirsiniz.
+                </p>
+
+                <div class="mt-3">
+                    <span class="title-badge bg-white">
+                        <i class="fa fa-phone me-2"></i>
+                        {{ phone || '-' }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="/User/KullaniciIslemleri" class="btn btn-back d-none d-md-inline-flex">
+                    <i class="fa fa-arrow-left me-2"></i>
+                    Geri Dön
+                </a>
+
+                <div class="hero-logo-mark d-none d-md-flex">
+                    <img src="~/logo/logo_1.png" alt="LymphGuide" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+       @*  <div class="col-md-4">
+            <div class="summary-box d-flex align-items-center gap-3">
+                <div class="summary-icon">
+                    <i class="fa fa-notes-medical"></i>
+                </div>
+                <div>
+                    <p class="summary-value">{{ symptoms.length }}</p>
+                    <p class="summary-label">Semptom Kaydı</p>
+                </div>
+            </div>
+        </div> *@
+
+        <div class="col-md-6">
+            <div class="summary-box d-flex align-items-center gap-3">
+                <div class="summary-icon">
+                    <i class="fa fa-weight"></i>
+                </div>
+                <div>
+                    <p class="summary-value">{{ bkiValues.length }}</p>
+                    <p class="summary-label">BKİ Kaydı</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="summary-box d-flex align-items-center gap-3">
+                <div class="summary-icon">
+                    <i class="fa fa-stopwatch"></i>
+                </div>
+                <div>
+                    <p class="summary-value">{{ exerciseTimes.length }}</p>
+                    <p class="summary-label">Aerobik Egzersiz Süresi</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+      @*   <div class="col-xl-12">
+            <div class="lg-card">
+                <div class="lg-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-notes-medical me-2 text-info"></i>
+                        Semptomlar
+                    </h5>
+                    <p class="section-desc">
+                        Kullanıcının seçtiği semptomlar ve şiddet bilgileri.
+                    </p>
+                </div>
+
+                <div class="lg-card-body">
+                    <div class="table-responsive" v-if="symptoms.length > 0">
+                        <table class="table lg-table">
+                            <thead>
+                                <tr>
+                                    <th>Semptom</th>
+                                    <th>Açıklama</th>
+                                    <th>Şiddet</th>
+                                    <th>Not</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in symptoms" :key="item.id">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="detail-icon">
+                                                <i class="fa fa-notes-medical"></i>
+                                            </div>
+
+                                            <span class="title-badge">
+                                                {{ item.symptom?.title || '-' }}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-muted">
+                                        {{ item.symptom?.description || '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ item.severity || '-' }}
+                                    </td>
+
+                                    <td class="text-muted">
+                                        {{ item.note || '-' }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div v-else class="empty-box">
+                        Bu kullanıcıya ait semptom kaydı bulunamadı.
+                    </div>
+                </div>
+            </div>
+        </div> *@
+
+        <div class="col-xl-6">
+            <div class="lg-card">
+                <div class="lg-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-weight me-2 text-success"></i>
+                        BKİ Kayıtları
+                    </h5>
+                    <p class="section-desc">
+                        Kullanıcının boy, kilo ve BKİ değerleri.
+                    </p>
+                </div>
+
+                <div class="lg-card-body">
+                    <div class="table-responsive" v-if="bkiValues.length > 0">
+                        <table class="table lg-table">
+                            <thead>
+                                <tr>
+                                    <th>Boy</th>
+                                    <th>Kilo</th>
+                                    <th>BKİ</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in bkiValues" :key="item.id">
+                                    <td>{{ item.boy }}</td>
+                                    <td>{{ item.kilo }}</td>
+                                    <td>
+                                        <span class="title-badge">
+                                            {{ item.bkiValue }}
+                                        </span>
+                                    </td>
+                                    <td class="text-muted">{{ formatDate(item.createdAt) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div v-else class="empty-box">
+                        Bu kullanıcıya ait BKİ kaydı bulunamadı.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6">
+            <div class="lg-card">
+                <div class="lg-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-stopwatch me-2 text-warning"></i>
+                        Aerobik Egzersiz Süreleri
+                    </h5>
+                    <p class="section-desc">
+                        Kullanıcının kronometre üzerinden kaydedilen aerobik egzersiz süreleri.
+                    </p>
+                </div>
+
+                <div class="lg-card-body">
+                    <div class="table-responsive" v-if="exerciseTimes.length > 0">
+                        <table class="table lg-table">
+                            <thead>
+                                <tr>
+                                    <th>Süre</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in exerciseTimes" :key="item.id">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="detail-icon">
+                                                <i class="fa fa-clock"></i>
+                                            </div>
+                                            <span class="title-badge">
+                                                {{ formatSecond(item.second) }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted">{{ formatDate(item.createdAt) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div v-else class="empty-box">
+                        Bu kullanıcıya ait aerobik egzersiz süresi kaydı bulunamadı.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/page-js/user/detail.js"></script>
+}

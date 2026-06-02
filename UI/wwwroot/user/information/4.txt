@@ -1,0 +1,4 @@
+﻿<div class="profile-content">
+<h6 class="">Tolga Demiralp</h6>
+<p class="">Süper Admin</p>
+</div>

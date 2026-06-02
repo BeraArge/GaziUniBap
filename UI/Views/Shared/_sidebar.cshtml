@@ -1,0 +1,68 @@
+﻿@using System.IO;
+@using System.Net;
+@using Microsoft.AspNetCore.Hosting
+@inject IHostingEnvironment HostingEnvironment
+
+
+@{
+    Layout = null;
+    var path = HostingEnvironment.WebRootPath;
+    string vidS = "1";
+    string cookie = "";
+
+    string phone = "";
+    string tel = "";
+    foreach (var cookies in Context.Request.Cookies)
+    {
+        if (cookies.Key == "vid")
+        {
+            cookie = cookies.Value;
+        }
+        if (cookies.Key == "phone")
+        {
+            phone = cookies.Value;
+        }
+    }
+    if (cookie != "")
+    {
+        var vid = Utility.Security.Encryption.EncryptionHelper.Decrypt(cookie).Split("-");
+        vidS = vid[0];
+    }
+    if (phone != "")
+    {
+        var phoneTel = Utility.Security.Encryption.EncryptionHelper.Decrypt(phone).Split("-");
+        tel = phoneTel[0];
+    }
+    var menu = Html.Raw(UI.Extensions.Functions.MenuRead(path + "/user/menu/", vidS + ".txt"));
+    var adminUser = Html.Raw(UI.Extensions.Functions.MenuRead(path + "/user/information", vidS + ".txt"));
+}
+
+
+@section Head{
+}
+<div class="app-menu navbar-menu">
+    <!-- LOGO -->
+    <div class="sidebar-logo-card">
+        <a href="/" class="sidebar-logo-link">
+            <img src="/logo/logo_1.png" alt="LymphGuide" class="sidebar-logo-img" height="100">
+        </a>
+    </div>
+
+    <div id="scrollbar">
+        <div class="container-fluid">
+
+            <div id="two-column-menu">
+            </div>
+            <ul class="navbar-nav" id="navbar-nav">
+                <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                @menu
+
+            </ul>
+        </div>
+        <!-- Sidebar -->
+    </div>
+    <div class="sidebar-background" style="background:#78bb70"></div>
+</div>
+<!-- Left Sidebar End -->
+<!-- Vertical Overlay-->
+<div class="vertical-overlay"></div> 

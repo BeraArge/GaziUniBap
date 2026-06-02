@@ -1,0 +1,38 @@
+﻿<li class="menu active"><a href="/Home/Index" class="dropdown-toggle">
+<div class="">
+<i class='fas fa-home'></i>
+<span>AnaSayfa</span>
+</div>
+<div>
+</div>
+</a></li><hr/><li class="menu"><a href="#page17" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+<div class="">
+<i class='fas fa-align-justify'></i>
+<span>Modül Yönetimi</span>
+</div>
+<div>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+</a><ul class="collapse submenu list-unstyled" id="page17" data-bs-parent="#accordionExample"><li>
+<a href="/Module/Index">Modül Listesi</a>
+</li></ul></li><hr/><li class="menu"><a href="#page18" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+<div class="">
+<i class='icon-user-lock'></i>
+<span>Rol Yönetimi</span>
+</div>
+<div>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+</a><ul class="collapse submenu list-unstyled" id="page18" data-bs-parent="#accordionExample"><li>
+<a href="/Role/Index">Rol Listesi</a>
+</li></ul></li><hr/><li class="menu"><a href="#page41" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+<div class="">
+<i class='fas fa-code mr-3'></i>
+<span>İçerik Yönetimi</span>
+</div>
+<div>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+</a><ul class="collapse submenu list-unstyled" id="page41" data-bs-parent="#accordionExample"><li>
+<a href="/MyContent/Index">İçerik Ekleme</a>
+</li></ul></li><hr/>

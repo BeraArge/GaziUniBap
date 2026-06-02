@@ -1,0 +1,44 @@
+﻿<li class="menu active"><a href="/Home/Index" class="dropdown-toggle">
+<div class="">
+<i class='fas fa-home'></i>
+<span>Ana Sayfa</span>
+</div>
+<div>
+</div>
+</a><ul class="collapse submenu dropdown-menu list-unstyled" id="page data-bs-parent="#accordionExample"><li>
+<a href='#'></a>
+</li></ul></li><hr/><li class="menu"><a href="#page2" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+<div class="">
+<i class='icon-user-lock'></i>
+<span>Rol Yönetimi</span>
+</div>
+<div>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+</a><ul class="collapse submenu list-unstyled" id="page2" data-bs-parent="#accordionExample"><li>
+<a href="/Role/Create">Rol Ekle</a>
+</li><li>
+<a href="/Role/Index">Rol Listesi</a>
+</li></ul></li><hr/><li class="menu"><a href="#page9" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+<div class="">
+<i class='fas fa-align-justify'></i>
+<span>Modül Yönetimi</span>
+</div>
+<div>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+</a><ul class="collapse submenu list-unstyled" id="page9" data-bs-parent="#accordionExample"><li>
+<a href="/Module/Index">Modül Listesi</a>
+</li><li>
+<a href="/Module/Create">Modül Oluşturma</a>
+</li></ul></li><hr/><li class="menu"><a href="#page15" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+<div class="">
+<i class='icon-mail5 mr-3'></i>
+<span>E-Posta Yönetimi</span>
+</div>
+<div>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</div>
+</a><ul class="collapse submenu list-unstyled" id="page15" data-bs-parent="#accordionExample"><li>
+<a href="/Mail/Index">E-Posta Listesi</a>
+</li></ul></li><hr/>

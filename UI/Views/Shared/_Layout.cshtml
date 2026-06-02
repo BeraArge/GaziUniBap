@@ -1,0 +1,207 @@
+﻿@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment HostingEnvironment
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+<head>
+    @Html.Partial("~/Views/Shared/_title_meta.cshtml")
+    @Html.Partial("~/Views/Shared/_head_css.cshtml")
+    @RenderSection("Head", required: false)
+
+    <style>
+        body {
+            background: radial-gradient(circle at top right, rgba(111, 189, 99, .18), transparent 32%), radial-gradient(circle at top left, rgba(8, 124, 143, .14), transparent 28%), #f7f9fc;
+        }
+
+        .hero-title{
+            color: white
+        }
+
+        .navbar-menu {
+            background: #a8d5a2 !important;
+            border-right: 1px solid rgba(255,255,255,0.25) !important;
+        }
+
+        .sidebar-background {
+            background: #a8d5a2 !important;
+        }
+
+        .navbar-nav .nav-link,
+        .navbar-nav .nav-link span,
+        .navbar-nav .menu-title span {
+            color: #2f4f35 !important;
+        }
+
+            .navbar-nav .nav-link i {
+                color: #4d7c57 !important;
+            }
+
+            .navbar-nav .nav-link:hover {
+                background: rgba(255,255,255,0.35) !important;
+                color: #1f3825 !important;
+                border-radius: 12px !important;
+            }
+
+                .navbar-nav .nav-link:hover i {
+                    color: #2f6b3d !important;
+                }
+
+            .navbar-nav .nav-link.active {
+                background: rgba(255,255,255,0.55) !important;
+                color: #1f3825 !important;
+                border-radius: 12px !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+            }
+
+                .navbar-nav .nav-link.active i {
+                    color: #2f6b3d !important;
+                }
+
+        .menu-dropdown {
+            background: rgba(255,255,255,0.12) !important;
+            border-radius: 14px !important;
+            margin-top: 6px !important;
+        }
+
+            .menu-dropdown .nav-link {
+                color: #35553d !important;
+            }
+
+                .menu-dropdown .nav-link:hover {
+                    background: rgba(255,255,255,0.28) !important;
+                }
+
+        [data-simplebar] .simplebar-content-wrapper {
+            scrollbar-color: #7fbf7f transparent !important;
+        }
+    </style>
+
+
+    <style>
+        .navbar-menu {
+            background: linear-gradient(180deg, #b9dfb4 0%, #a8d5a2 45%, #9fce9a 100%) !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.35) !important;
+            box-shadow: 10px 0 35px rgba(47, 79, 53, 0.08) !important;
+        }
+
+        .sidebar-background {
+            background: transparent !important;
+        }
+
+        .sidebar-logo-card {
+            margin: 42px 24px 38px 24px !important;
+            padding: 18px 14px !important;
+            border-radius: 24px !important;
+            background: rgba(255, 255, 255, 0.78) !important;
+            border: 1px solid rgba(255, 255, 255, 0.85) !important;
+            box-shadow: 0 16px 32px rgba(47, 79, 53, 0.16) !important;
+            backdrop-filter: blur(10px) !important;
+            overflow: hidden !important;
+        }
+
+        .sidebar-logo-link {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .sidebar-logo-img {
+            width: 165px !important;
+            height: auto !important;
+            max-width: 100% !important;
+            object-fit: contain !important;
+            border-radius: 14px !important;
+        }
+
+   
+    </style>
+</head>
+<body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        @* menu partialının içindekiler aşağıdaki iki satır *@
+        @Html.Partial("~/Views/Shared/_topbar.cshtml")
+        @Html.Partial("~/Views/Shared/_sidebar.cshtml")
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                           @*  <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">@ViewBag.ptitle</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+
+                                    </ol>
+                                </div>
+
+                            </div> *@
+                        </div>
+                    </div>
+
+                    @RenderBody()
+                </div>
+            </div>
+            @Html.Partial("~/Views/Shared/_footer.cshtml")
+        </div>
+
+    </div>
+    <!-- END layout-wrapper -->
+    @Html.Partial("~/Views/Shared/_customizer.cshtml")
+
+    @Html.Partial("~/Views/Shared/_vendor_scripts.cshtml")
+
+    @RenderSection("Scripts", required: false)
+
+    <script>
+        function openOffcanvas() {
+            var offcanvasElement = new bootstrap.Offcanvas(document.getElementById('theme-settings-offcanvas'));
+            offcanvasElement.show();
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const currentPath = window.location.pathname.toLowerCase();
+
+            const menuLinks = document.querySelectorAll(".menu-link");
+
+            menuLinks.forEach(link => {
+
+                const href = link.getAttribute("href");
+                if (!href || href.startsWith("#"))
+                    return;
+
+                const normalizedHref = href.toLowerCase();
+
+                if (currentPath === normalizedHref ||
+                    currentPath.startsWith(normalizedHref + "/")) {
+
+                    link.classList.add("active");
+
+                    const collapse = link.closest(".collapse");
+
+                    if (collapse) {
+                        collapse.classList.add("show");
+                        const trigger = document.querySelector(
+                            `[href="#${collapse.id}"]`
+                        );
+
+                        if (trigger) {
+                            trigger.classList.add("active");
+                            trigger.setAttribute("aria-expanded", "true");
+                        }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>

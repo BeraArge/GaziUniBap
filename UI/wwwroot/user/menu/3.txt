@@ -1,0 +1,49 @@
+﻿  <li class="nav-item">
+     <a class="nav-link menu-link" href="/Home/Index"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-home'></i><span >Ana Sayfa</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/kullanici_islemleri"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-users-cog'></i><span >Kullanıcı İşlemleri</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/Form/Index"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fab fa-wpforms'></i><span >Form İşlemleri</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/motivasyon_kartlari"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-shapes'></i><span >Motivasyon Kartları</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/semptomlar"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-file-medical-alt '></i><span >Semptomlar</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/egzersiz_detaylari"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-volleyball-ball'></i><span >Egzersiz Takip</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/masaj_detaylari"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-hands'></i><span >Masaj Takip</span>
+   </a>
+
+ </li>   <li class="nav-item">
+     <a class="nav-link menu-link" href="/iletisim"  role="button"
+ aria-expanded="false" aria-controls="sidebarDashboards">
+<i class='fas fa-comments '></i><span >Hasta Mesajları</span>
+   </a>
+
+ </li> 

@@ -1,0 +1,558 @@
+﻿@using System.Text.Json
+@{
+    ViewData["Title"] = "Profilim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --lg-primary: #087c8f;
+        --lg-secondary: #6fbd63;
+        --lg-soft: #eef9f5;
+        --lg-dark: #2f3a4a;
+        --lg-muted: #8b95a7;
+        --lg-border: #e4eaf1;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f7fcfa 0%, #eef9f5 100%);
+    }
+
+    .profile-page {
+        min-height: calc(100vh - 140px);
+        padding-bottom: 50px;
+    }
+
+    .profile-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        padding: 32px;
+        margin-bottom: 28px;
+        background: linear-gradient(135deg, #087c8f 0%, #28a49a 48%, #6fbd63 100%);
+        color: #fff;
+        box-shadow: 0 18px 45px rgba(8, 124, 143, .22);
+    }
+
+        .profile-hero::after {
+            content: "";
+            position: absolute;
+            right: -70px;
+            top: -80px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.16);
+        }
+
+    .hero-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+        opacity: .92;
+        max-width: 650px;
+        margin-bottom: 0;
+    }
+
+    .hero-logo-mark {
+        width: 86px;
+        height: 86px;
+        border-radius: 24px;
+        background: rgba(255,255,255,.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    }
+
+        .hero-logo-mark img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+        }
+
+    .lg-card {
+        border: 0;
+        border-radius: 26px;
+        background: rgba(255,255,255,.92);
+        box-shadow: 0 14px 35px rgba(31,45,61,.08);
+    }
+
+    .lg-card-header {
+        padding: 24px 26px 0;
+    }
+
+    .lg-card-body {
+        padding: 24px 26px 26px;
+    }
+
+    .section-title {
+        color: var(--lg-dark);
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .section-desc {
+        color: var(--lg-muted);
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .profile-avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 24px;
+        margin: 0 auto 16px;
+        background: linear-gradient(135deg, rgba(8,124,143,.12), rgba(111,189,99,.18));
+        color: var(--lg-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        box-shadow: 0 12px 30px rgba(8,124,143,.18);
+    }
+
+    .profile-name {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--lg-dark);
+        margin-bottom: 4px;
+    }
+
+    .profile-subtitle {
+        text-align: center;
+        color: var(--lg-muted);
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .info-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 14px 15px;
+        border-radius: 18px;
+        background: #fbfdff;
+        border: 1px solid var(--lg-border);
+    }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 13px;
+        background: var(--lg-soft);
+        color: var(--lg-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .info-item strong {
+        display: block;
+        color: var(--lg-dark);
+        font-size: 13px;
+        margin-bottom: 2px;
+    }
+
+    .info-item span {
+        color: var(--lg-muted);
+        font-size: 14px;
+        word-break: break-word;
+    }
+
+    .lg-input {
+        border-radius: 16px;
+        border: 1px solid var(--lg-border);
+        padding: 12px 15px;
+        min-height: 48px;
+        background-color: #fbfdff;
+    }
+
+        .lg-input:focus {
+            border-color: var(--lg-primary);
+            box-shadow: 0 0 0 .18rem rgba(8,124,143,.12);
+        }
+
+    .form-label {
+        color: var(--lg-dark);
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+        .form-label i {
+            color: var(--lg-primary);
+            margin-right: 6px;
+        }
+
+    .btn-lymph {
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 24px;
+        color: #fff;
+        font-weight: 600;
+        background: linear-gradient(135deg, var(--lg-primary), var(--lg-secondary));
+        box-shadow: 0 10px 22px rgba(8,124,143,.22);
+        transition: .25s ease;
+    }
+
+        .btn-lymph:hover {
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(8,124,143,.28);
+        }
+
+    .btn-soft {
+        border-radius: 999px;
+        padding: 11px 24px;
+        font-weight: 600;
+        background: #fff;
+        color: var(--lg-primary);
+        border: 1px solid #dfe8ef;
+    }
+
+        .btn-soft:hover {
+            background: var(--lg-soft);
+            color: var(--lg-primary);
+        }
+
+    .btn-warning-soft {
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 24px;
+        color: #fff;
+        font-weight: 600;
+        background: linear-gradient(135deg, #f0ad4e, #d98c19);
+        box-shadow: 0 10px 22px rgba(217,140,25,.18);
+    }
+
+        .btn-warning-soft:hover {
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+    .lg-alert {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(8,124,143,0.08), rgba(111,189,99,0.12));
+        border: 1px solid rgba(111,189,99,0.25);
+        color: #2f6f5f;
+        border-radius: 16px;
+        padding: 12px 14px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .alert {
+        border-radius: 16px;
+        border: none;
+        padding: 14px 16px;
+    }
+
+    .nav-tabs {
+        border-bottom: 1px solid #dfe8ef;
+        gap: 8px;
+    }
+
+        .nav-tabs .nav-link {
+            border: 1px solid transparent;
+            border-radius: 16px 16px 0 0;
+            color: #637083;
+            font-weight: 600;
+            padding: 12px 16px;
+        }
+
+            .nav-tabs .nav-link.active {
+                background: var(--lg-soft);
+                color: var(--lg-primary);
+                border-color: #dfe8ef;
+                border-bottom-color: var(--lg-soft);
+            }
+
+    .password-box {
+        background: #fbfdff;
+        border: 1px solid var(--lg-border);
+        border-radius: 22px;
+        padding: 20px;
+    }
+
+    @@media(max-width: 768px) {
+        .profile-page {
+            padding: 24px 16px;
+        }
+
+        .profile-hero {
+            padding: 24px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+        }
+
+        .lg-card-header,
+        .lg-card-body {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    }
+</style>
+
+<div id="app" class="profile-page mb-5 mt-1">
+
+    <div class="profile-hero">
+        <div class="d-flex justify-content-between align-items-center position-relative">
+            <div>
+                <h1 class="hero-title">
+                    Profil Ayarları
+                </h1>
+                <p class="hero-subtitle">
+                    Hesap bilgilerinizi güncelleyebilir ve şifrenizi güvenli şekilde değiştirebilirsiniz.
+                </p>
+            </div>
+
+            <div class="hero-logo-mark d-none d-md-flex">
+                <img src="~/logo/logo_1.png" alt="LymphGuide" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-4">
+            <div class="lg-card h-100">
+                <div class="lg-card-body">
+
+                    <div class="profile-avatar">
+                        <i class="fa fa-user"></i>
+                    </div>
+
+                    <div class="profile-name">
+                        {{ edit.fullName || '-' }}
+                    </div>
+
+                    <div class="profile-subtitle">
+                        Kullanıcı profil özeti
+                    </div>
+
+                    <div class="info-list">
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fa fa-id-card"></i>
+                            </div>
+                            <div>
+                                <strong>Ad Soyad</strong>
+                                <span>{{ edit.fullName || '-' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div>
+                                <strong>Telefon</strong>
+                                <span>{{ edit.phone || '-' }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div v-if="alert.show"
+                         class="alert mt-4"
+                         :class="alert.class"
+                         role="alert">
+                        {{ alert.message }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="lg-card">
+
+                <div class="lg-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-user-cog me-2 text-info"></i>
+                        Hesap Yönetimi
+                    </h5>
+                    <p class="section-desc">
+                        Profil bilgilerinizi düzenleyin veya şifrenizi değiştirin.
+                    </p>
+                </div>
+
+                <div class="lg-card-body">
+
+                    <div class="lg-alert mb-4">
+                        <i class="fa fa-info-circle me-2"></i>
+                        Güvenliğiniz için şifrenizi belirli aralıklarla güncellemeniz önerilir.
+                    </div>
+
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="javascript:void(0)"
+                               :class="{ active: activeTab === 'profile' }"
+                               v-on:click="activeTab = 'profile'">
+                                <i class="fa fa-user me-1"></i>
+                                Profil Bilgileri
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="javascript:void(0)"
+                               :class="{ active: activeTab === 'password' }"
+                               v-on:click="activeTab = 'password'">
+                                <i class="fa fa-key me-1"></i>
+                                Şifre Değiştir
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-4">
+
+                        <div class="tab-pane fade"
+                             :class="{ 'show active': activeTab === 'profile' }">
+
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fa fa-user"></i>
+                                        Ad Soyad
+                                    </label>
+                                    <input type="text"
+                                           class="form-control lg-input"
+                                           v-model.trim="edit.fullName"
+                                           placeholder="Ad soyad girin" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fa fa-phone"></i>
+                                        Telefon Numarası
+                                    </label>
+                                    <input type="text"
+                                           class="form-control lg-input"
+                                           v-model="edit.phone"
+                                           placeholder="5XXXXXXXXX"
+                                           maxlength="11"
+                                           inputmode="numeric"
+                                           @@input="formatPhone" />
+                                </div>
+
+                                <div class="col-12 d-flex flex-wrap gap-2 mt-2">
+                                    <button class="btn btn-lymph"
+                                            v-on:click="saveProfile"
+                                            :disabled="isSavingEdit">
+                                        <span v-if="isSavingEdit"
+                                              class="spinner-border spinner-border-sm me-2"></span>
+                                        <i v-else class="fa fa-check-circle me-2"></i>
+                                        {{ isSavingEdit ? 'Kaydediliyor...' : 'Profili Kaydet' }}
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade"
+                             :class="{ 'show active': activeTab === 'password' }">
+
+                            <div class="password-box">
+
+                                <div class="row g-3">
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">
+                                            <i class="fa fa-lock"></i>
+                                            Mevcut Şifre
+                                        </label>
+                                        <input type="password"
+                                               class="form-control lg-input"
+                                               v-model="password.oldPassword"
+                                               placeholder="Mevcut şifreniz" />
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">
+                                            <i class="fa fa-key"></i>
+                                            Yeni Şifre
+                                        </label>
+                                        <input type="password"
+                                               class="form-control lg-input"
+                                               v-model="password.newPassword"
+                                               placeholder="Yeni şifreniz" />
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label">
+                                            <i class="fa fa-key"></i>
+                                            Yeni Şifre Tekrar
+                                        </label>
+                                        <input type="password"
+                                               class="form-control lg-input"
+                                               v-model="password.newPasswordRepeat"
+                                               placeholder="Yeni şifre tekrar" />
+                                    </div>
+
+                                    <div class="col-12 d-flex flex-wrap gap-2 mt-2">
+
+                                        <button class="btn btn-warning-soft"
+                                                v-on:click="changePassword"
+                                                :disabled="isSavingPassword">
+                                            <span v-if="isSavingPassword"
+                                                  class="spinner-border spinner-border-sm me-2"></span>
+                                            <i v-else class="fa fa-shield-alt me-2"></i>
+                                            {{ isSavingPassword ? 'Güncelleniyor...' : 'Şifreyi Değiştir' }}
+                                        </button>
+
+                                        <button class="btn btn-soft"
+                                                v-on:click="resetPasswordForm"
+                                                :disabled="isSavingPassword">
+                                            <i class="fa fa-undo me-2"></i>
+                                            Temizle
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.__initialProfile = @Html.Raw(JsonSerializer.Serialize(new
+        {
+                id = Model.Id,
+                rolId = Model.RolId,
+                fullName = Model.FullName,
+                phone = Model.Phone,
+        }));
+</script>
+
+    <script src="~/page-js/auth/profile.js"></script>
+}

@@ -1,0 +1,507 @@
+﻿@{
+    ViewData["Title"] = "Ana Sayfa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Head {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --lg-primary: #087c8f;
+            --lg-secondary: #6fbd63;
+            --lg-soft: #eef9f5;
+            --lg-dark: #2f3a4a;
+            --lg-muted: #8b95a7;
+        }
+
+        .lymph-page {
+            min-height: calc(100vh - 140px);
+        }
+
+        .lymph-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            padding: 32px;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, #087c8f 0%, #28a49a 48%, #6fbd63 100%);
+            color: #fff;
+            box-shadow: 0 18px 45px rgba(8, 124, 143, .22);
+        }
+
+            .lymph-hero::after {
+                content: "";
+                position: absolute;
+                right: -70px;
+                top: -80px;
+                width: 260px;
+                height: 260px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, .16);
+            }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-subtitle {
+            opacity: .92;
+            max-width: 720px;
+            margin-bottom: 0;
+        }
+
+        .hero-logo-mark {
+            width: 86px;
+            height: 86px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, .95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .12);
+        }
+
+            .hero-logo-mark img {
+                width: 68px;
+                height: 68px;
+                object-fit: contain;
+            }
+
+        .lg-card {
+            border: 0;
+            border-radius: 26px;
+            background: rgba(255, 255, 255, .92);
+            box-shadow: 0 14px 35px rgba(31, 45, 61, .08);
+            height: 100%;
+        }
+
+        .lg-card-header {
+            padding: 24px 26px 0;
+        }
+
+        .lg-card-body {
+            padding: 24px 26px 26px;
+        }
+
+        .section-title {
+            color: var(--lg-dark);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .section-desc {
+            color: var(--lg-muted);
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        .summary-card {
+            border-radius: 24px;
+            background: #fff;
+            padding: 22px;
+            height: 100%;
+            box-shadow: 0 10px 24px rgba(31, 45, 61, .07);
+            transition: .2s;
+        }
+
+            .summary-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 16px 32px rgba(8, 124, 143, .12);
+            }
+
+        .summary-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(8,124,143,.12), rgba(111,189,99,.18));
+            color: var(--lg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            margin-bottom: 15px;
+        }
+
+        .summary-card h5 {
+            color: var(--lg-dark);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .summary-card p {
+            color: var(--lg-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .feature-list {
+            max-height: 430px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+            .feature-list::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .feature-list::-webkit-scrollbar-track {
+                background: #edf5ea;
+                border-radius: 20px;
+            }
+
+            .feature-list::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, var(--lg-primary), var(--lg-secondary));
+                border-radius: 20px;
+            }
+
+        .feature-item {
+            display: flex;
+            gap: 14px;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf1f4;
+        }
+
+        .feature-icon {
+            min-width: 44px;
+            height: 44px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(8,124,143,.10), rgba(111,189,99,.16));
+            color: var(--lg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .feature-item h6 {
+            color: var(--lg-dark);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .feature-item p {
+            color: var(--lg-muted);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        .tracking-box {
+            background: linear-gradient(135deg, rgba(8,124,143,0.07), rgba(111,189,99,0.11));
+            border: 1px solid rgba(111,189,99,0.20);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .tracking-box span {
+                display: block;
+                color: var(--lg-dark);
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+
+            .tracking-box small {
+                color: var(--lg-muted);
+                line-height: 1.4;
+            }
+
+            .tracking-box i {
+                color: var(--lg-primary);
+                font-size: 24px;
+                margin-left: 14px;
+            }
+
+        .quick-btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 22px;
+            color: #fff;
+            font-weight: 600;
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--lg-primary), var(--lg-secondary));
+            box-shadow: 0 10px 22px rgba(8, 124, 143, .22);
+            transition: .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .quick-btn:hover {
+                color: #fff;
+                transform: translateY(-1px);
+                box-shadow: 0 14px 28px rgba(8, 124, 143, .28);
+            }
+
+        @@media(max-width: 768px) {
+            .lymph-page {
+                padding: 24px 16px;
+            }
+
+            .lymph-hero {
+                padding: 24px;
+            }
+
+            .hero-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+}
+
+<div class="lymph-page mb-5 mt-1">
+
+    <div class="lymph-hero">
+        <div class="d-flex justify-content-between align-items-center position-relative">
+            <div>
+                <h1 class="hero-title">Lenfödem Takip ve Eğitim Yönetim Paneli</h1>
+                <p class="hero-subtitle">
+                    Hastaların egzersiz, masaj, BKI, aerobik kronometre, form cevapları,
+                    semptom bildirimleri ve mesaj süreçlerini tek panelden takip edebilirsiniz.
+                </p>
+            </div>
+
+            <div class="hero-logo-mark d-none d-md-flex">
+                <img src="~/logo/logo_1.png" alt="LymphGuide" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fa-solid fa-user-injured"></i>
+                </div>
+                <h5>Hasta Takibi</h5>
+                <p>Kayıtlı hastaların sistem aktivitelerini ve takip durumlarını görüntüleyin.</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <h5>Egzersiz Kayıtları</h5>
+                <p>İyileştirici, direnç ve aerobik egzersiz kayıtlarını inceleyin.</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fa-solid fa-hands"></i>
+                </div>
+                <h5>Masaj Takibi</h5>
+                <p>Hastaların kendi kendine masaj uygulama durumlarını kontrol edin.</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i class="fa-solid fa-weight-scale"></i>
+                </div>
+                <h5>BKI Değerleri</h5>
+                <p>Kilo ve beden kitle indeksi değişimlerini takip edin.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-xl-7">
+            <div class="lg-card">
+                <div class="lg-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-layer-group me-2 text-success"></i>
+                        Panelde Neler Yapabilirsiniz?
+                    </h5>
+                    <p class="section-desc">Panel menülerinin ne işe yaradığını buradan özet olarak inceleyebilirsiniz.</p>
+                </div>
+
+                <div class="lg-card-body">
+                    <div class="feature-list">
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-house"></i>
+                            </div>
+                            <div>
+                                <h6>Ana Sayfa</h6>
+                                <p>Sistemin genel özetini, takip başlıklarını ve hızlı erişim alanlarını görüntüler.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-users-gear"></i>
+                            </div>
+                            <div>
+                                <h6>Kullanıcı İşlemleri</h6>
+                                <p>Hasta ve kullanıcı kayıtlarını görüntüleyebilir, düzenleme ve detay işlemlerini yapabilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <h6>Form İşlemleri</h6>
+                                <p>Mobil uygulamada hastalar tarafından doldurulan formları ve cevapları inceleyebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-shapes"></i>
+                            </div>
+                            <div>
+                                <h6>Motivasyon Kartları</h6>
+                                <p>Mobil uygulamada gösterilecek bilgilendirici ve destekleyici motivasyon kartlarını yönetebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-notes-medical"></i>
+                            </div>
+                            <div>
+                                <h6>Semptomlar</h6>
+                                <p>Hastaların bildirdiği şişlik, ağrı, gerginlik, kızarıklık ve benzeri semptom kayıtlarını takip edebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-person-running"></i>
+                            </div>
+                            <div>
+                                <h6>Egzersiz Takip</h6>
+                                <p>Hastaların egzersiz uygulama durumlarını, tekrar sayılarını ve aerobik süre kayıtlarını görüntüleyebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-hands-holding-circle"></i>
+                            </div>
+                            <div>
+                                <h6>Masaj Takip</h6>
+                                <p>Kendi kendine lenfödem masajı uygulama kayıtlarını ve düzenlilik durumlarını inceleyebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div>
+                                <h6>Hasta Mesajları</h6>
+                                <p>Hastalardan gelen mesajları görüntüleyebilir, iletişim ve geri bildirim süreçlerini yönetebilirsiniz.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5">
+            <div class="lg-card">
+                <div class="lg-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-heart-pulse me-2 text-info"></i>
+                        Takip Edilen Hasta Verileri
+                    </h5>
+                    <p class="section-desc">Hasta sürecinde izlenen temel kayıt alanları.</p>
+                </div>
+
+                <div class="lg-card-body">
+
+                    <div class="tracking-box">
+                        <div>
+                            <span>Egzersiz Takibi</span>
+                            <small>İyileştirici, direnç ve aerobik egzersiz kayıtları</small>
+                        </div>
+                        <i class="fa-solid fa-person-walking"></i>
+                    </div>
+
+                    <div class="tracking-box">
+                        <div>
+                            <span>Masaj Takibi</span>
+                            <small>Hastanın düzenli masaj uygulama durumu</small>
+                        </div>
+                        <i class="fa-solid fa-spa"></i>
+                    </div>
+
+                    <div class="tracking-box">
+                        <div>
+                            <span>Aerobik Kronometre</span>
+                            <small>Yürüyüş veya aerobik egzersiz süre kayıtları</small>
+                        </div>
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+
+                    <div class="tracking-box">
+                        <div>
+                            <span>Bildirim Geçmişi</span>
+                            <small>Hastalara gönderilen manuel ve otomatik bildirimler</small>
+                        </div>
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <a href="/kullanici_islemleri" class="quick-btn">
+                            <i class="fa-solid fa-users"></i>
+                            Kullanıcılar
+                        </a>
+
+                        <a href="/egzersiz_detaylari" class="quick-btn">
+                            <i class="fa-solid fa-dumbbell"></i>
+                            Egzersiz
+                        </a>
+
+                        <a href="/masaj_detaylari" class="quick-btn">
+                            <i class="fa-solid fa-hands"></i>
+                            Masaj
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cards = document.querySelectorAll(".summary-card, .lg-card, .quick-btn");
+
+            cards.forEach((card, index) => {
+                card.style.opacity = "0";
+                card.style.transform = "translateY(15px)";
+
+                setTimeout(() => {
+                    card.style.transition = "all .4s ease";
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, index * 70);
+            });
+        });
+    </script>
+}

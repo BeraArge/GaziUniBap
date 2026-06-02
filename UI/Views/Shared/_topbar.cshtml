@@ -1,0 +1,157 @@
+﻿@using System.IO;
+@using System.Net;
+@using Microsoft.AspNetCore.Hosting
+@*@inject IHostingEnvironment HostingEnvironment*@
+@inject IWebHostEnvironment HostingEnvironment
+
+
+
+@{
+    Layout = null;
+    var path = HostingEnvironment.WebRootPath;
+    string vidS = "1";
+    string cookie = "";
+
+    string phone = "";
+    string tel = "";
+    foreach (var cookies in Context.Request.Cookies)
+    {
+        if (cookies.Key == "vid")
+        {
+            cookie = cookies.Value;
+        }
+    
+    }
+    if (cookie != "")
+    {
+        var vid = Utility.Security.Encryption.EncryptionHelper.Decrypt(cookie).Split("-");
+        vidS = vid[0];
+    }
+
+    var menu = Html.Raw(UI.Extensions.Functions.MenuRead(path + "/user/menu/", vidS + ".txt"));
+    var adminUser = Html.Raw(UI.Extensions.Functions.MenuRead(path + "/user/information", vidS + ".txt"));
+    var currentPath = Context.Request.Path;
+    var queryString = Context.Request.QueryString.Value ?? "";
+
+    // Culture parametresini query string'den temizle
+    var newCultureLink = queryString;
+
+    if (newCultureLink.Contains("culture="))
+    {
+        // Culture parametresini bul ve temizle
+        newCultureLink = System.Text.RegularExpressions.Regex.Replace(newCultureLink, @"[?&]culture=[^&]*", "");
+    }
+
+    // Sondaki gereksiz '&' veya '?' karakterlerini temizle
+    newCultureLink = newCultureLink.TrimEnd('&').TrimEnd('?');
+
+    // Yeni query string'i hazırlama
+    string querySeparator = string.IsNullOrEmpty(newCultureLink) ? "?" : "&";
+
+    // Dil değiştirme linkleri
+    var englishCultureLink = $"{currentPath}{newCultureLink}{querySeparator}culture=en";
+    var arabicCultureLink = $"{currentPath}{newCultureLink}{querySeparator}culture=ar";
+    var turkishCultureLink = $"{currentPath}{newCultureLink}{querySeparator}culture=tr";
+}
+
+
+<header id="page-topbar">
+    <div class="layout-width">
+        <div class="navbar-header">
+            <div class="d-flex">
+                <!-- LOGO -->
+                <div class="navbar-brand-box horizontal-logo">
+                    <a href="@Url.Action("Index", "Dashboard")" class="logo logo-dark">
+                        <span class="logo-sm">
+                            <img src="~/logo/logo_2.png" alt="" height="50">
+                        </span>
+                        <span class="logo-lg">
+                            <img src="~/logo/logo_2.png" alt="" height="50">
+                        </span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "Dashboard")" class="logo logo-light">
+                        <span class="logo-sm">
+                            <img src="~/logo/logo_2.png" alt="" height="50">
+                        </span>
+                        <span class="logo-lg">
+                            <img src="~/logo/logo_2.png" alt="" height="50">
+                        </span>
+                    </a>
+                </div>
+
+                <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
+                        id="topnav-hamburger-icon">
+                    <span class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </button>
+
+            </div>
+
+            <div class="d-flex align-items-center">
+
+
+                <div class="ms-1 header-item d-none d-sm-flex">
+                    <button type="button"
+                            class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
+                        <i class='bx bx-moon fs-22'></i>
+                    </button>
+                </div>
+
+
+                <div class="dropdown ms-sm-3 header-item topbar-user">
+                    <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <span class="d-flex align-items-center">
+                            <img class="rounded-circle header-profile-user" src="~/logo/user-avatar.png"
+                                 alt="Header Avatar">
+                            <span class="text-start ms-xl-2">
+                                @adminUser
+                            </span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+
+                        <a class="dropdown-item" href="/User/Profil">
+                            <i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profil</span>
+                        </a> 
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/Auth/Logout">
+                            <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Çıkış Yap</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- removeNotificationModal -->
+<div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="NotificationModalbtn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Are you sure ?</h4>
+                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Notification ?</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn w-sm btn-danger" id="delete-notification">Yes, Delete It!</button>
+                </div>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
