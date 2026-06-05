@@ -25,6 +25,9 @@ namespace DataAccessLayer
             services.AddScoped<IModuleRepository, ModuleRepository>();
             services.AddScoped<IModuleRoleRepository, ModuleRoleRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<ISoruRepository, SoruRepository>();
+            services.AddScoped<ISoruUserRepository, SoruUserRepository>();
+            services.AddScoped<ICozumlemeSoruUserRepository, CozumlemeSoruUserRepository>();
 
             return services;
         }

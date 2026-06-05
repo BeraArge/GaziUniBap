@@ -26,6 +26,9 @@ namespace DataAccessLayer.EntityFramework.Context
         public virtual DbSet<Module> Modules { get; set; }
         public virtual DbSet<ModuleRoles> ModuleRoles { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
+        public virtual DbSet<Soru> Sorus { get; set; }
+        public virtual DbSet<SoruUser> SoruUsers { get; set; }
+        public virtual DbSet<CozumlemeSoruUser> CozumlemeSoruUsers { get; set; }
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,10 +41,16 @@ namespace DataAccessLayer.EntityFramework.Context
             modelBuilder.Entity<ModuleRoles>().HasOne(m => m.Module).WithMany(m => m.ModuleRoles).HasForeignKey(m => m.ModuleId);
             modelBuilder.Entity<ModuleRoles>().HasOne(m => m.Role).WithMany(m => m.ModuleRoles).HasForeignKey(m => m.RolId);
 
+            modelBuilder.Entity<SoruUser>().HasOne(m => m.Soru).WithMany(m => m.SoruUsers).HasForeignKey(m => m.SoruId);
+            modelBuilder.Entity<SoruUser>().HasOne(m => m.User).WithMany(m => m.SoruUsers).HasForeignKey(m => m.UserId);
+            modelBuilder.Entity<CozumlemeSoruUser>().HasOne(m => m.User).WithMany(m => m.CozumlemeSoruUsers).HasForeignKey(m => m.UserId);
+
 
             modelBuilder.Entity<User>().Property(x => x.KvkkApproved).HasDefaultValue(false);
             modelBuilder.Entity<User>().Property(x => x.OnamApproved).HasDefaultValue(false);
             modelBuilder.Entity<User>().Property(x => x.IlkGiris).HasDefaultValue(false);
+            modelBuilder.Entity<User>().Property(x => x.SimulasyonTamamlandiMi).HasDefaultValue(false);
+            modelBuilder.Entity<User>().Property(x => x.CozumlemeTamamlandiMi).HasDefaultValue(false);
 
 
 

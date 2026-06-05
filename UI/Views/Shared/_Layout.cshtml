@@ -1,5 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @inject IWebHostEnvironment HostingEnvironment
+@{
+
+    var request_token = antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
 <!doctype html>
 <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 <head>
@@ -165,6 +169,9 @@
         }
     </script>
 
+    <script type="text/javascript">
+        const VerifyToken = "@request_token";
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 

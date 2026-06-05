@@ -15,13 +15,11 @@ namespace UI.Controllers
     {
         private readonly IUserBL _userBL;
         private readonly IAuthBL _authBL;
-        private readonly IUserDetailBL _userDetailBL;
         private readonly IOneTimePasswordService _oneTimePasswordService;
 
-        public UserController(IUserBL userBL, IUserDetailBL userDetailBL, IAuthBL authBL, IOneTimePasswordService oneTimePasswordService)
+        public UserController(IUserBL userBL, IAuthBL authBL, IOneTimePasswordService oneTimePasswordService)
         {
             _userBL = userBL;
-            _userDetailBL = userDetailBL;
             _authBL = authBL;
             _oneTimePasswordService = oneTimePasswordService;
         }

@@ -3,11 +3,13 @@
 
 // Write your JavaScript code.
 function SendPostRequest(url, data, config) {
+    var verifyToken = VerifyToken;
     return new Promise((resolve, reject) => {
         if (config == null || config == undefined) {
             config = {
                 headers: {
-                    'Content-Type': 'application/json; chartset-UTF-8'
+                    'Content-Type': 'application/json; chartset-UTF-8',
+                    'RequestVerificationToken': verifyToken
                 }
             };
         }

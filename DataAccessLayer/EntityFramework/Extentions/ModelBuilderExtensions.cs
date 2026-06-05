@@ -43,23 +43,33 @@ namespace DataAccessLayer.EntityFramework.Extentions
             modelBuilder.Entity<Module>(
             ).HasData(
                 new Module { Id = 1, Name = "Ana Sayfa", Address = "/Home/Index", Controller = "Home", Action = "Index", Icon = "fas fa-home", Menu = 1, ParentId = 0, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new Module { Id = 2, Name = "Rol Yönetimi", Address = "/Role/Index", Controller = "Role", Action = "Index", Icon = "icon-user-lock", Menu = 1, ParentId = 0, Type = "Category", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 2, Name = "Rol Yönetimi", Address = "Index", Controller = "Role", Action = "Index", Icon = "icon-user-lock", Menu = 1, ParentId = 0, Type = "Category", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 3, Name = "Rol Ekle", Address = "/Role/Create", Controller = "Role", Action = "Create", Icon = "", Menu = 1, ParentId = 2, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 4, Name = "Rol Düzenleme", Address = "/Role/Edit", Controller = "Role", Action = "Edit", Icon = "", Menu = 0, ParentId = 2, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 5, Name = "Rol Silme", Address = "/Role/Delete", Controller = "Role", Action = "Delete", Icon = "", Menu = 0, ParentId = 2, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 6, Name = "Id Bazlı Rol Getirme", Address = "/Role/GetById", Controller = "Role", Action = "GetById", Icon = "", Menu = 0, ParentId = 2, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new Module { Id = 7, Name = "Rol Listesi", Address = "/Role/Index", Controller = "Role", Action = "Index", Icon = "", Menu = 1, ParentId = 2, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 7, Name = "Rol Listesi", Address = "/Role/Index", Controller = "Role", Action = "/Role/Index", Icon = "", Menu = 1, ParentId = 2, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 8, Name = "Rol Listesi", Address = "/Role/GetList", Controller = "Role", Action = "GetList", Icon = "", Menu = 0, ParentId = 2, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 9, Name = "Rol Yetkilendirme", Address = "/Role/Authentication", Controller = "Role", Action = "Authentication", Icon = "", Menu = 0, ParentId = 2, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 10, Name = "Modül Yönetimi", Address = "/Module/Index", Controller = "Module", Action = "Index", Icon = "fas fa-align-justify", Menu = 1, ParentId = 0, Type = "Category", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new Module { Id = 11, Name = "Modül Listesi", Address = "/Module/Index", Controller = "Module", Action = "Index", Icon = "", Menu = 1, ParentId = 10, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 11, Name = "Modül Listesi", Address = "/Module/Index", Controller = "Module", Action = "/Module/Index", Icon = "", Menu = 1, ParentId = 10, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 12, Name = "Modül Listesi", Address = "/Module/GetList", Controller = "Module", Action = "GetList", Icon = "", Menu = 0, ParentId = 10, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 13, Name = "Modül Silme", Address = "/Module/Delete", Controller = "Module", Action = "Delete", Icon = "", Menu = 0, ParentId = 10, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 14, Name = "Id Bazlı Rol Getirmea", Address = "/Module/GetById", Controller = "Module", Action = "GetById", Icon = "", Menu = 10, ParentId = 3, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new Module { Id = 15, Name = "Modül Ekle", Address = "/Module/Create", Controller = "Module", Action = "Create", Icon = "", Menu = 1, ParentId = 10, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 15, Name = "Modül Ekle", Address = "/Module/Create", Controller = "Module", Action = "/Module/Create", Icon = "", Menu = 1, ParentId = 10, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 16, Name = "E-Posta Yönetimi", Address = "/Mail/Index", Controller = "Mail", Action = "Index", Icon = "icon-mail5 mr-3", Menu = 1, ParentId = 16, Type = "Category", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new Module { Id = 17, Name = "E-Posta Listesi", Address = "/Mail/Index", Controller = "Mail", Action = "Index", Icon = "", Menu = 1, ParentId = 16, Type = "Page", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new Module { Id = 18, Name = "E-Posta Listesi", Address = "/Mail/GetList", Controller = "Mail", Action = "GetList", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
+                new Module { Id = 18, Name = "E-Posta Listesi", Address = "/Mail/GetList", Controller = "Mail", Action = "GetList", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 19, Name = "Kullanıcı İşlemleri", Address = "/User/KullaniciIslemleri", Controller = "User", Action = "/kullanici_islemleri", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 20, Name = "Api Modules", Address = "Api", Controller = "Api", Action = "Api", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 21, Name = "Kullanıcı Detay", Address = "/User/Detail", Controller = "User", Action = "/kullanici_detay", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 22, Name = "User Detail", Address = "/User/Detail", Controller = "User", Action = "Detail", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 23, Name = "User GetUsers", Address = "/User/GetUsers", Controller = "User", Action = "GetUsers", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 24, Name = "User GetById", Address = "/User/GetUserById", Controller = "User", Action = "GetUserById", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 25, Name = "User CreateUser", Address = "/User/CreateUser", Controller = "User", Action = "CreateUser", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 26, Name = "User UpdateUser", Address = "/User/UpdateUser", Controller = "User", Action = "UpdateUser", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 27, Name = "User DeleteUser", Address = "/User/DeleteUser", Controller = "User", Action = "DeleteUser", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new Module { Id = 28, Name = "User ResetPassword", Address = "/User/ResetPassword", Controller = "User", Action = "ResetPassword", Icon = "", Menu = 0, ParentId = 16, Type = "Feature", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
             );
             modelBuilder.Entity<ModuleRoles>().HasData(
 
@@ -80,7 +90,17 @@ namespace DataAccessLayer.EntityFramework.Extentions
                 new ModuleRoles { Id = 15, RolId = 1, ModuleId = 15, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new ModuleRoles { Id = 16, RolId = 1, ModuleId = 16, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
                 new ModuleRoles { Id = 17, RolId = 1, ModuleId = 17, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new ModuleRoles { Id = 18, RolId = 1, ModuleId = 18, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
+                new ModuleRoles { Id = 18, RolId = 1, ModuleId = 18, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 19, RolId = 1, ModuleId = 19, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 20, RolId = 1, ModuleId = 20, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 21, RolId = 1, ModuleId = 21, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 22, RolId = 1, ModuleId = 22, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 23, RolId = 1, ModuleId = 23, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 24, RolId = 1, ModuleId = 24, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 25, RolId = 1, ModuleId = 25, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 26, RolId = 1, ModuleId = 26, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 27, RolId = 1, ModuleId = 27, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new ModuleRoles { Id = 28, RolId = 1, ModuleId = 28, UserId = 1, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
 
                 );
         }

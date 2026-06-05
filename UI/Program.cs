@@ -119,28 +119,6 @@ app.MapControllerRoute(
     pattern: "/kullanici_detay/{id}",
     defaults: new { controller = "User", action = "Detail" }
 );
-
-app.MapControllerRoute(
-    name: "MotivasyonKartIslemleri",
-    pattern: "/motivasyon_kartlari",
-    defaults: new { controller = "MotivasyonKart", action = "Index" }
-);
-app.MapControllerRoute(
-    name: "SemptomIslemleri",
-    pattern: "/semptomlar",
-    defaults: new { controller = "Symptom", action = "Index" }
-);
-
-app.MapControllerRoute(
-    name: "EgzersizDetaylarý",
-    pattern: "/egzersiz_detaylari",
-    defaults: new { controller = "Exercise", action = "Index" }
-);
-app.MapControllerRoute(
-    name: "MasajDetaylarý",
-    pattern: "/masaj_detaylari",
-    defaults: new { controller = "Massage", action = "Index" }
-);
 app.MapControllerRoute(
     name: "MesajIslemleri",
     pattern: "/iletisim",
@@ -151,6 +129,11 @@ app.MapControllerRoute(
     pattern: "/bildirimler",
     defaults: new { controller = "Notification", action = "Index" }
 );
+app.MapControllerRoute(
+    name: "SoruIslemleri",
+    pattern: "/soru_islemleri",
+    defaults: new { controller = "Soru", action = "Index" }
+);
 #endregion
 app.UseEndpoints(endpoints =>
 {
@@ -159,10 +142,10 @@ app.UseEndpoints(endpoints =>
 app.UseDeveloperExceptionPage();
 
 
-RecurringJob.AddOrUpdate<NotificationJob>(
-    "general-reminder",
-    job => job.SendGeneralReminder(),
-    "0 20 * * *"
-);
+//RecurringJob.AddOrUpdate<NotificationJob>(
+//    "general-reminder",
+//    job => job.SendGeneralReminder(),
+//    "0 20 * * *"
+//);
 
 app.Run();
