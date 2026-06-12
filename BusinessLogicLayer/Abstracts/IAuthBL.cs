@@ -18,7 +18,7 @@ namespace BusinessLogicLayer.Abstracts
         void ClearRedis(string redisKey);
 
         void ClearCache(string key);
-
+        Task<Result<UserModel>> OgrenciLogin(OgrenciLoginDTO userLoginDTO);
         string GenerateUserMenu(List<ModuleRoleDTO> modules);
         string GeneratePassword();
     }

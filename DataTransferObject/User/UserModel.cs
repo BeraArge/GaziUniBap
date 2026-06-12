@@ -23,12 +23,13 @@ namespace DataTransferObject.User
         //public string Name { get; set; }
         //public string Surname { get; set; }
         //public string Username { get; set; }
+        public string? OgrenciNo { get; set; }
+        public string? Phone { get; set; }
         public string? FullName { get; set; }
         public string? BirthDate { get; set; }
-        public string? SurgerySide { get; set; }
-        public bool? HasRadiotherapy { get; set; }
-        public bool? HasChemotherapy { get; set; }
-        public string Phone { get; set; }
+        public bool SimulasyonTamamlandiMi { get; set; } = false;
+        public bool CozumlemeTamamlandiMi { get; set; } = false;
+        public int? ToplamPuan { get; set; }
         public string? DeviceToken { get; set; }
         public AccessToken AccessToken { get; set; }
         public RoleDTO roleDTO  { get; set; }

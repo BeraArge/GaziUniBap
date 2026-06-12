@@ -77,12 +77,22 @@ namespace BusinessLogicLayer.Concretes
             return new Result<SoruDTO>(true, resultDto, "Kayıt başarıyla güncellendi");
         }
 
-        public Result<SoruDTO> Update(SoruDTO model)//düzenlenecek
+        public Result<SoruDTO> Update(SoruDTO model)
         {
             var entity = _soruRepository.Get(x => x.Id == model.Id);
 
             if (entity == null)
                 return new Result<SoruDTO>(false, "Güncellenecek kayıt bulunamadı");
+            if (!string.IsNullOrWhiteSpace(model.VideoPath))
+            {
+                entity.VideoPath = model.VideoPath;
+            }
+            entity.Hedef = model.Hedef;
+            entity.OlcekMaddesi = model.OlcekMaddesi;
+            entity.SoruMetni = model.SoruMetni;
+            entity.Cevaplar = model.Cevaplar;
+            entity.DogruCevap = model.DogruCevap;
+            entity.UpdatedAt = DateTime.Now;
 
             _soruRepository.Update(entity);
 

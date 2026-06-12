@@ -27,20 +27,54 @@ namespace BusinessLogicLayer.Concretes
 
         public Result<CozumlemeSoruUserDTO> Add(CozumlemeSoruUserDTO model)
         {
-            Result<CozumlemeSoruUserDTO> result;
-            if (model != null)
+            if (model.UserId <= 0)
+                return new Result<CozumlemeSoruUserDTO>(false, "Kullanıcı bilgisi zorunludur.");
+
+            if (string.IsNullOrWhiteSpace(model.Asama))
+                return new Result<CozumlemeSoruUserDTO>(false, "Aşama bilgisi zorunludur.");
+
+            if (model.SoruCevap == null || !model.SoruCevap.Any())
+                return new Result<CozumlemeSoruUserDTO>(false, "Soru cevap bilgisi zorunludur.");
+
+            var eskiKayit = _cozumlemeSoruUserRepository.Get(x =>
+                x.UserId == model.UserId &&
+                x.Asama == model.Asama
+            );
+
+            if (eskiKayit != null)
             {
+                eskiKayit.SoruCevap = model.SoruCevap;
+                eskiKayit.UpdatedAt = DateTime.Now;
 
-                CozumlemeSoruUser addedSoru = _mapper.Map<CozumlemeSoruUser>(model);
-                _cozumlemeSoruUserRepository.Add(addedSoru);
+                _cozumlemeSoruUserRepository.Update(eskiKayit);
 
-                result = new Result<CozumlemeSoruUserDTO>(true, model, "Semptom Eklendi.");
-                return result;
+                var updateDto = _mapper.Map<CozumlemeSoruUserDTO>(eskiKayit);
+
+                return new Result<CozumlemeSoruUserDTO>(
+                    true,
+                    updateDto,
+                    "Çözümleme cevapları güncellendi."
+                );
             }
-            result = new Result<CozumlemeSoruUserDTO>(false, "Semptom Eklenemedi, Semptom Başlığı zorunlu.");
-            return result;
-        }
 
+            var entity = new CozumlemeSoruUser
+            {
+                UserId = model.UserId,
+                Asama = model.Asama,
+                SoruCevap = model.SoruCevap,
+                CreatedAt = DateTime.Now
+            };
+
+            _cozumlemeSoruUserRepository.Add(entity);
+
+            var dto = _mapper.Map<CozumlemeSoruUserDTO>(entity);
+
+            return new Result<CozumlemeSoruUserDTO>(
+                true,
+                dto,
+                "Çözümleme cevapları kaydedildi."
+            );
+        }
         public Result<bool> Delete(int id)
         {
             var entity = _cozumlemeSoruUserRepository.Get(x => x.Id == id);

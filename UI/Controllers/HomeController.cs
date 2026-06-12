@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessLogicLayer.Abstracts;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using MSC.Extentions.Filters;
 using System.Diagnostics;
@@ -9,10 +10,12 @@ namespace UI.Controllers
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ISoruUserBL _soruUserBL;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ISoruUserBL soruUserBL)
         {
             _logger = logger;
+            _soruUserBL = soruUserBL;
         }
 
         [AuthorizeFilter]
@@ -24,6 +27,12 @@ namespace UI.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [HttpGet]
+        public IActionResult GetDashboardData()
+        {
+            var res = _soruUserBL.GetDashboardData();
+            return Ok(res);
         }
     }
 }

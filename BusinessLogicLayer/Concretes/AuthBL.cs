@@ -132,6 +132,70 @@ namespace BusinessLogicLayer.Concretes
                 return result;
             }
         }
+        public async Task<Result<UserModel>> OgrenciLogin(OgrenciLoginDTO userLoginDTO)
+        {
+            Result<UserModel> result;
+            UserModel userModel;
+            User user = await _userRepository.GetAsync(u => u.OgrenciNo == userLoginDTO.OgrenciNo);
+            if (user != null)
+            {
+                if (!HashingHelper.VerifyPasswordHash(userLoginDTO.Password, user.PasswordHash, user.PasswordSalt))
+                {
+                    result = new Result<UserModel>(false, Messages.LoginFailedMessage);
+                    return result;
+                }
+                Result<RoleDTO> roleResult = _roleBL.GetById(user.RoleId);
+                if (!roleResult.IsSuccess)
+                {
+                    result = new Result<UserModel>(false, roleResult.Message);
+                    return result;
+                }
+                var moduleListForMenu = await _moduleRoleBL.GetModuleListForMenu(user.RoleId);
+                var authorizedModuleList = await _moduleRoleBL.GetAuthorizedModuleList(user.RoleId);
+                if (!authorizedModuleList.IsSuccess)
+                {
+                    result = new Result<UserModel>(false, authorizedModuleList.Message);
+                    return result;
+                }
+                //izinler redise yazılacak.
+                string permission_str = string.Join(",", authorizedModuleList.Data.Select(s => s.ModuleDTO.Address));
+
+                string auth_id = user.Phone + "." + user.Id;
+
+                var claims = new { FullName = user.Phone , UserName = user.Phone, RoleName = roleResult.Data.Name, AuthID = auth_id };
+
+                var token = _tokenHelper.CreateToken(claims);
+                if (string.IsNullOrEmpty(token.Token))
+                {
+                    result = new Result<UserModel>(false, Messages.TokenFailedMessage);
+                    return result;
+                }
+                TimeSpan diff = token.Expiration - DateTime.UtcNow;
+                DateTime cacheTime = DateTime.UtcNow.AddDays(1);
+                DateTimeOffset offset = new DateTimeOffset(cacheTime);
+                //_redisCacheManager.SetValue(auth_id, permission_str, (int)diff.TotalMinutes);
+                _memoryService.Add(auth_id, permission_str, offset);
+                //modelin içi doldurulacak
+                userModel = _mapper.Map<User, UserModel>(user);
+                userModel.AccessToken.Token = token.Token;
+                userModel.AccessToken.Expiration = token.Expiration;
+                userModel.AuthList = moduleListForMenu.Data.OrderBy(a => a.ModuleId).ToList();
+                userModel.roleDTO = roleResult.Data;
+                if (!string.IsNullOrWhiteSpace(userLoginDTO.DeviceToken))
+                {
+                    user.DeviceToken = userLoginDTO.DeviceToken;
+                    _userRepository.Update(user);
+                }
+                result = new Result<UserModel>(true, userModel, Messages.LoginSuccessMessage);
+                result.Redirect = "/Home/Index";
+                return result;
+            }
+            else
+            {
+                result = new Result<UserModel>(false, Messages.LoginFailedMessage);
+                return result;
+            }
+        }
 
         public Result<UserRegisterDTO> Register(UserRegisterDTO userRegisterDTO)
         {

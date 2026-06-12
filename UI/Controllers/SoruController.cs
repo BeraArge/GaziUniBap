@@ -42,5 +42,19 @@ namespace UI.Controllers
             var res = _soruBL.Add(Soru);
             return Ok(res);
         }
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateSoru([FromForm] SoruDTO Soru)
+        {
+            ImageExtensions image = new(_env);
+
+            if (Soru.VideoFile != null)
+            {
+                var file = await image.FileUpload(Soru.VideoFile, "videos");
+                Soru.VideoPath = file.address;
+            }
+
+            var res = _soruBL.Update(Soru);
+            return Ok(res);
+        }
     }
 }

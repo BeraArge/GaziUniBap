@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Abstracts;
 using BusinessLogicLayer.Concretes;
+using DataTransferObject.CozumlemeSoruUser;
 using DataTransferObject.User.Mobil;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,12 @@ namespace UI.ApiControllers
         {
             _cozumlemeSoruUserBL = cozumlemeSoruUserBL;
         }
-
+        [HttpPost("AddCozumlemeCevap")]
+        public IActionResult AddCozumlemeCevap([FromBody] CozumlemeSoruUserDTO model)
+        {
+            var res = _cozumlemeSoruUserBL.Add(model);
+            return Ok(res);
+        }
         [HttpPost("update-profile")]
         public async Task<IActionResult> UpdateProfile(UpdateProfileDTO dto)
         {

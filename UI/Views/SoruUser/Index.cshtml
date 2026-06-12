@@ -1,0 +1,653 @@
+﻿@{
+    ViewData["Title"] = "Cevap Raporları";
+}
+
+<style>
+    :root {
+        --rp-primary: #087c8f;
+        --rp-secondary: #6fbd63;
+        --rp-dark: #243044;
+        --rp-muted: #7d8797;
+        --rp-border: #e5edf1;
+    }
+
+    .report-page {
+        min-height: calc(100vh - 90px);
+        padding: 34px;
+        border-radius: 32px;
+        background: radial-gradient(circle at top left, rgba(111,189,99,.26), transparent 34%), radial-gradient(circle at top right, rgba(8,124,143,.20), transparent 32%), linear-gradient(135deg, #f8fffc 0%, #eef8f6 42%, #f7fbff 100%);
+    }
+
+    .report-hero {
+        padding: 30px 34px;
+        margin-bottom: 26px;
+        border-radius: 30px;
+        color: #fff;
+        background: linear-gradient(135deg, #087c8f, #159d98, #6fbd63);
+        box-shadow: 0 22px 55px rgba(8,124,143,.24);
+    }
+
+    .hero-kicker {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 14px;
+        margin-bottom: 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.18);
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    .hero-title {
+        font-size: 34px;
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    .hero-subtitle {
+        max-width: 760px;
+        margin: 0;
+        opacity: .94;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card,
+    .report-card {
+        border: 1px solid rgba(255,255,255,.72);
+        border-radius: 26px;
+        background: rgba(255,255,255,.78);
+        box-shadow: 0 18px 42px rgba(32,52,70,.09);
+        backdrop-filter: blur(16px);
+    }
+
+    .stat-card {
+        padding: 22px;
+    }
+
+    .stat-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        background: linear-gradient(135deg, var(--rp-primary), var(--rp-secondary));
+        margin-bottom: 14px;
+    }
+
+    .stat-label {
+        color: var(--rp-muted);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .stat-value {
+        color: var(--rp-dark);
+        font-size: 28px;
+        font-weight: 900;
+    }
+
+    .report-card {
+        overflow: hidden;
+    }
+
+    .report-header {
+        padding: 24px 26px;
+        border-bottom: 1px solid rgba(229,237,241,.75);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--rp-dark);
+        font-weight: 900;
+        margin-bottom: 6px;
+    }
+
+        .section-title i {
+            width: 36px;
+            height: 36px;
+            border-radius: 14px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--rp-primary), var(--rp-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .section-desc {
+        color: var(--rp-muted);
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .report-body {
+        padding: 24px 26px 28px;
+    }
+
+    .search-wrap {
+        position: relative;
+        margin-bottom: 22px;
+    }
+
+        .search-wrap i {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            color: var(--rp-muted);
+        }
+
+    .search-input {
+        width: 100%;
+        min-height: 50px;
+        border-radius: 16px;
+        border: 1px solid var(--rp-border);
+        padding: 12px 16px 12px 44px;
+        background: rgba(255,255,255,.9);
+    }
+
+    .user-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .user-card {
+        border: 1px solid rgba(8,124,143,.10);
+        border-radius: 24px;
+        background: rgba(255,255,255,.86);
+        box-shadow: 0 12px 26px rgba(32,52,70,.06);
+        overflow: hidden;
+    }
+
+    .user-card-top {
+        padding: 20px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+    }
+
+    .avatar {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        border-radius: 18px;
+        color: #fff;
+        background: linear-gradient(135deg, var(--rp-primary), var(--rp-secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 20px;
+    }
+
+    .user-name {
+        color: var(--rp-dark);
+        font-size: 18px;
+        font-weight: 900;
+    }
+
+    .user-sub {
+        color: var(--rp-muted);
+        font-size: 13px;
+    }
+
+    .score-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        padding: 0 20px 20px;
+    }
+
+    .mini-score {
+        border-radius: 18px;
+        background: rgba(8,124,143,.06);
+        padding: 12px;
+    }
+
+        .mini-score strong {
+            display: block;
+            color: var(--rp-dark);
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .mini-score span {
+            color: var(--rp-muted);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+    .progress-wrap {
+        padding: 0 20px 20px;
+    }
+
+    .progress {
+        height: 10px;
+        border-radius: 999px;
+        background: #e8f1f3;
+    }
+
+    .progress-bar {
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--rp-primary), var(--rp-secondary));
+    }
+
+    .detail-toggle {
+        width: 100%;
+        border: 0;
+        padding: 15px 20px;
+        background: rgba(8,124,143,.06);
+        color: var(--rp-primary);
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .answer-detail {
+        padding: 18px 20px 20px;
+        border-top: 1px solid rgba(8,124,143,.08);
+    }
+
+    .answer-item {
+        padding: 14px;
+        border-radius: 18px;
+        background: #fff;
+        border: 1px solid rgba(229,237,241,.95);
+        margin-bottom: 10px;
+    }
+
+    .answer-question {
+        color: var(--rp-dark);
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .answer-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        background: rgba(8,124,143,.08);
+        color: var(--rp-primary);
+    }
+
+        .pill.success {
+            background: rgba(111,189,99,.14);
+            color: #327a2a;
+        }
+
+        .pill.danger {
+            background: rgba(220,53,69,.10);
+            color: #c92a3a;
+        }
+
+    .empty-state {
+        text-align: center;
+        color: var(--rp-muted);
+        padding: 50px 0;
+        font-weight: 800;
+    }
+
+    .pagination-wrap {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 22px;
+    }
+
+    .page-btn {
+        min-width: 40px;
+        height: 40px;
+        border: 1px solid rgba(8,124,143,.16);
+        border-radius: 14px;
+        background: #fff;
+        color: var(--rp-primary);
+        font-weight: 900;
+    }
+
+        .page-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--rp-primary), var(--rp-secondary));
+        }
+
+        .page-btn:disabled {
+            opacity: .4;
+        }
+
+    @@media(max-width: 1200px) {
+        .stats-grid,
+        .user-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media(max-width: 768px) {
+        .report-page {
+            padding: 18px;
+        }
+
+        .stats-grid,
+        .user-grid,
+        .score-row {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+            font-size: 26px;
+        }
+    }
+
+    .cozumleme-block {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(8,124,143,.10);
+        background: rgba(8,124,143,.04);
+    }
+
+    .cozumleme-toggle {
+        width: 100%;
+        border: 0;
+        padding: 14px 16px;
+        background: rgba(8,124,143,.08);
+        color: var(--rp-primary);
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .cozumleme-detail {
+        padding: 14px;
+    }
+
+    .cozumleme-stage {
+        border-radius: 16px;
+        background: #fff;
+        border: 1px solid rgba(229,237,241,.95);
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .cozumleme-stage-title {
+        font-weight: 900;
+        color: var(--rp-dark);
+        margin-bottom: 10px;
+    }
+
+    .cozumleme-question {
+        padding: 10px 0;
+        border-top: 1px dashed rgba(8,124,143,.15);
+    }
+
+    .cozumleme-question-title {
+        color: var(--rp-dark);
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    .cozumleme-answer {
+        color: var(--rp-muted);
+        font-size: 13px;
+        margin-top: 4px;
+    }
+</style>
+
+<div id="app" class="report-page">
+
+    <div class="report-hero">
+        <div class="hero-kicker">
+            <i class="fa fa-chart-line"></i>
+            Cevap Analizi
+        </div>
+
+        <h1 class="hero-title">Kullanıcı Cevap Raporları</h1>
+
+        <p class="hero-subtitle">
+            Mobil uygulamadan verilen cevapları kullanıcı bazlı inceleyin, başarı oranlarını ve puan dağılımlarını görüntüleyin.
+        </p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa fa-users"></i></div>
+            <div class="stat-label">Toplam Kullanıcı</div>
+            <div class="stat-value">{{ summary.totalUsers }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa fa-list-check"></i></div>
+            <div class="stat-label">Toplam Cevap</div>
+            <div class="stat-value">{{ summary.totalAnswers }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa fa-star"></i></div>
+            <div class="stat-label">Toplam Puan</div>
+            <div class="stat-value">{{ summary.totalScore }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fa fa-percent"></i></div>
+            <div class="stat-label">Ortalama Başarı</div>
+            <div class="stat-value">%{{ summary.averageSuccess }}</div>
+        </div>
+    </div>
+
+    <div class="report-card">
+        <div class="report-header">
+            <h5 class="section-title">
+                <i class="fa fa-user-graduate"></i>
+                Kullanıcılar
+            </h5>
+            <p class="section-desc">
+                Her kullanıcı için cevap sayısı, doğru/yanlış dağılımı, toplam puan ve detaylar.
+            </p>
+        </div>
+
+        <div class="report-body">
+
+            <div class="search-wrap">
+                <i class="fa fa-search"></i>
+                <input class="search-input"
+                       v-model="search"
+                       placeholder="Kullanıcı adına göre ara..." />
+            </div>
+
+            <div class="user-grid" v-if="pagedReports.length > 0">
+                <div class="user-card" v-for="user in pagedReports" :key="user.userId">
+
+                    <div class="user-card-top">
+                        <div class="avatar">
+                            {{ getInitials(user.userName) }}
+                        </div>
+
+                        <div>
+                            <div class="user-name">{{ user.userName || '-' }}</div>
+                            <div class="user-sub">
+                                Kullanıcı ID: {{ user.userId }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="score-row">
+                        <div class="mini-score">
+                            <strong>{{ user.totalQuestion }}</strong>
+                            <span>Cevap</span>
+                        </div>
+
+                        <div class="mini-score">
+                            <strong>{{ user.correctCount }}</strong>
+                            <span>Doğru</span>
+                        </div>
+
+                        <div class="mini-score">
+                            <strong>{{ user.wrongCount }}</strong>
+                            <span>Yanlış</span>
+                        </div>
+
+                        <div class="mini-score">
+                            <strong>{{ user.totalScore }}</strong>
+                            <span>Puan</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-wrap">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small fw-bold">Başarı Oranı</span>
+                            <span class="text-muted small fw-bold">%{{ user.successRate }}</span>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 :style="{ width: user.successRate + '%' }">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="detail-toggle"
+                            type="button"
+                            @@click="toggleDetail(user.userId)">
+                        <span>Cevap detayları</span>
+                        <i class="fa"
+                           :class="openedUserId === user.userId ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+
+                    <div class="answer-detail" v-show="openedUserId === user.userId">
+                        <div class="answer-item" v-for="answer in user.answers" :key="answer.soruId">
+                            <div class="answer-question">
+                                {{ answer.soruMetni || '-' }}
+                            </div>
+
+                            <div class="answer-meta">
+                                <span class="pill">
+                                    Verilen: {{ answer.verilenCevap || '-' }}
+                                </span>
+
+                                <span class="pill success">
+                                    Doğru: {{ answer.dogruCevap || '-' }}
+                                </span>
+
+                                <span class="pill"
+                                      :class="answer.puan === 10 ? 'success' : 'danger'">
+                                    Puan: {{ answer.puan || 0 }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div v-if="!user.answers || user.answers.length === 0"
+                             class="text-muted small">
+                            Cevap detayı bulunamadı.
+                        </div>
+                    </div>
+                    <div class="cozumleme-block mt-3">
+                        <button class="cozumleme-toggle"
+                                type="button"
+                                @@click="toggleCozumleme(user.userId)">
+                            <span>
+                                <i class="fa fa-clipboard-question me-1"></i>
+                                Çözümleme Cevapları
+                            </span>
+
+                            <i class="fa"
+                               :class="openedCozumlemeUserId === user.userId ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+
+                        <div class="cozumleme-detail"
+                             v-show="openedCozumlemeUserId === user.userId">
+
+                            <div v-if="user.cozumlemeSorular && user.cozumlemeSorular.length > 0">
+
+                                <div class="cozumleme-stage"
+                                     v-for="cozumleme in user.cozumlemeSorular"
+                                     :key="cozumleme.id">
+
+                                    <div class="cozumleme-stage-title">
+                                        {{ cozumleme.asama || 'Çözümleme Aşaması' }}
+                                    </div>
+
+                                    <div class="cozumleme-question"
+                                         v-for="(item, index) in cozumleme.soruCevap"
+                                         :key="index">
+
+                                        <div class="cozumleme-question-title">
+                                            {{ item.soru || item.Soru || item.question || item.Question || 'Soru' }}
+                                        </div>
+
+                                        <div class="cozumleme-answer">
+                                            {{ item.cevap || item.Cevap || item.answer || item.Answer || '-' }}
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div v-else class="text-muted small">
+                                Çözümleme cevabı bulunamadı.
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else class="empty-state">
+                <i class="fa fa-circle-info me-1"></i>
+                Kayıt bulunamadı.
+            </div>
+
+            <div class="pagination-wrap" v-if="totalPages > 1">
+                <button class="page-btn"
+                        type="button"
+                        @@click="changePage(currentPage - 1)"
+                        :disabled="currentPage === 1">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+
+                <button v-for="page in totalPages"
+                        :key="page"
+                        type="button"
+                        class="page-btn"
+                        :class="{ active: currentPage === page }"
+                        @@click="changePage(page)">
+                    {{ page }}
+                </button>
+
+                <button class="page-btn"
+                        type="button"
+                        @@click="changePage(currentPage + 1)"
+                        :disabled="currentPage === totalPages">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/page-js/soruUser/index.js"></script>
+}

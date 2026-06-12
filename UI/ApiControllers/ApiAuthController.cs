@@ -23,9 +23,9 @@ namespace UI.ApiControllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] OgrenciLoginDTO loginDTO)
         {
-            var res = await _authBL.Login(loginDTO);
+            var res = await _authBL.OgrenciLogin(loginDTO);
             return Ok(res);
         }
 

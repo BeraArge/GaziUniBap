@@ -178,17 +178,27 @@ namespace BusinessLogicLayer.Concretes
 
             if (existingUser != null)
                 return new Result<UserCreateDto>(false,"Bu telefon numarası ile kayıtlı kullanıcı zaten var.");
-
+            
+            if (dto.Password != dto.PasswordRepeat)
+            {
+                return  new Result<UserCreateDto>(false, "Yeni Şifre İle Yeni Şifre Tekrarı Uyuşmalıdır.");
+            }
             HashingHelper.CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
 
             var user = new User
             {
                 Phone = dto.Phone,
+                Name=dto.Name,
+                Surname=dto.Surname,
+                ToplamPuan=0,
+                OgrenciNo=dto.OgrenciNo,
                 RoleId = dto.RoleId,
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 KvkkApproved = false,
                 OnamApproved = false,
+                CozumlemeTamamlandiMi = false,
+                SimulasyonTamamlandiMi = false,
                 FullName = dto.FullName,
                 IlkGiris = false
             };

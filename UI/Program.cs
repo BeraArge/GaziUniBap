@@ -134,6 +134,11 @@ app.MapControllerRoute(
     pattern: "/soru_islemleri",
     defaults: new { controller = "Soru", action = "Index" }
 );
+app.MapControllerRoute(
+    name: "KullaniciFormTakip",
+    pattern: "/soru_user_takip",
+    defaults: new { controller = "SoruUser", action = "Index" }
+);
 #endregion
 app.UseEndpoints(endpoints =>
 {

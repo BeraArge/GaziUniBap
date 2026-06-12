@@ -316,15 +316,18 @@
 
         async update() {
             try {
-                const response = await fetch("/Soru/SoruUpdate", {
-                    method: "POST",
+                let config = {
                     headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(this.form)
-                });
+                        'RequestVerificationToken': VerifyToken
+                    }
+                };
 
-                const result = await response.json();
+                const url = '/Soru/UpdateSoru';
+                const data = this.createFormData();
+
+                startLoader();
+
+                let result = await SendPostRequest(url, data, config);
 
                 Swal.fire({
                     icon: (result.success || result.isSuccess) ? 'success' : 'error',
@@ -335,6 +338,7 @@
 
                 if (result.success || result.isSuccess) {
                     this.clearForm();
+                    this.formAccordionOpen = false;
                     await this.getAll();
                 }
 
@@ -399,6 +403,7 @@
         clearForm() {
             this.isUpdate = false;
             this.form = this.emptyForm();
-        }
+            this.formAccordionOpen = false;
+        },
     }
 }).mount("#app");
