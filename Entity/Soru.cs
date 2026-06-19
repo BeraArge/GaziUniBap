@@ -11,6 +11,7 @@ namespace Entity
     public class Soru:BaseEntity
     {
         public string VideoPath { get; set; }
+        public string VideoTranscript { get; set; }
         public string Hedef { get; set; }
         public string OlcekMaddesi { get; set; }
         public string SoruMetni { get; set; }//soru metni

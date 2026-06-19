@@ -15,5 +15,7 @@ namespace DataTransferObject.SoruUser
         public int UserId { get; set; }
         public string VerilenCevap { get; set; }
         public int? Puan { get; set; }
+        public int? CevaplamaSuresiSaniye { get; set; }
+        public int? AciklamaOkumaSuresiSaniye { get; set; }
     }
 }

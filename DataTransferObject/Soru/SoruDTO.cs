@@ -14,6 +14,8 @@ namespace DataTransferObject.Soru
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string VideoPath { get; set; }
+        public string VideoTranscript { get; set; }
+        public bool PartArasiMi { get; set; }
         public IFormFile? VideoFile { get; set; }
         public string Hedef { get; set; }
         public string OlcekMaddesi { get; set; }

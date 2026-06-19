@@ -11,7 +11,7 @@ namespace BusinessLogicLayer.Abstracts
 {
     public interface ISoruUserBL
     {
-        Result<SoruUserDTO> Add(SoruUserDTO model);
+        Result<List<SoruUserDTO>> Add(SoruUserBulkDTO model);
         Result<SoruUserDTO> Update(SoruUserDTO model);
         Result<bool> Delete(int id);
         Result<SoruUserDTO> GetById(int id);

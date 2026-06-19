@@ -21,6 +21,7 @@ namespace Core.DataAccess.Repositories
                 null,
             bool enableTracking = true);
 
+        void ClearTracking();
         T Add(T entity);
         T Update(T entity);
         T Delete(T entity);

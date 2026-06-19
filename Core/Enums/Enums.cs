@@ -6,18 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Enums
 {
-    public enum MeasurementPeriodType
+    public enum SimulationPartBreak
     {
-        FirstMeasurement = 1,
-        Week4 = 2,
-        Week8 = 3,
-        Week12 = 4
+        FirstPartQuestionCount = 7
     }
-    public enum MeasurementPointType
-    {
-        TenCmAboveElbow = 1,
-        TenCmBelowElbow = 2,
-        Wrist = 3,
-        MetacarpophalangealJoint = 4
-    }
+
 }

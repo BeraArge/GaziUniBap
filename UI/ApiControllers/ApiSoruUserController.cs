@@ -25,7 +25,7 @@ namespace UI.ApiControllers
             return Ok();
         }
         [HttpPost("add")]
-        public IActionResult Cevapla([FromBody] SoruUserDTO model)
+        public IActionResult AddBulk([FromBody] SoruUserBulkDTO model)
         {
             var res = _soruUserBL.Add(model);
             return Ok(res);

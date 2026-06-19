@@ -20,9 +20,9 @@ namespace DataTransferObject.User
 
         public int Id { get; set; }
         public int RolId { get; set; }
-        //public string Name { get; set; }
-        //public string Surname { get; set; }
-        //public string Username { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Username { get; set; }
         public string? OgrenciNo { get; set; }
         public string? Phone { get; set; }
         public string? FullName { get; set; }

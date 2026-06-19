@@ -7,7 +7,8 @@
             form: this.emptyForm(),
             formAccordionOpen: false,
             currentPage: 1,
-            pageSize: 5
+            pageSize: 5,
+            videoTranscript: "",
         }
     },
 
@@ -53,6 +54,7 @@
                 videoPath: "",
                 hedef: "",
                 olcekMaddesi: "",
+                videoTranscript: "",
                 soruMetni: "",
                 cevaplar: [
                     { key: "A", value: "" },
@@ -162,13 +164,13 @@
         },
         createFormData() {
             const formData = new FormData();
-
+            console.log(this.form)
             formData.append("Id", this.form.id || 0);
             formData.append("VideoPath", this.form.videoPath || "");
             formData.append("Hedef", this.form.hedef || "");
             formData.append("OlcekMaddesi", this.form.olcekMaddesi || "");
             formData.append("SoruMetni", this.form.soruMetni || "");
-
+            formData.append("VideoTranscript", this.form.videoTranscript || "");
             this.form.cevaplar.forEach((answer, index) => {
                 formData.append(`Cevaplar[${index}][key]`, answer.key || "");
                 formData.append(`Cevaplar[${index}][value]`, answer.value || "");
@@ -285,6 +287,7 @@
                 hedef: item.hedef || "",
                 olcekMaddesi: item.olcekMaddesi || "",
                 soruMetni: item.soruMetni || "",
+                videoTranscript: item.videoTranscript || "",
                 cevaplar: cevaplar.length > 0
                     ? cevaplar.map((x, index) => ({
                         key: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[index],

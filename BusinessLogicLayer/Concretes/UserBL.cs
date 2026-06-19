@@ -129,21 +129,37 @@ namespace BusinessLogicLayer.Concretes
 
         public async Task<Result<List<UserListDto>>> GetAllAsync()
         {
-            var users = await _userRepository.GetAsListAsync(a=>a.RoleId != 1,include: a=>a.Include(a=>a.Role));
+            var users = await _userRepository.GetAsListAsync(
+                x => x.RoleId != 1,
+                include: x => x.Include(y => y.Role)
+            );
 
             var result = users.Select(x => new UserListDto
             {
                 Id = x.Id,
+
+                Name = x.Name,
+                Surname = x.Surname,
+                UserName = x.UserName,
+
                 Phone = x.Phone,
+
                 RoleId = x.RoleId,
-                RoleName = x.Role?.Name,
+                RoleName = x.Role != null ? x.Role.Name : null,
+
+                OgrenciNo = x.RoleId == 2 ? x.OgrenciNo : null,
+
+                SimulasyonTamamlandiMi = x.RoleId == 2 && x.SimulasyonTamamlandiMi,
+                CozumlemeTamamlandiMi = x.RoleId == 2 && x.CozumlemeTamamlandiMi,
+
+                ToplamPuan = x.RoleId == 2 ? x.ToplamPuan : null,
+
                 KvkkApproved = x.KvkkApproved,
                 OnamApproved = x.OnamApproved,
-                IlkGiris = x.IlkGiris,
-                FullName = x.FullName
+                IlkGiris = x.IlkGiris
             }).ToList();
 
-            return new Result<List<UserListDto>>(true,result);
+            return new Result<List<UserListDto>>(true, result);
         }
 
         public async Task<Result<UserListDto>> GetByIdAsync(int id)
@@ -172,65 +188,116 @@ namespace BusinessLogicLayer.Concretes
             var normalizedPhone = NormalizePhone(dto.Phone);
 
             if (!IsValidPhone(normalizedPhone))
-                return new Result<UserCreateDto>(false,"Telefon numarası geçersiz. 5XXXXXXXXX formatında giriniz.");
+                return new Result<UserCreateDto>(false, "Telefon numarası geçersiz. 5XXXXXXXXX formatında giriniz.");
 
-            var existingUser = await _userRepository.GetAsync(a=>a.Phone == dto.Phone);
+
+            var existingUser = await _userRepository.GetAsync(a => a.Phone == normalizedPhone);
 
             if (existingUser != null)
-                return new Result<UserCreateDto>(false,"Bu telefon numarası ile kayıtlı kullanıcı zaten var.");
-            
-            if (dto.Password != dto.PasswordRepeat)
-            {
-                return  new Result<UserCreateDto>(false, "Yeni Şifre İle Yeni Şifre Tekrarı Uyuşmalıdır.");
-            }
-            HashingHelper.CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
+                return new Result<UserCreateDto>(false, "Bu telefon numarası ile kayıtlı kullanıcı zaten var.");
+
 
             var user = new User
             {
-                Phone = dto.Phone,
-                Name=dto.Name,
-                Surname=dto.Surname,
-                ToplamPuan=0,
-                OgrenciNo=dto.OgrenciNo,
+                Phone = normalizedPhone,
+
+                UserName = dto.UserName,
+
+                Name = dto.Name,
+                Surname = dto.Surname,
+
+                OgrenciNo = dto.RoleId == 2
+                    ? dto.OgrenciNo
+                    : null,
+
                 RoleId = dto.RoleId,
-                PasswordHash = hash,
-                PasswordSalt = salt,
+
+
+                ToplamPuan = 0,
+
+                SimulasyonTamamlandiMi = false,
+                CozumlemeTamamlandiMi = false,
+
                 KvkkApproved = false,
                 OnamApproved = false,
-                CozumlemeTamamlandiMi = false,
-                SimulasyonTamamlandiMi = false,
-                FullName = dto.FullName,
-                IlkGiris = false
+                IlkGiris = false,
+
+                DeviceToken = null
             };
 
             await _userRepository.AddAsync(user);
 
-            return new Result<UserCreateDto>(true,"Kullanıcı başarıyla oluşturuldu.");
+            return new Result<UserCreateDto>(
+                true,
+                "Kullanıcı başarıyla oluşturuldu."
+            );
         }
-
         public async Task<Result<UserUpdateDto>> UpdateAsync(UserUpdateDto dto)
         {
-            var user = await _userRepository.GetAsync(a=> a.Id == dto.Id);
+            var user = await _userRepository.GetAsync(x => x.Id == dto.Id);
 
             if (user == null)
-                return new Result<UserUpdateDto>(false,"Kullanıcı bulunamadı.");
+                return new Result<UserUpdateDto>(
+                    false,
+                    "Kullanıcı bulunamadı."
+                );
+
             var normalizedPhone = NormalizePhone(dto.Phone);
 
             if (!IsValidPhone(normalizedPhone))
-                return new Result<UserUpdateDto>(false,"Telefon numarası geçersiz.");
-            user.Phone = dto.Phone;
-            user.RoleId = dto.RoleId;
+                return new Result<UserUpdateDto>(
+                    false,
+                    "Telefon numarası geçersiz."
+                );
+
+            var phoneOwner = await _userRepository.GetAsync(x =>
+                x.Phone == normalizedPhone &&
+                x.Id != dto.Id);
+
+            if (phoneOwner != null)
+                return new Result<UserUpdateDto>(
+                    false,
+                    "Bu telefon numarası başka bir kullanıcı tarafından kullanılmaktadır."
+                );
+
+            user.Phone = normalizedPhone;
+
             user.FullName = dto.FullName;
-            if (dto.RoleId == 1)
+
+            user.Name = dto.Name;
+            user.Surname = dto.Surname;
+
+            user.RoleId = dto.RoleId;
+
+            if (dto.RoleId == 3)
             {
-                user.KvkkApproved = false;
-                user.OnamApproved = false;
-                user.IlkGiris = false;
+                user.OgrenciNo = dto.OgrenciNo;
             }
+            else
+            {
+                user.OgrenciNo = null;
+            }
+
+            /*
+             * AŞAĞIDAKİLER DOKUNULMUYOR
+             *
+             * ToplamPuan
+             * SimulasyonTamamlandiMi
+             * CozumlemeTamamlandiMi
+             * DeviceToken
+             * KvkkApproved
+             * OnamApproved
+             * IlkGiris
+             * PasswordHash
+             * PasswordSalt
+             */
 
             await _userRepository.UpdateAsync(user);
 
-            return new Result<UserUpdateDto>(true,"Kullanıcı güncellendi.");
+            return new Result<UserUpdateDto>(
+                true,
+                "Kullanıcı güncellendi."
+            );
         }
 
         public async Task<Result<UserModel>> DeleteAsync(int id)

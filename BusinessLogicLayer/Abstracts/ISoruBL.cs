@@ -16,5 +16,6 @@ namespace BusinessLogicLayer.Abstracts
         Result<bool> Delete(int id);
         Result<SoruDTO> GetById(int id);
         Result<List<SoruDTO>> GetAll();
+        Result<MobileSoruListResponseDTO> GetMobileSorular(int userId);
     }
 }

@@ -17,10 +17,10 @@ namespace UI.ApiControllers
         }
 
         [HttpGet("GetAllSorus")]
-        public IActionResult GetAllSorus()
+        public IActionResult GetAllSorus(int userId)
         {
-            var result = _soruBL.GetAll();
-            return Ok(result);
+            var res = _soruBL.GetMobileSorular(userId);
+            return Ok(res);
         }
     }
 }

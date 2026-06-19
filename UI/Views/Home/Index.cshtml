@@ -248,6 +248,26 @@
                 font-size: 26px;
             }
         }
+
+        .activity-list {
+            max-height: 430px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+            .activity-list::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .activity-list::-webkit-scrollbar-track {
+                background: #edf5ea;
+                border-radius: 20px;
+            }
+
+            .activity-list::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, var(--lg-primary), var(--lg-secondary));
+                border-radius: 20px;
+            }
     </style>
 }
 
@@ -305,7 +325,7 @@
                         <div class="rank">{{ index + 1 }}</div>
 
                         <div>
-                            <div class="leader-name">{{ user.fullName || '-' }}</div>
+                            <div class="leader-name">{{ user.name || '-' }} {{ user.surname || '-' }}</div>
                             <div class="leader-sub">
                                 Öğrenci No: {{ user.ogrenciNo || '-' }} |
                                 Doğru: {{ user.correctCount }} |
@@ -418,27 +438,29 @@
                     <p class="section-desc">Sistemdeki son cevap ve çözümleme hareketleri.</p>
                 </div>
 
-                <div class="dash-card-body">
-                    <div v-for="item in dashboard.recentActivities" :key="item.userId + item.description + item.date" class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fa fa-bolt"></i>
+                <div class="activity-list">
+                    <div class="dash-card-body">
+                        <div v-for="item in dashboard.recentActivities" :key="item.userId + item.description + item.date" class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fa fa-bolt"></i>
+                            </div>
+
+                            <div>
+                                <div class="activity-title">
+                                    {{ item.name  }} {{ item.surname  }} — {{ item.activityType }}
+                                </div>
+                                <div class="activity-desc">
+                                    {{ item.description }}
+                                </div>
+                                <div class="activity-desc">
+                                    {{ formatDate(item.date) }}
+                                </div>
+                            </div>
                         </div>
 
-                        <div>
-                            <div class="activity-title">
-                                {{ item.fullName || '-' }} — {{ item.activityType }}
-                            </div>
-                            <div class="activity-desc">
-                                {{ item.description }}
-                            </div>
-                            <div class="activity-desc">
-                                {{ formatDate(item.date) }}
-                            </div>
+                        <div v-if="!dashboard.recentActivities || dashboard.recentActivities.length === 0" class="text-muted">
+                            Henüz aktivite bulunamadı.
                         </div>
-                    </div>
-
-                    <div v-if="!dashboard.recentActivities || dashboard.recentActivities.length === 0" class="text-muted">
-                        Henüz aktivite bulunamadı.
                     </div>
                 </div>
             </div>

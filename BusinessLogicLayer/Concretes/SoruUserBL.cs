@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Abstracts;
+using Core.Enums;
 using Core.ResultType;
 using DataAccessLayer.EntityFramework.Abstracts;
 using DataAccessLayer.EntityFramework.Concretes;
@@ -34,63 +35,152 @@ namespace BusinessLogicLayer.Concretes
             _userRepository = userRepository;
         }
 
-        public Result<SoruUserDTO> Add(SoruUserDTO model)
+        private void CheckAndCompleteSimulation(int userId)
         {
-            var soru = _soruRepository.Get(x => x.Id == model.SoruId);
+            var totalQuestionCount = _soruRepository.GetAsList(x => true).Count;
 
-            if (soru == null)
-                return new Result<SoruUserDTO>(false, "Soru bulunamadı.");
+            var userAnswers = _soruUserRepository.GetAsList(x => x.UserId == userId);
 
-            if (string.IsNullOrWhiteSpace(model.VerilenCevap))
-                return new Result<SoruUserDTO>(false, "Cevap boş olamaz.");
+            var userAnsweredQuestionCount = userAnswers
+                .Select(x => x.SoruId)
+                .Distinct()
+                .Count();
 
-            var dogruCevapKey = soru.DogruCevap != null && soru.DogruCevap.ContainsKey("key")
-                ? soru.DogruCevap["key"]
-                : "";
+            var totalScore = userAnswers.Sum(x => x.Puan ?? 0);
 
-            var verilenCevap = model.VerilenCevap.Trim();
-            var dogruCevap = dogruCevapKey.Trim();
+            var user = _userRepository.Get(x => x.Id == userId);
 
-            var puan = string.Equals(verilenCevap, dogruCevap, StringComparison.OrdinalIgnoreCase)
-                ? 10
-                : 0;
+            if (user == null)
+                return;
 
-            var eskiCevap = _soruUserRepository.Get(x =>
-                x.SoruId == model.SoruId &&
-                x.UserId == model.UserId
-            );
+            user.ToplamPuan = totalScore;
 
-            if (eskiCevap != null)
+            if (totalQuestionCount > 0 && userAnsweredQuestionCount >= totalQuestionCount)
             {
-                eskiCevap.VerilenCevap = verilenCevap;
-                eskiCevap.Puan = puan;
-                eskiCevap.UpdatedAt = DateTime.Now;
-
-                _soruUserRepository.Update(eskiCevap);
-
-                var dto = _mapper.Map<SoruUserDTO>(eskiCevap);
-                return new Result<SoruUserDTO>(true, dto, "Cevap güncellendi.");
+                user.SimulasyonTamamlandiMi = true;
             }
 
-            var entity = new SoruUser
+            user.UpdatedAt = DateTime.Now;
+
+            _userRepository.Update(user);
+        }
+        public Result<List<SoruUserDTO>> Add(SoruUserBulkDTO model)
+        {
+            if (model.UserId <= 0)
+                return new Result<List<SoruUserDTO>>(false, "Kullanıcı bilgisi zorunludur.");
+
+            if (model.Cevaplar == null || !model.Cevaplar.Any())
+                return new Result<List<SoruUserDTO>>(false, "Cevap listesi boş olamaz.");
+
+            var partBreakQuestionCount = (int)SimulationPartBreak.FirstPartQuestionCount;
+
+            var totalQuestionCount = _soruRepository.GetAsList(x => true).Count;
+
+            var existingAnsweredQuestionIds = _soruUserRepository
+                .GetAsList(x => x.UserId == model.UserId)
+                .Select(x => x.SoruId)
+                .Distinct()
+                .ToList();
+
+            var incomingQuestionIds = model.Cevaplar
+                .Select(x => x.SoruId)
+                .Distinct()
+                .ToList();
+
+            var totalAfterSave = existingAnsweredQuestionIds
+                .Union(incomingQuestionIds)
+                .Count();
+
+            var isFirstPartSubmit = existingAnsweredQuestionIds.Count == 0;
+            var isBreakSubmit = totalAfterSave == partBreakQuestionCount;
+            var isFinalSubmit = totalAfterSave == totalQuestionCount;
+
+            if (isFirstPartSubmit && !isBreakSubmit && !isFinalSubmit)
             {
-                SoruId = model.SoruId,
-                UserId = model.UserId,
-                VerilenCevap = verilenCevap,
-                Puan = puan,
-                CreatedAt = DateTime.Now
-            };
-            var mevcut = _soruUserRepository.Get(x =>
-    x.UserId == model.UserId &&
-    x.SoruId == model.SoruId);
+                return new Result<List<SoruUserDTO>>(
+                    false,
+                    $"{partBreakQuestionCount} soru tamamlanmadan cevaplar kaydedilemez."
+                );
+            }
 
-            if (mevcut != null)
-                return new Result<SoruUserDTO>(false, "Bu soru daha önce cevaplanmış.");
-            _soruUserRepository.Add(entity);
+            if (!isFirstPartSubmit && !isFinalSubmit)
+            {
+                return new Result<List<SoruUserDTO>>(
+                    false,
+                    "Kalan tüm sorular tamamlanmadan cevaplar kaydedilemez."
+                );
+            }
 
-            var resultDto = _mapper.Map<SoruUserDTO>(entity);
+            var savedList = new List<SoruUserDTO>();
 
-            return new Result<SoruUserDTO>(true, resultDto, "Cevap başarıyla kaydedildi.");
+            foreach (var cevap in model.Cevaplar)
+            {
+                if (cevap.SoruId <= 0)
+                    return new Result<List<SoruUserDTO>>(false, "Soru bilgisi eksik.");
+
+                if (string.IsNullOrWhiteSpace(cevap.VerilenCevap))
+                    return new Result<List<SoruUserDTO>>(false, "Cevap boş olamaz.");
+
+                var soru = _soruRepository.Get(x => x.Id == cevap.SoruId);
+
+                if (soru == null)
+                    return new Result<List<SoruUserDTO>>(false, $"Soru bulunamadı. SoruId: {cevap.SoruId}");
+
+                var dogruCevapKey = soru.DogruCevap != null && soru.DogruCevap.ContainsKey("key")
+                    ? soru.DogruCevap["key"]
+                    : "";
+
+                var verilenCevap = cevap.VerilenCevap.Trim();
+                var dogruCevap = dogruCevapKey.Trim();
+
+                var puan = string.Equals(verilenCevap, dogruCevap, StringComparison.OrdinalIgnoreCase)
+                    ? 10
+                    : 0;
+                _soruUserRepository.ClearTracking();
+                var eskiCevap = _soruUserRepository.Get(x =>
+                    x.SoruId == cevap.SoruId &&
+                    x.UserId == model.UserId
+                );
+
+                if (eskiCevap != null)
+                {
+                    eskiCevap.VerilenCevap = verilenCevap;
+                    eskiCevap.Puan = puan;
+                    eskiCevap.UpdatedAt = DateTime.Now;
+
+                    eskiCevap.CevaplamaSuresiSaniye = cevap.CevaplamaSuresiSaniye;
+                    eskiCevap.AciklamaOkumaSuresiSaniye = cevap.AciklamaOkumaSuresiSaniye;
+                    _soruUserRepository.Update(eskiCevap);
+
+                    savedList.Add(_mapper.Map<SoruUserDTO>(eskiCevap));
+                }
+                else
+                {
+                    var entity = new SoruUser
+                    {
+                        SoruId = cevap.SoruId,
+                        UserId = model.UserId,
+                        VerilenCevap = verilenCevap,
+                        Puan = puan,
+                        CreatedAt = DateTime.Now,
+
+                        CevaplamaSuresiSaniye = cevap.CevaplamaSuresiSaniye,
+                        AciklamaOkumaSuresiSaniye = cevap.AciklamaOkumaSuresiSaniye,
+                    };
+
+                    _soruUserRepository.Add(entity);
+
+                    savedList.Add(_mapper.Map<SoruUserDTO>(entity));
+                }
+            }
+
+            CheckAndCompleteSimulation(model.UserId);
+
+            return new Result<List<SoruUserDTO>>(
+                true,
+                savedList,
+                "Cevaplar başarıyla kaydedildi."
+            );
         }
         public Result<List<UserAnswerReportDTO>> GetUserAnswerReports()
         {
@@ -128,6 +218,8 @@ namespace BusinessLogicLayer.Concretes
 
                     Answers = group.Select(x => new UserAnswerDetailDTO
                     {
+                        CevaplamaSuresiSaniye = x.CevaplamaSuresiSaniye,
+                        AciklamaOkumaSuresiSaniye = x.AciklamaOkumaSuresiSaniye,
                         SoruId = x.SoruId,
                         SoruMetni = x.Soru != null ? x.Soru.SoruMetni : "-",
                         VerilenCevap = x.VerilenCevap,
@@ -264,13 +356,17 @@ namespace BusinessLogicLayer.Concretes
                 .GroupBy(x => new
                 {
                     x.UserId,
-                    FullName = x.User != null ? x.User.FullName : "-",
-                    OgrenciNo = x.User != null ? x.User.OgrenciNo : "-"
+                    UserName = x.User != null ? x.User.UserName : "-",
+                    OgrenciNo = x.User != null ? x.User.OgrenciNo : "-",
+                    Name = x.User != null ? x.User.Name : "-",
+                    Surname = x.User != null ? x.User.Surname : "-",
                 })
                 .Select(group => new DashboardTopUserDTO
                 {
                     UserId = group.Key.UserId,
-                    FullName = group.Key.FullName,
+                    UserName = group.Key.UserName,
+                    Name = group.Key.Name,
+                    Surname = group.Key.Surname,
                     OgrenciNo = group.Key.OgrenciNo,
                     TotalScore = group.Sum(x => x.Puan ?? 0),
                     CorrectCount = group.Count(x => x.Puan == 10),
@@ -313,7 +409,9 @@ namespace BusinessLogicLayer.Concretes
                 .Select(x => new DashboardRecentActivityDTO
                 {
                     UserId = x.UserId,
-                    FullName = x.User != null ? x.User.FullName : "-",
+                    UserName = x.User != null ? x.User.UserName : "-",
+                    Name = x.User != null ? x.User.Name : "-",
+                    Surname = x.User != null ? x.User.Surname : "-",
                     ActivityType = "Soru Cevabı",
                     Description = $"Soruya {x.VerilenCevap} cevabı verildi. Puan: {x.Puan ?? 0}",
                     Date = x.CreatedAt
@@ -325,7 +423,9 @@ namespace BusinessLogicLayer.Concretes
                 .Select(x => new DashboardRecentActivityDTO
                 {
                     UserId = x.UserId,
-                    FullName = x.User != null ? x.User.FullName : "-",
+                    UserName = x.User != null ? x.User.UserName : "-",
+                    Name = x.User != null ? x.User.Name : "-",
+                    Surname = x.User != null ? x.User.Surname : "-",
                     ActivityType = "Çözümleme",
                     Description = $"{x.Asama} çözümleme cevabı gönderildi.",
                     Date = x.CreatedAt

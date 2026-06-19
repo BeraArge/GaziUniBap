@@ -30,7 +30,9 @@ namespace DataTransferObject.Home
     public class DashboardTopUserDTO
     {
         public int UserId { get; set; }
-        public string? FullName { get; set; }
+        public string? UserName { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
         public string? OgrenciNo { get; set; }
         public int TotalScore { get; set; }
         public int CorrectCount { get; set; }
@@ -45,7 +47,9 @@ namespace DataTransferObject.Home
     public class DashboardRecentActivityDTO
     {
         public int UserId { get; set; }
-        public string? FullName { get; set; }
+        public string? UserName { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
         public string ActivityType { get; set; }
         public string Description { get; set; }
         public DateTime? Date { get; set; }

@@ -33,6 +33,7 @@
                 if (result.success || result.isSuccess) {
                     this.dashboard = result.data;
                 }
+                console.log(this.dashboard)
 
             } catch (error) {
                 console.error(error);

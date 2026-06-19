@@ -10,7 +10,10 @@ namespace DataTransferObject.User.KullaniciIslemleri
     {
         public int Id { get; set; }
         public string? FullName { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
         public string Phone { get; set; }
         public int RoleId { get; set; }
+        public string? OgrenciNo { get; set; }
     }
 }

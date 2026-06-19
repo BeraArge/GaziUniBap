@@ -2,10 +2,6 @@
     ViewData["Title"] = "Kullanıcı İşlemleri";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@{
-    ViewData["Title"] = "Kullanıcı İşlemleri";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
 <style>
     :root {
@@ -154,6 +150,7 @@
             font-size: 13px;
             font-weight: 700;
             padding: 0 18px 8px;
+            white-space: nowrap;
         }
 
         .lg-table tbody tr {
@@ -180,13 +177,14 @@
     .user-avatar {
         width: 44px;
         height: 44px;
+        min-width: 44px;
         border-radius: 15px;
         background: linear-gradient(135deg, rgba(8,124,143,.12), rgba(111,189,99,.18));
         color: var(--lg-primary);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
+        font-weight: 800;
     }
 
     .role-badge {
@@ -205,6 +203,7 @@
         padding: 7px 12px;
         font-size: 13px;
         font-weight: 700;
+        white-space: nowrap;
     }
 
     .status-no {
@@ -214,35 +213,7 @@
         padding: 7px 12px;
         font-size: 13px;
         font-weight: 700;
-    }
-
-    .action-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 13px;
-        border: 1px solid #e2e8f0;
-        background: #fff;
-        color: #667085;
-        margin-left: 4px;
-    }
-
-        .action-btn:hover {
-            background: var(--lg-soft);
-            color: var(--lg-primary);
-        }
-
-    @@media(max-width: 768px) {
-        .lymph-page {
-            padding: 24px 16px;
-        }
-
-        .lymph-hero {
-            padding: 24px;
-        }
-
-        .hero-title {
-            font-size: 24px;
-        }
+        white-space: nowrap;
     }
 
     .lg-alert {
@@ -286,6 +257,24 @@
             align-items: center !important;
             justify-content: center !important;
         }
+
+    @@media(max-width: 768px) {
+        .lymph-page {
+            padding: 24px 16px;
+        }
+
+        .lymph-hero {
+            padding: 24px;
+        }
+
+        .hero-title {
+            font-size: 24px;
+        }
+
+        .action-row {
+            flex-wrap: wrap !important;
+        }
+    }
 </style>
 
 <div id="app" class="lymph-page mb-5 mt-1">
@@ -295,8 +284,8 @@
             <div>
                 <h1 class="hero-title">Kullanıcı İşlemleri</h1>
                 <p class="hero-subtitle">
-                    LymphGuide panelindeki admin ve kullanıcı hesaplarını buradan yönetebilir,
-                    şifre sıfırlama ve detay işlemlerini hızlıca yapabilirsiniz.
+                    Admin ve öğrenci hesaplarını buradan yönetebilir, temel bilgileri düzenleyebilir
+                    ve şifre sıfırlama işlemlerini hızlıca yapabilirsiniz.
                 </p>
             </div>
 
@@ -313,26 +302,40 @@
                 <div class="lg-card-header">
                     <h5 class="section-title">
                         <i class="fa fa-user-plus me-2 text-success"></i>
-                        Yeni Kullanıcı
+                        {{ form.id ? 'Kullanıcı Güncelle' : 'Yeni Kullanıcı' }}
                     </h5>
-                    <p class="section-desc">Admin veya kullanıcı rolüyle yeni kayıt oluşturun.</p>
+                    <p class="section-desc">
+                        Admin veya öğrenci rolüyle kullanıcı oluşturun. Öğrenciye özel alanlar rol seçimine göre açılır.
+                    </p>
                 </div>
 
                 <div class="lg-card-body">
 
                     <div class="lg-alert mb-3">
                         <i class="fa fa-info-circle me-2"></i>
-                        Kullanıcı şifresi otomatik olarak '123123Aa' olarak oluşturulacaktır.
+                        Kullanıcı şifresi otomatik olarak <strong class="mx-1">123123Aa</strong> oluşturulur.
+                        Simülasyon, çözümleme ve toplam puan bilgileri bu ekrandan güncellenemez.
                     </div>
+
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="mb-3">
-                                <label class="form-label">Ad Soyad</label>
+                                <label class="form-label">Ad</label>
                                 <input class="form-control lg-input"
-                                       v-model="form.fullName"
-                                       placeholder="Ad Soyad" />
+                                       v-model="form.name"
+                                       placeholder="Ad" />
                             </div>
                         </div>
+
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label">Soyad</label>
+                                <input class="form-control lg-input"
+                                       v-model="form.surname"
+                                       placeholder="Soyad" />
+                            </div>
+                        </div>
+
                         <div class="col-lg-6">
                             <div class="mb-3">
                                 <label class="form-label">Telefon Numarası</label>
@@ -342,35 +345,41 @@
                                        placeholder="5XXXXXXXXX" />
                             </div>
                         </div>
-                        
+
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label">Rol</label>
+                                <select class="form-select lg-select" v-model="form.roleId">
+                                    <option value="">Rol seçiniz</option>
+                                    <option v-for="role in roles"
+                                            :key="role.id"
+                                            :value="role.id">
+                                        {{ role.name }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" v-if="isStudentRole()">
+                            <div class="mb-3">
+                                <label class="form-label">Öğrenci No</label>
+                                <input class="form-control lg-input"
+                                       v-model="form.ogrenciNo"
+                                       placeholder="Öğrenci numarası" />
+                            </div>
+                        </div>
                     </div>
-                  
 
-                    @* <div class="mb-3">
-                        <label class="form-label">Şifre</label>
-                        <input type="password"
-                               class="form-control lg-input"
-                               v-model="form.password"
-                               placeholder="Geçici şifre" />
-                    </div> *@
-
-                    <div class="mb-4">
-                        <label class="form-label">Rol</label>
-                        <select class="form-select lg-select" v-model="form.roleId">
-                            <option value="">Rol seçiniz</option>
-                            <option v-for="role in roles" :value="role.id">
-                                {{ role.name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-lymph w-100" @@click="saveUser">
+                    <button class="btn btn-lymph w-100"
+                            type="button"
+                            @@click="saveUser">
                         <i class="fa fa-check-circle me-1"></i>
                         {{ form.id ? 'Kullanıcıyı Güncelle' : 'Kullanıcı Oluştur' }}
                     </button>
 
                     <button v-if="form.id"
                             class="btn btn-light w-100 rounded-pill mt-2"
+                            type="button"
                             @@click="clearForm">
                         Vazgeç
                     </button>
@@ -387,18 +396,23 @@
                                 <i class="fa fa-users me-2 text-info"></i>
                                 Kullanıcı Listesi
                             </h5>
-                            <p class="section-desc">Filtreleyin, düzenleyin veya detaylara geçin.</p>
+                            <p class="section-desc">
+                                Kullanıcıları filtreleyin, düzenleyin veya şifrelerini sıfırlayın.
+                            </p>
                         </div>
 
                         <div class="d-flex gap-2">
                             <button class="filter-chip"
+                                    type="button"
                                     :class="{ active: filters.roleId === '' }"
                                     @@click="filters.roleId = ''">
                                 Tümü
                             </button>
 
                             <button class="filter-chip"
+                                    type="button"
                                     v-for="role in roles"
+                                    :key="role.id"
                                     :class="{ active: filters.roleId == role.id }"
                                     @@click="filters.roleId = role.id">
                                 {{ role.name }}
@@ -411,7 +425,7 @@
                     <div class="mb-3">
                         <input class="form-control lg-input"
                                v-model="filters.search"
-                               placeholder="Telefon veya rol adına göre ara..." />
+                               placeholder="Ad, soyad, telefon, öğrenci no veya role göre ara..." />
                     </div>
 
                     <div class="table-responsive">
@@ -420,9 +434,11 @@
                                 <tr>
                                     <th>Kullanıcı</th>
                                     <th>Rol</th>
-                                    <th>KVKK</th>
-                                    <th>Onam</th>
-                                    <th>İlk Giriş</th>
+                                    <th>Öğrenci No</th>
+                                    <th>Doğum Tarihi</th>
+                                    <th>Simülasyon</th>
+                                    <th>Çözümleme</th>
+                                    <th>Toplam Puan</th>
                                     <th class="text-end">İşlemler</th>
                                 </tr>
                             </thead>
@@ -431,110 +447,92 @@
                                 <tr v-for="user in filteredUsers" :key="user.id">
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
-                                           
+                                            <div class="user-avatar">
+                                                {{ getInitials((user.name || '') + ' ' + (user.surname || '')) }}
+                                            </div>
+
                                             <div>
-                                                <div class="fw-bold text-dark">{{ formatDisplayPhone(user.phone) }}</div>
-                                                <small>{{user.fullName}}</small>
+                                                <div class="fw-bold text-dark">
+                                                    {{ user.name || '-' }} {{ user.surname || '' }}
+                                                </div>
+
+                                                <small class="text-muted">
+                                                    {{ formatDisplayPhone(user.phone) }}
+                                                </small>
                                             </div>
                                         </div>
                                     </td>
 
                                     <td>
-                                        <span class="role-badge">{{ user.roleName }}</span>
-                                    </td>
-
-                                    <td>
-                                        <span v-if="isAdmin(user)" class="text-muted">—</span>
-                                        <span v-else :class="user.kvkkApproved ? 'status-ok' : 'status-no'">
-                                            {{ user.kvkkApproved ? 'Onaylı' : 'Bekliyor' }}
+                                        <span class="role-badge">
+                                            {{ getRoleName(user) }}
                                         </span>
                                     </td>
 
                                     <td>
                                         <span v-if="isAdmin(user)" class="text-muted">—</span>
-                                        <span v-else :class="user.onamApproved ? 'status-ok' : 'status-no'">
-                                            {{ user.onamApproved ? 'Onaylı' : 'Bekliyor' }}
+                                        <span v-else>{{ user.ogrenciNo || '-' }}</span>
+                                    </td>
+
+
+                                    <td>
+                                        <span v-if="isAdmin(user)" class="text-muted">—</span>
+                                        <span v-else :class="user.simulasyonTamamlandiMi ? 'status-ok' : 'status-no'">
+                                            {{ user.simulasyonTamamlandiMi ? 'Tamamlandı' : 'Bekliyor' }}
                                         </span>
                                     </td>
 
                                     <td>
                                         <span v-if="isAdmin(user)" class="text-muted">—</span>
-                                        <span v-else :class="user.ilkGiris ? 'status-no' : 'status-ok'">
-                                            {{ user.ilkGiris ? 'Evet' : 'Hayır' }}
+                                        <span v-else :class="user.cozumlemeTamamlandiMi ? 'status-ok' : 'status-no'">
+                                            {{ user.cozumlemeTamamlandiMi ? 'Tamamlandı' : 'Bekliyor' }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span v-if="isAdmin(user)" class="text-muted">—</span>
+                                        <span v-else class="role-badge">
+                                            {{ user.toplamPuan || 0 }} Puan
                                         </span>
                                     </td>
 
                                     <td class="text-end">
                                         <div class="user-action-buttons">
-
-                                            <!-- 1. SATIR -->
-                                            <div class="action-row">
-
-                                                <a v-if="user.roleName === 'Kullanıcı'"
-                                                   @@click="goDetail(user.id)"
-                                                   class="btn btn-sm btn-info rounded-pill">
-                                                    <i class="fa fa-eye me-1"></i>
-                                                    Detay
-                                                </a>
-
-
-
-                                                <a v-if="user.roleName === 'Kullanıcı'"
-                                                   :href="`/Form/Index?userId=${user.id}`"
-                                                   class="btn btn-sm btn-success rounded-pill">
-                                                    <i class="fa fa-clipboard-list me-1"></i>
-                                                    Formlar
-                                                </a>
-
-                                                <a v-if="user.roleName === 'Kullanıcı'"
-                                                   :href="`/egzersiz_detaylari?userId=${user.id}`"
-                                                   class="btn btn-sm btn-success rounded-pill">
-                                                    <i class="fa fa-clipboard-list me-1"></i>
-                                                    Egzersiz
-                                                </a>
-
-                                                <a v-if="user.roleName === 'Kullanıcı'"
-                                                   :href="`/masaj_detaylari?userId=${user.id}`"
-                                                   class="btn btn-sm btn-success rounded-pill">
-                                                    <i class="fa fa-spa me-1"></i>
-                                                    Masaj
-                                                </a>
-
-                                            </div>
-
-                                            <!-- 2. SATIR -->
                                             <div class="action-row mt-2">
 
                                                 <button class="btn btn-sm btn-light rounded-pill"
+                                                        type="button"
                                                         @@click="editUser(user)">
                                                     <i class="fa fa-pen me-1"></i>
                                                     Düzenle
                                                 </button>
 
                                                 <button class="btn btn-sm btn-warning text-white rounded-pill"
+                                                        type="button"
                                                         @@click="openPasswordModal(user)">
                                                     <i class="fa fa-key me-1"></i>
                                                     Şifre
                                                 </button>
 
                                                 <button class="btn btn-sm btn-danger rounded-pill"
+                                                        type="button"
                                                         @@click="deleteUser(user.id)">
                                                     <i class="fa fa-trash me-1"></i>
                                                     Sil
                                                 </button>
 
                                             </div>
-
                                         </div>
                                     </td>
                                 </tr>
 
                                 <tr v-if="filteredUsers.length === 0">
-                                    <td colspan="6" class="text-center text-muted py-5">
+                                    <td colspan="8" class="text-center text-muted py-5">
                                         Kullanıcı kaydı bulunamadı.
                                     </td>
                                 </tr>
                             </tbody>
+
                         </table>
                     </div>
 
@@ -544,7 +542,6 @@
 
     </div>
 </div>
-
 
 @section Scripts {
     <script src="~/page-js/user/kullanici_islemleri.js"></script>

@@ -33,6 +33,10 @@ namespace Core.DataAccess.Repositories
             return await Context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
+        public void ClearTracking()
+        {
+            Context.ChangeTracker.Clear();
+        }
         public async Task<IPaginate<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? predicate = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy =
                 null,

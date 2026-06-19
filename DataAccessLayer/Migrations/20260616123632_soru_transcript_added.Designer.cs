@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DataAccessLayer.EntityFramework.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260616123632_soru_transcript_added")]
+    partial class soru_transcript_added
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,13 +105,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Index",
                             Address = "/Home/Index",
                             Controller = "Home",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(786),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2957),
                             Icon = "fas fa-home",
                             Menu = 1,
                             Name = "Ana Sayfa",
                             ParentId = 0,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(788)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2959)
                         },
                         new
                         {
@@ -116,13 +119,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Index",
                             Address = "Index",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(790),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2960),
                             Icon = "icon-user-lock",
                             Menu = 1,
                             Name = "Rol Yönetimi",
                             ParentId = 0,
                             Type = "Category",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(791)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2961)
                         },
                         new
                         {
@@ -130,13 +133,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Create",
                             Address = "/Role/Create",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(793),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2963),
                             Icon = "",
                             Menu = 1,
                             Name = "Rol Ekle",
                             ParentId = 2,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(793)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2964)
                         },
                         new
                         {
@@ -144,13 +147,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Edit",
                             Address = "/Role/Edit",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(795),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2965),
                             Icon = "",
                             Menu = 0,
                             Name = "Rol Düzenleme",
                             ParentId = 2,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(796)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2965)
                         },
                         new
                         {
@@ -158,13 +161,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Delete",
                             Address = "/Role/Delete",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(798),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2966),
                             Icon = "",
                             Menu = 0,
                             Name = "Rol Silme",
                             ParentId = 2,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(798)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2967)
                         },
                         new
                         {
@@ -172,13 +175,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetById",
                             Address = "/Role/GetById",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(800),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2968),
                             Icon = "",
                             Menu = 0,
                             Name = "Id Bazlı Rol Getirme",
                             ParentId = 2,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(800)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2968)
                         },
                         new
                         {
@@ -186,13 +189,13 @@ namespace DataAccessLayer.Migrations
                             Action = "/Role/Index",
                             Address = "/Role/Index",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(802),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2969),
                             Icon = "",
                             Menu = 1,
                             Name = "Rol Listesi",
                             ParentId = 2,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(802)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2970)
                         },
                         new
                         {
@@ -200,13 +203,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetList",
                             Address = "/Role/GetList",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(804),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2971),
                             Icon = "",
                             Menu = 0,
                             Name = "Rol Listesi",
                             ParentId = 2,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(804)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2971)
                         },
                         new
                         {
@@ -214,13 +217,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Authentication",
                             Address = "/Role/Authentication",
                             Controller = "Role",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(806),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2972),
                             Icon = "",
                             Menu = 0,
                             Name = "Rol Yetkilendirme",
                             ParentId = 2,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(806)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2972)
                         },
                         new
                         {
@@ -228,13 +231,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Index",
                             Address = "/Module/Index",
                             Controller = "Module",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(808),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3072),
                             Icon = "fas fa-align-justify",
                             Menu = 1,
                             Name = "Modül Yönetimi",
                             ParentId = 0,
                             Type = "Category",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(808)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3072)
                         },
                         new
                         {
@@ -242,13 +245,13 @@ namespace DataAccessLayer.Migrations
                             Action = "/Module/Index",
                             Address = "/Module/Index",
                             Controller = "Module",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(810),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3074),
                             Icon = "",
                             Menu = 1,
                             Name = "Modül Listesi",
                             ParentId = 10,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(810)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3074)
                         },
                         new
                         {
@@ -256,13 +259,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetList",
                             Address = "/Module/GetList",
                             Controller = "Module",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(812),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3075),
                             Icon = "",
                             Menu = 0,
                             Name = "Modül Listesi",
                             ParentId = 10,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(813)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3076)
                         },
                         new
                         {
@@ -270,13 +273,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Delete",
                             Address = "/Module/Delete",
                             Controller = "Module",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(814),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3078),
                             Icon = "",
                             Menu = 0,
                             Name = "Modül Silme",
                             ParentId = 10,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(815)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3078)
                         },
                         new
                         {
@@ -284,13 +287,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetById",
                             Address = "/Module/GetById",
                             Controller = "Module",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(816),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3079),
                             Icon = "",
                             Menu = 10,
                             Name = "Id Bazlı Rol Getirmea",
                             ParentId = 3,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(817)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3080)
                         },
                         new
                         {
@@ -298,13 +301,13 @@ namespace DataAccessLayer.Migrations
                             Action = "/Module/Create",
                             Address = "/Module/Create",
                             Controller = "Module",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(818),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3081),
                             Icon = "",
                             Menu = 1,
                             Name = "Modül Ekle",
                             ParentId = 10,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(819)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3081)
                         },
                         new
                         {
@@ -312,13 +315,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Index",
                             Address = "/Mail/Index",
                             Controller = "Mail",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(820),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3082),
                             Icon = "icon-mail5 mr-3",
                             Menu = 1,
                             Name = "E-Posta Yönetimi",
                             ParentId = 16,
                             Type = "Category",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(821)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3083)
                         },
                         new
                         {
@@ -326,13 +329,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Index",
                             Address = "/Mail/Index",
                             Controller = "Mail",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(822),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3084),
                             Icon = "",
                             Menu = 1,
                             Name = "E-Posta Listesi",
                             ParentId = 16,
                             Type = "Page",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(823)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3084)
                         },
                         new
                         {
@@ -340,13 +343,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetList",
                             Address = "/Mail/GetList",
                             Controller = "Mail",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(824),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3086),
                             Icon = "",
                             Menu = 0,
                             Name = "E-Posta Listesi",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(825)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3086)
                         },
                         new
                         {
@@ -354,13 +357,13 @@ namespace DataAccessLayer.Migrations
                             Action = "/kullanici_islemleri",
                             Address = "/User/KullaniciIslemleri",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(826),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3087),
                             Icon = "",
                             Menu = 0,
                             Name = "Kullanıcı İşlemleri",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(827)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3088)
                         },
                         new
                         {
@@ -368,13 +371,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Api",
                             Address = "Api",
                             Controller = "Api",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(828),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3089),
                             Icon = "",
                             Menu = 0,
                             Name = "Api Modules",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(829)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3089)
                         },
                         new
                         {
@@ -382,13 +385,13 @@ namespace DataAccessLayer.Migrations
                             Action = "/kullanici_detay",
                             Address = "/User/Detail",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(831),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3090),
                             Icon = "",
                             Menu = 0,
                             Name = "Kullanıcı Detay",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(831)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3091)
                         },
                         new
                         {
@@ -396,13 +399,13 @@ namespace DataAccessLayer.Migrations
                             Action = "Detail",
                             Address = "/User/Detail",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(833),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3092),
                             Icon = "",
                             Menu = 0,
                             Name = "User Detail",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(833)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3093)
                         },
                         new
                         {
@@ -410,13 +413,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetUsers",
                             Address = "/User/GetUsers",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(835),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3094),
                             Icon = "",
                             Menu = 0,
                             Name = "User GetUsers",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(835)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3094)
                         },
                         new
                         {
@@ -424,13 +427,13 @@ namespace DataAccessLayer.Migrations
                             Action = "GetUserById",
                             Address = "/User/GetUserById",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(837),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3096),
                             Icon = "",
                             Menu = 0,
                             Name = "User GetById",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(837)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3096)
                         },
                         new
                         {
@@ -438,13 +441,13 @@ namespace DataAccessLayer.Migrations
                             Action = "CreateUser",
                             Address = "/User/CreateUser",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(839),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3097),
                             Icon = "",
                             Menu = 0,
                             Name = "User CreateUser",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(839)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3097)
                         },
                         new
                         {
@@ -452,13 +455,13 @@ namespace DataAccessLayer.Migrations
                             Action = "UpdateUser",
                             Address = "/User/UpdateUser",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(841),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3098),
                             Icon = "",
                             Menu = 0,
                             Name = "User UpdateUser",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(841)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3099)
                         },
                         new
                         {
@@ -466,13 +469,13 @@ namespace DataAccessLayer.Migrations
                             Action = "DeleteUser",
                             Address = "/User/DeleteUser",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(845),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3100),
                             Icon = "",
                             Menu = 0,
                             Name = "User DeleteUser",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(846)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3100)
                         },
                         new
                         {
@@ -480,13 +483,13 @@ namespace DataAccessLayer.Migrations
                             Action = "ResetPassword",
                             Address = "/User/ResetPassword",
                             Controller = "User",
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(847),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3101),
                             Icon = "",
                             Menu = 0,
                             Name = "User ResetPassword",
                             ParentId = 16,
                             Type = "Feature",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(848)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3102)
                         });
                 });
 
@@ -527,253 +530,253 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(877),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3132),
                             ModuleId = 1,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(878),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3133),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(879),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3134),
                             ModuleId = 2,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(880),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3134),
                             UserId = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(880),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3135),
                             ModuleId = 3,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(881),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3136),
                             UserId = 1
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(882),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3136),
                             ModuleId = 4,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(883),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3137),
                             UserId = 1
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(884),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3140),
                             ModuleId = 5,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(884),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3140),
                             UserId = 1
                         },
                         new
                         {
                             Id = 6,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(885),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3141),
                             ModuleId = 6,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(886),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3141),
                             UserId = 1
                         },
                         new
                         {
                             Id = 7,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(887),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3142),
                             ModuleId = 7,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(887),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3143),
                             UserId = 1
                         },
                         new
                         {
                             Id = 8,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(888),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3143),
                             ModuleId = 8,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(889),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3144),
                             UserId = 1
                         },
                         new
                         {
                             Id = 9,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(889),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3144),
                             ModuleId = 9,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(890),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3145),
                             UserId = 1
                         },
                         new
                         {
                             Id = 10,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(891),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3146),
                             ModuleId = 10,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(892),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3146),
                             UserId = 1
                         },
                         new
                         {
                             Id = 11,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(892),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3147),
                             ModuleId = 11,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(893),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3147),
                             UserId = 1
                         },
                         new
                         {
                             Id = 12,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(968),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3148),
                             ModuleId = 12,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(969),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3148),
                             UserId = 1
                         },
                         new
                         {
                             Id = 13,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(971),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3149),
                             ModuleId = 13,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(971),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3150),
                             UserId = 1
                         },
                         new
                         {
                             Id = 14,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(972),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3150),
                             ModuleId = 14,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(973),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3151),
                             UserId = 1
                         },
                         new
                         {
                             Id = 15,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(974),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3152),
                             ModuleId = 15,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(974),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3153),
                             UserId = 1
                         },
                         new
                         {
                             Id = 16,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(975),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3153),
                             ModuleId = 16,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(976),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3154),
                             UserId = 1
                         },
                         new
                         {
                             Id = 17,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(977),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3155),
                             ModuleId = 17,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(977),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3155),
                             UserId = 1
                         },
                         new
                         {
                             Id = 18,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(978),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3156),
                             ModuleId = 18,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(979),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3156),
                             UserId = 1
                         },
                         new
                         {
                             Id = 19,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(980),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3157),
                             ModuleId = 19,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(980),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3157),
                             UserId = 1
                         },
                         new
                         {
                             Id = 20,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(981),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3158),
                             ModuleId = 20,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(982),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3159),
                             UserId = 1
                         },
                         new
                         {
                             Id = 21,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(983),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3159),
                             ModuleId = 21,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(983),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3160),
                             UserId = 1
                         },
                         new
                         {
                             Id = 22,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(984),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3161),
                             ModuleId = 22,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(985),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3161),
                             UserId = 1
                         },
                         new
                         {
                             Id = 23,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(986),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3162),
                             ModuleId = 23,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(986),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3162),
                             UserId = 1
                         },
                         new
                         {
                             Id = 24,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(987),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3163),
                             ModuleId = 24,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(988),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3163),
                             UserId = 1
                         },
                         new
                         {
                             Id = 25,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(989),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3164),
                             ModuleId = 25,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(989),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3164),
                             UserId = 1
                         },
                         new
                         {
                             Id = 26,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(990),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3165),
                             ModuleId = 26,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(991),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3166),
                             UserId = 1
                         },
                         new
                         {
                             Id = 27,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(992),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3166),
                             ModuleId = 27,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(992),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3167),
                             UserId = 1
                         },
                         new
                         {
                             Id = 28,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(993),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3168),
                             ModuleId = 28,
                             RolId = 1,
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 694, DateTimeKind.Local).AddTicks(994),
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(3168),
                             UserId = 1
                         });
                 });
@@ -825,23 +828,23 @@ namespace DataAccessLayer.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 693, DateTimeKind.Local).AddTicks(9665),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2094),
                             Name = "Süper Admin",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 693, DateTimeKind.Local).AddTicks(9681)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2108)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 693, DateTimeKind.Local).AddTicks(9682),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2109),
                             Name = "Kullanıcı",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 693, DateTimeKind.Local).AddTicks(9683)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2110)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 693, DateTimeKind.Local).AddTicks(9684),
+                            CreatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2111),
                             Name = "Demo",
-                            UpdatedAt = new DateTime(2026, 6, 17, 17, 20, 40, 693, DateTimeKind.Local).AddTicks(9684)
+                            UpdatedAt = new DateTime(2026, 6, 16, 15, 36, 32, 263, DateTimeKind.Local).AddTicks(2111)
                         });
                 });
 
@@ -892,12 +895,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AciklamaOkumaSuresiSaniye")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("CevaplamaSuresiSaniye")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
@@ -1012,8 +1009,8 @@ namespace DataAccessLayer.Migrations
                             IlkGiris = false,
                             KvkkApproved = false,
                             OnamApproved = false,
-                            PasswordHash = new byte[] { 201, 211, 23, 84, 149, 180, 70, 138, 199, 121, 154, 80, 129, 64, 51, 202, 219, 221, 153, 203, 172, 79, 211, 248, 253, 5, 17, 156, 140, 129, 247, 29, 95, 33, 222, 145, 166, 40, 35, 48, 175, 224, 163, 59, 215, 215, 44, 190, 223, 90, 158, 50, 145, 134, 233, 194, 22, 32, 114, 235, 203, 186, 140, 28 },
-                            PasswordSalt = new byte[] { 109, 248, 169, 114, 220, 141, 23, 210, 154, 184, 190, 246, 168, 254, 172, 232, 169, 232, 186, 163, 112, 133, 212, 203, 248, 94, 100, 1, 57, 56, 228, 64, 246, 127, 84, 225, 42, 121, 229, 152, 254, 65, 40, 147, 169, 136, 144, 28, 120, 237, 232, 86, 159, 89, 208, 196, 139, 149, 15, 213, 162, 104, 235, 219, 169, 76, 84, 168, 240, 77, 66, 159, 181, 109, 228, 180, 249, 175, 224, 100, 0, 89, 77, 189, 150, 224, 201, 241, 80, 136, 124, 9, 244, 161, 65, 110, 25, 138, 210, 221, 18, 36, 232, 180, 240, 196, 157, 230, 110, 104, 147, 108, 242, 254, 207, 67, 43, 8, 21, 6, 129, 177, 64, 95, 239, 208, 156, 205 },
+                            PasswordHash = new byte[] { 108, 248, 228, 138, 107, 229, 30, 166, 18, 217, 16, 112, 5, 208, 235, 46, 68, 115, 53, 105, 231, 243, 90, 84, 226, 100, 245, 78, 133, 125, 91, 101, 235, 112, 40, 1, 175, 168, 91, 88, 236, 157, 123, 23, 48, 158, 127, 100, 100, 202, 231, 20, 12, 8, 169, 3, 92, 135, 48, 104, 228, 111, 232, 172 },
+                            PasswordSalt = new byte[] { 146, 84, 180, 242, 4, 119, 254, 250, 184, 184, 80, 176, 94, 44, 10, 94, 196, 77, 43, 160, 28, 37, 251, 215, 207, 245, 84, 43, 152, 98, 71, 225, 173, 89, 65, 42, 109, 197, 71, 252, 175, 30, 108, 139, 157, 40, 192, 156, 81, 63, 22, 159, 18, 176, 42, 121, 47, 227, 115, 194, 103, 55, 170, 116, 229, 130, 114, 242, 161, 57, 143, 210, 29, 210, 44, 74, 165, 186, 111, 54, 238, 195, 181, 141, 51, 88, 153, 118, 252, 37, 0, 96, 133, 93, 66, 149, 191, 175, 231, 250, 13, 227, 230, 232, 125, 159, 10, 90, 146, 101, 120, 195, 25, 240, 186, 251, 1, 243, 204, 6, 149, 177, 129, 174, 68, 31, 69, 3 },
                             Phone = "00000000000",
                             RoleId = 1,
                             SimulasyonTamamlandiMi = false

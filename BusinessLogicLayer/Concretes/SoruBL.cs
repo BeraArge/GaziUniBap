@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Abstracts;
+using Core.Enums;
 using Core.ResultType;
 using DataAccessLayer.EntityFramework.Abstracts;
+using DataAccessLayer.EntityFramework.Concretes;
 using DataTransferObject.Soru;
 using Entity;
 using System;
@@ -16,11 +18,15 @@ namespace BusinessLogicLayer.Concretes
     {
         private readonly IMapper _mapper;
         private readonly ISoruRepository _soruRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ISoruUserRepository _soruUserRepository;
 
-        public SoruBL(IMapper mapper, ISoruRepository soruRepository)
+        public SoruBL(IMapper mapper, ISoruRepository soruRepository, IUserRepository userRepository, ISoruUserRepository soruUserRepository)
         {
             _mapper = mapper;
             _soruRepository = soruRepository;
+            _userRepository = userRepository;
+            _soruUserRepository = soruUserRepository;
         }
 
         public Result<SoruDTO> Add(SoruDTO model)
@@ -63,7 +69,75 @@ namespace BusinessLogicLayer.Concretes
             result = new Result<List<SoruDTO>>(false, "Soru Listesi Boş");
             return result;
         }
+        public Result<MobileSoruListResponseDTO> GetMobileSorular(int userId)
+        {
+            var user = _userRepository.Get(x => x.Id == userId);
 
+            if (user == null)
+                return new Result<MobileSoruListResponseDTO>(false, "Kullanıcı bulunamadı.");
+
+            if (user.SimulasyonTamamlandiMi)
+            {
+                return new Result<MobileSoruListResponseDTO>(
+                    false,
+                    "Simülasyonu tamamladınız. Tekrar başlayamazsınız."
+                );
+            }
+
+            var partBreakQuestionCount = (int)SimulationPartBreak.FirstPartQuestionCount;
+
+            var tumSorular = _soruRepository
+                .GetAsList(x => true)
+                .OrderBy(x => x.Id)
+                .ToList();
+
+            var cevaplananSoruSayisi = _soruUserRepository
+                .GetAsList(x => x.UserId == userId)
+                .Select(x => x.SoruId)
+                .Distinct()
+                .Count();
+
+            var ilkPartTamamlandiMi = cevaplananSoruSayisi >= partBreakQuestionCount;
+
+            var gonderilecekSorular = ilkPartTamamlandiMi
+                ? tumSorular.Skip(partBreakQuestionCount).ToList()
+                : tumSorular;
+
+            var data = gonderilecekSorular
+                .Select((x, index) => new SoruDTO
+                {
+                    Id = x.Id,
+                    VideoPath = x.VideoPath, 
+                    VideoTranscript = x.VideoTranscript,
+                    Hedef = x.Hedef,
+                    OlcekMaddesi = x.OlcekMaddesi,
+                    SoruMetni = x.SoruMetni,
+                    Cevaplar = x.Cevaplar,
+                    DogruCevap=x.DogruCevap,
+                    PartArasiMi = !ilkPartTamamlandiMi &&
+                                  (index + 1) == partBreakQuestionCount
+                })
+                .ToList();
+
+            var response = new MobileSoruListResponseDTO
+            {
+                UserId = userId,
+                CevaplananSoruSayisi = cevaplananSoruSayisi,
+                PartBreakQuestionCount = partBreakQuestionCount,
+                IlkPartTamamlandiMi = ilkPartTamamlandiMi,
+                SimulasyonTamamlandiMi = false,
+                KalanSoruSayisi = data.Count,
+                Sorular = data
+            };
+
+            return new Result<MobileSoruListResponseDTO>(
+                true,
+                response,
+                ilkPartTamamlandiMi
+                    ? "İlk part tamamlandı. Simülasyon ikinci parttan devam edecek."
+                    : "Sorular listelendi."
+            );
+        }
         public Result<SoruDTO> GetById(int id)
         {
             var entity = _soruRepository.Get(x => x.Id == id);
@@ -91,6 +165,7 @@ namespace BusinessLogicLayer.Concretes
             entity.OlcekMaddesi = model.OlcekMaddesi;
             entity.SoruMetni = model.SoruMetni;
             entity.Cevaplar = model.Cevaplar;
+            entity.VideoTranscript = model.VideoTranscript;
             entity.DogruCevap = model.DogruCevap;
             entity.UpdatedAt = DateTime.Now;
 
