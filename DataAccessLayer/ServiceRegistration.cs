@@ -28,6 +28,7 @@ namespace DataAccessLayer
             services.AddScoped<ISoruRepository, SoruRepository>();
             services.AddScoped<ISoruUserRepository, SoruUserRepository>();
             services.AddScoped<ICozumlemeSoruUserRepository, CozumlemeSoruUserRepository>();
+            services.AddScoped<IOnBilgilendirmeRepository, OnBilgilendirmeRepository>();
 
             return services;
         }

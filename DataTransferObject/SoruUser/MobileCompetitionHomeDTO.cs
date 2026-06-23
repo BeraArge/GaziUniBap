@@ -9,7 +9,7 @@ namespace DataTransferObject.SoruUser
     public class MobileCompetitionHomeDTO
     {
         public int UserId { get; set; }
-        public string? FullName { get; set; }
+        public string? UserName { get; set; }
 
         public int TotalScore { get; set; }
         public int Rank { get; set; }
@@ -29,9 +29,9 @@ namespace DataTransferObject.SoruUser
     public class MobileLeaderboardUserDTO
     {
         public int UserId { get; set; }
-        public string? FullName { get; set; }
+        public string? UserName { get; set; }
         public int TotalScore { get; set; }
-        public int Rank { get; set; }
+        public int Sira { get; set; }
         public bool IsCurrentUser { get; set; }
     }
 }

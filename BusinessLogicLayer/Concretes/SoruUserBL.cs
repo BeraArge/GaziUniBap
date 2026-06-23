@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Abstracts;
 using Core.Enums;
+using Core.Paging;
 using Core.ResultType;
 using DataAccessLayer.EntityFramework.Abstracts;
 using DataAccessLayer.EntityFramework.Concretes;
@@ -8,6 +9,7 @@ using DataTransferObject.CozumlemeSoruUser;
 using DataTransferObject.Home;
 using DataTransferObject.Soru;
 using DataTransferObject.SoruUser;
+using DataTransferObject.SoruUser.Excel;
 using Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -182,7 +184,70 @@ namespace BusinessLogicLayer.Concretes
                 "Cevaplar başarıyla kaydedildi."
             );
         }
-        public Result<List<UserAnswerReportDTO>> GetUserAnswerReports()
+        //public Result<List<UserAnswerReportDTO>> GetUserAnswerReports()
+        //{
+        //    var answers = _soruUserRepository.GetAsList(
+        //        x => true,
+        //        include: x => x
+        //            .Include(y => y.User)
+        //            .Include(y => y.Soru)
+        //    );
+
+        //    var cozumlemeAnswers = _cozumlemeSoruUserRepository.GetAsList(
+        //        x => true,
+        //        include: x => x.Include(y => y.User)
+        //    );
+
+        //    var reports = answers
+        //        .GroupBy(x => new
+        //        {
+        //            x.UserId,
+        //            UserName = x.User != null ? x.User.FullName : "-"
+        //        })
+        //        .Select(group => new UserAnswerReportDTO
+        //        {
+        //            UserId = group.Key.UserId,
+        //            UserName = group.Key.UserName,
+
+        //            TotalQuestion = group.Count(),
+        //            CorrectCount = group.Count(x => x.Puan == 10),
+        //            WrongCount = group.Count(x => x.Puan == 0),
+        //            TotalScore = group.Sum(x => x.Puan ?? 0),
+
+        //            SuccessRate = group.Count() == 0
+        //                ? 0
+        //                : Math.Round((double)group.Count(x => x.Puan == 10) / group.Count() * 100, 2),
+
+        //            Answers = group.Select(x => new UserAnswerDetailDTO
+        //            {
+        //                CevaplamaSuresiSaniye = x.CevaplamaSuresiSaniye,
+        //                AciklamaOkumaSuresiSaniye = x.AciklamaOkumaSuresiSaniye,
+        //                SoruId = x.SoruId,
+        //                SoruMetni = x.Soru != null ? x.Soru.SoruMetni : "-",
+        //                VerilenCevap = x.VerilenCevap,
+        //                DogruCevap = x.Soru != null &&
+        //                             x.Soru.DogruCevap != null &&
+        //                             x.Soru.DogruCevap.ContainsKey("key")
+        //                    ? x.Soru.DogruCevap["key"]
+        //                    : "-",
+        //                Puan = x.Puan
+        //            }).ToList(),
+
+        //            CozumlemeSorular = cozumlemeAnswers
+        //                .Where(c => c.UserId == group.Key.UserId)
+        //                .Select(c => _mapper.Map<CozumlemeSoruUserDTO>(c))
+        //                .ToList()
+        //        })
+        //        .OrderByDescending(x => x.TotalScore)
+        //        .ToList();
+
+        //    return new Result<List<UserAnswerReportDTO>>(
+        //        true,
+        //        reports,
+        //        "Kullanıcı cevap raporları listelendi."
+        //    );
+        //}
+        public Result<IPaginate<UserAnswerReportDTO>> GetUserAnswerReports(UserAnswerReportRequestDTO request)
         {
             var answers = _soruUserRepository.GetAsList(
                 x => true,
@@ -200,13 +265,17 @@ namespace BusinessLogicLayer.Concretes
                 .GroupBy(x => new
                 {
                     x.UserId,
-                    UserName = x.User != null ? x.User.FullName : "-"
+                    UserName = x.User != null ? x.User.UserName : "-",
+                    Phone = x.User != null ? x.User.Phone : "-",
+                    OgrenciNo = x.User != null ? x.User.OgrenciNo : "-"
                 })
                 .Select(group => new UserAnswerReportDTO
                 {
                     UserId = group.Key.UserId,
                     UserName = group.Key.UserName,
 
+                    Phone = group.Key.Phone,
+                    OgrenciNo = group.Key.OgrenciNo,
                     TotalQuestion = group.Count(),
                     CorrectCount = group.Count(x => x.Puan == 10),
                     WrongCount = group.Count(x => x.Puan == 0),
@@ -218,8 +287,6 @@ namespace BusinessLogicLayer.Concretes
 
                     Answers = group.Select(x => new UserAnswerDetailDTO
                     {
-                        CevaplamaSuresiSaniye = x.CevaplamaSuresiSaniye,
-                        AciklamaOkumaSuresiSaniye = x.AciklamaOkumaSuresiSaniye,
                         SoruId = x.SoruId,
                         SoruMetni = x.Soru != null ? x.Soru.SoruMetni : "-",
                         VerilenCevap = x.VerilenCevap,
@@ -228,7 +295,9 @@ namespace BusinessLogicLayer.Concretes
                                      x.Soru.DogruCevap.ContainsKey("key")
                             ? x.Soru.DogruCevap["key"]
                             : "-",
-                        Puan = x.Puan
+                        Puan = x.Puan,
+                        CevaplamaSuresiSaniye = x.CevaplamaSuresiSaniye,
+                        AciklamaOkumaSuresiSaniye = x.AciklamaOkumaSuresiSaniye
                     }).ToList(),
 
                     CozumlemeSorular = cozumlemeAnswers
@@ -237,12 +306,157 @@ namespace BusinessLogicLayer.Concretes
                         .ToList()
                 })
                 .OrderByDescending(x => x.TotalScore)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var search = request.Search.ToLower();
+
+                reports = reports.Where(x =>
+                    x.UserName != null &&
+                    x.UserName.ToLower().Contains(search)
+                );
+            }
+
+            var pagedReports = reports.ToPaginate(
+                index: request.Page,
+                size: request.Size, from: 0
+            );
+
+            return new Result<IPaginate<UserAnswerReportDTO>>(
+                true,
+                pagedReports,
+                "Kullanıcı cevap raporları listelendi."
+            );
+        }
+        public Result<UserAnswerExcelExportDTO> GetUserAnswerExcelExportData()
+        {
+            var answers = _soruUserRepository.GetAsList(
+                x => true,
+                include: x => x
+                    .Include(y => y.User)
+                    .Include(y => y.Soru)
+            );
+
+            var totalUsers = answers.Select(x => x.UserId).Distinct().Count();
+            var totalAnswers = answers.Count;
+            var correctCount = answers.Count(x => x.Puan == 10);
+            var wrongCount = answers.Count(x => x.Puan == 0);
+            var totalScore = answers.Sum(x => x.Puan ?? 0);
+
+            var averageScore = totalAnswers == 0
+                ? 0
+                : Math.Round((double)totalScore / totalAnswers, 2);
+
+            var successRate = totalAnswers == 0
+                ? 0
+                : Math.Round((double)correctCount / totalAnswers * 100, 2);
+
+            var avgAnswerTime = totalAnswers == 0
+                ? 0
+                : Math.Round(answers.Average(x => x.CevaplamaSuresiSaniye ?? 0), 2);
+
+            var avgExplanationTime = totalAnswers == 0
+                ? 0
+                : Math.Round(answers.Average(x => x.AciklamaOkumaSuresiSaniye ?? 0), 2);
+
+            var summary = new List<UserAnswerExcelSummaryModel>
+    {
+        new() { Baslik = "Toplam Kullanıcı", Deger = totalUsers.ToString() },
+        new() { Baslik = "Toplam Cevap", Deger = totalAnswers.ToString() },
+        new() { Baslik = "Doğru Cevap", Deger = correctCount.ToString() },
+        new() { Baslik = "Yanlış Cevap", Deger = wrongCount.ToString() },
+        new() { Baslik = "Toplam Puan", Deger = totalScore.ToString() },
+        new() { Baslik = "Ortalama Puan", Deger = averageScore.ToString() },
+        new() { Baslik = "Başarı Oranı (%)", Deger = successRate.ToString() },
+        new() { Baslik = "Ortalama Cevaplama Süresi (sn)", Deger = avgAnswerTime.ToString() },
+        new() { Baslik = "Ortalama Açıklama Okuma Süresi (sn)", Deger = avgExplanationTime.ToString() },
+        new() { Baslik = "Rapor Tarihi", Deger = DateTime.Now.ToString("dd.MM.yyyy HH:mm") }
+    };
+
+            var userReports = answers
+                .GroupBy(x => new
+                {
+                    x.UserId,
+                    UserName = x.User != null ? x.User.UserName : "-",
+                    Username = x.User != null ? x.User.UserName : "-",
+                    OgrenciNo = x.User != null ? x.User.OgrenciNo : "-",
+                    Phone = x.User != null ? x.User.Phone : "-"
+                })
+                .Select(g =>
+                {
+                    var total = g.Count();
+                    var correct = g.Count(x => x.Puan == 10);
+                    var wrong = g.Count(x => x.Puan == 0);
+                    var score = g.Sum(x => x.Puan ?? 0);
+
+                    return new UserAnswerExcelUserReportModel
+                    {
+                        KullaniciId = g.Key.UserId,
+                        AdSoyad = g.Key.UserName,
+                        KullaniciAdi = g.Key.Username,
+                        OgrenciNo = g.Key.OgrenciNo,
+                        Telefon = g.Key.Phone,
+
+                        ToplamCevap = total,
+                        DogruSayisi = correct,
+                        YanlisSayisi = wrong,
+
+                        ToplamPuan = score,
+                        OrtalamaPuan = total == 0 ? 0 : Math.Round((double)score / total, 2),
+                        BasariOrani = total == 0 ? 0 : Math.Round((double)correct / total * 100, 2),
+
+                        OrtalamaCevaplamaSuresiSn = Math.Round(g.Average(x => x.CevaplamaSuresiSaniye ?? 0), 2),
+                        OrtalamaAciklamaOkumaSuresiSn = Math.Round(g.Average(x => x.AciklamaOkumaSuresiSaniye ?? 0), 2)
+                    };
+                })
+                .OrderByDescending(x => x.OrtalamaPuan)
+                .ThenByDescending(x => x.BasariOrani)
                 .ToList();
 
-            return new Result<List<UserAnswerReportDTO>>(
+            var details = answers
+                .OrderBy(x => x.UserId)
+                .ThenBy(x => x.SoruId)
+                .Select(x =>
+                {
+                    var dogruCevap = x.Soru != null &&
+                                     x.Soru.DogruCevap != null &&
+                                     x.Soru.DogruCevap.ContainsKey("key")
+                        ? x.Soru.DogruCevap["key"]
+                        : "-";
+
+                    return new UserAnswerExcelDetailModel
+                    {
+                        KullaniciId = x.UserId,
+                        AdSoyad = x.User?.UserName ?? "-",
+                        KullaniciAdi = x.User?.UserName ?? "-",
+                        OgrenciNo = x.User?.OgrenciNo ?? "-",
+                        Telefon = x.User?.Phone ?? "-",
+                        SoruMetni = x.Soru?.SoruMetni ?? "-",
+                        VerilenCevap = x.VerilenCevap ?? "-",
+                        DogruCevap = dogruCevap,
+                        Durum = x.Puan == 10 ? "Doğru" : "Yanlış",
+
+                        Puan = x.Puan ?? 0,
+                        CevaplamaSuresiSn = x.CevaplamaSuresiSaniye ?? 0,
+                        AciklamaOkumaSuresiSn = x.AciklamaOkumaSuresiSaniye ?? 0,
+
+                        CevapTarihi = x.CreatedAt
+                    };
+                })
+                .ToList();
+
+            var exportDto = new UserAnswerExcelExportDTO
+            {
+                Summary = summary,
+                UserReports = userReports,
+                Details = details
+            };
+
+            return new Result<UserAnswerExcelExportDTO>(
                 true,
-                reports,
-                "Kullanıcı cevap raporları listelendi."
+                exportDto,
+                "Excel rapor verisi hazırlandı."
             );
         }
         public Result<bool> Delete(int id)
@@ -474,7 +688,7 @@ namespace BusinessLogicLayer.Concretes
                     return new
                     {
                         UserId = u.Id,
-                        FullName = u.FullName,
+                        UserName = u.UserName,
                         TotalScore = userAnswers.Sum(a => a.Puan ?? 0),
                         TotalAnswerCount = userAnswers.Count,
                         CorrectCount = userAnswers.Count(a => a.Puan == 10),
@@ -482,16 +696,16 @@ namespace BusinessLogicLayer.Concretes
                     };
                 })
                 .OrderByDescending(x => x.TotalScore)
-                .ThenBy(x => x.FullName)
+                .ThenBy(x => x.UserName)
                 .ToList();
 
             var rankedWithIndex = rankedUsers
                 .Select((x, index) => new MobileLeaderboardUserDTO
                 {
                     UserId = x.UserId,
-                    FullName = x.FullName,
+                    UserName = x.UserName,
                     TotalScore = x.TotalScore,
-                    Rank = index + 1,
+                    Sira = index + 1,
                     IsCurrentUser = x.UserId == userId
                 })
                 .ToList();
@@ -508,7 +722,7 @@ namespace BusinessLogicLayer.Concretes
 
             var currentStats = rankedUsers.First(x => x.UserId == userId);
 
-            var currentIndex = currentRank.Rank - 1;
+            var currentIndex = currentRank.Sira - 1;
 
             var nearbyUsers = rankedWithIndex
                 .Skip(Math.Max(currentIndex - 2, 0))
@@ -518,11 +732,11 @@ namespace BusinessLogicLayer.Concretes
             var response = new MobileCompetitionHomeDTO
             {
                 UserId = user.Id,
-                FullName = user.FullName,
+                UserName = user.UserName,
 
                 TotalScore = currentStats.TotalScore,
-                Rank = currentRank.Rank,
-                TotalParticipantCount = rankedWithIndex.Count,
+                Rank = currentRank.Sira,
+                TotalParticipantCount = rankedWithIndex.Count(),
 
                 TotalAnswerCount = currentStats.TotalAnswerCount,
                 CorrectCount = currentStats.CorrectCount,

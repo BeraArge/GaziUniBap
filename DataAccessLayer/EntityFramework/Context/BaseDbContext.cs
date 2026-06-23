@@ -29,6 +29,7 @@ namespace DataAccessLayer.EntityFramework.Context
         public virtual DbSet<Soru> Sorus { get; set; }
         public virtual DbSet<SoruUser> SoruUsers { get; set; }
         public virtual DbSet<CozumlemeSoruUser> CozumlemeSoruUsers { get; set; }
+        public virtual DbSet<OnBilgilendirme> OnBilgilendirmes { get; set; }
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

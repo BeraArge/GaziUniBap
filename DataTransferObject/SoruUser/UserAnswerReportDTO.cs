@@ -15,7 +15,8 @@ namespace DataTransferObject.SoruUser
         public int TotalQuestion { get; set; }
         public int CorrectCount { get; set; }
         public int WrongCount { get; set; }
-
+        public string? Phone { get; set; }
+        public string? OgrenciNo { get; set; }
         public int TotalScore { get; set; }
 
         public double SuccessRate { get; set; }

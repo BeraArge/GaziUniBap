@@ -1,4 +1,5 @@
-﻿using Core.ResultType;
+﻿using Core.Paging;
+using Core.ResultType;
 using DataTransferObject.SmsModel;
 using DataTransferObject.User;
 using DataTransferObject.User.KullaniciIslemleri;
@@ -21,7 +22,7 @@ namespace BusinessLogicLayer.Abstracts
         Task<Result<UserUpdateDto>> UpdateAsync(UserUpdateDto dto);
         Task<Result<UserModel>> DeleteAsync(int id);
         Task<Result<UserPasswordResetDto>> ResetPasswordAsync(UserPasswordResetDto dto);
-
+        Task<Result<IPaginate<UserListDto>>> GetAllAsync(UserListRequestDto request);
 
 
 

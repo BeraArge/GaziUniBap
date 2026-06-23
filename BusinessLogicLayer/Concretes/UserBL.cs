@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Abstracts;
+using Core.Paging;
 using Core.ResultType;
 using DataAccessLayer.EntityFramework.Abstracts;
 using DataTransferObject.SmsModel;
@@ -76,12 +77,12 @@ namespace BusinessLogicLayer.Concretes
         }
         public async Task<Result<bool>> UpdateProfileAsync(UpdateProfileDTO dto)
         {
-            var user = await _userRepository.GetAsync(a=>a.Id == dto.UserId);
+            var user = await _userRepository.GetAsync(a => a.Id == dto.UserId);
 
             if (user == null)
-                return new Result<bool>(false,"Kullanıcı Bulunamadı");
+                return new Result<bool>(false, "Kullanıcı Bulunamadı");
 
-            user.FullName = dto.FullName;
+            user.UserName = dto.UserName;
             user.Phone = dto.Phone;
 
             await _userRepository.UpdateAsync(user);
@@ -147,13 +148,10 @@ namespace BusinessLogicLayer.Concretes
                 RoleId = x.RoleId,
                 RoleName = x.Role != null ? x.Role.Name : null,
 
-                OgrenciNo = x.RoleId == 2 ? x.OgrenciNo : null,
-
-                SimulasyonTamamlandiMi = x.RoleId == 2 && x.SimulasyonTamamlandiMi,
-                CozumlemeTamamlandiMi = x.RoleId == 2 && x.CozumlemeTamamlandiMi,
-
-                ToplamPuan = x.RoleId == 2 ? x.ToplamPuan : null,
-
+                OgrenciNo = x.RoleId == 3 ? x.OgrenciNo : null,
+                SimulasyonTamamlandiMi = x.RoleId == 3 && x.SimulasyonTamamlandiMi,
+                CozumlemeTamamlandiMi = x.RoleId == 3 && x.CozumlemeTamamlandiMi,
+                ToplamPuan = x.RoleId == 3 ? x.ToplamPuan : null,
                 KvkkApproved = x.KvkkApproved,
                 OnamApproved = x.OnamApproved,
                 IlkGiris = x.IlkGiris
@@ -161,13 +159,73 @@ namespace BusinessLogicLayer.Concretes
 
             return new Result<List<UserListDto>>(true, result);
         }
+        public async Task<Result<IPaginate<UserListDto>>> GetAllAsync(UserListRequestDto request)
+        {
+            var query = _userRepository.Query()
+                .Include(x => x.Role)
+                .Where(x => x.RoleId != 1);
 
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                var search = request.Search.ToLower();
+
+                query = query.Where(x =>
+                    (x.UserName != null && x.UserName.ToLower().Contains(search)) ||
+                    (x.Name != null && x.Name.ToLower().Contains(search)) ||
+                    (x.Surname != null && x.Surname.ToLower().Contains(search)) ||
+                    (x.UserName != null && x.UserName.ToLower().Contains(search)) ||
+                    (x.Phone != null && x.Phone.ToLower().Contains(search)) ||
+                    (x.OgrenciNo != null && x.OgrenciNo.ToLower().Contains(search)) ||
+                    (x.Role != null && x.Role.Name.ToLower().Contains(search))
+                );
+            }
+
+            if (request.RoleId.HasValue && request.RoleId.Value > 0)
+            {
+                query = query.Where(x => x.RoleId == request.RoleId.Value);
+            }
+
+            var dtoQuery = query
+                .OrderByDescending(x => x.Id)
+                .Select(x => new UserListDto
+                {
+                    Id = x.Id,
+
+                    Name = x.Name,
+                    Surname = x.Surname,
+                    UserName = x.UserName,
+
+                    Phone = x.Phone,
+
+                    RoleId = x.RoleId,
+                    RoleName = x.Role != null ? x.Role.Name : null,
+
+                    OgrenciNo = x.RoleId == 2 ? x.OgrenciNo : null,
+
+                    SimulasyonTamamlandiMi = x.RoleId == 2 && x.SimulasyonTamamlandiMi,
+                    CozumlemeTamamlandiMi = x.RoleId == 2 && x.CozumlemeTamamlandiMi,
+
+                    ToplamPuan = x.RoleId == 2 ? x.ToplamPuan : null,
+
+                    KvkkApproved = x.KvkkApproved,
+                    OnamApproved = x.OnamApproved,
+                    IlkGiris = x.IlkGiris
+                });
+
+            var pagedData = dtoQuery.ToPaginate(
+                index: request.Page,
+                size: request.Size,
+                from:0
+            );
+
+            return new Result<IPaginate<UserListDto>>(true, pagedData);
+        }
         public async Task<Result<UserListDto>> GetByIdAsync(int id)
         {
-            var user = await _userRepository.GetAsync(a=>a.Id == id);
+            var user = await _userRepository.GetAsync(a => a.Id == id);
 
             if (user == null)
-                return new Result<UserListDto>(false,"Kullanıcı bulunamadı.");
+                return new Result<UserListDto>(false, "Kullanıcı bulunamadı.");
 
             var dto = new UserListDto
             {
@@ -196,7 +254,6 @@ namespace BusinessLogicLayer.Concretes
             if (existingUser != null)
                 return new Result<UserCreateDto>(false, "Bu telefon numarası ile kayıtlı kullanıcı zaten var.");
 
-
             var user = new User
             {
                 Phone = normalizedPhone,
@@ -224,6 +281,12 @@ namespace BusinessLogicLayer.Concretes
 
                 DeviceToken = null
             };
+            if (dto.Password == dto.PasswordRepeat)
+            {
+                HashingHelper.CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
+                user.PasswordHash = hash;
+                user.PasswordSalt = salt;
+            }
 
             await _userRepository.AddAsync(user);
 
@@ -262,14 +325,14 @@ namespace BusinessLogicLayer.Concretes
 
             user.Phone = normalizedPhone;
 
-            user.FullName = dto.FullName;
+            user.UserName = dto.UserName;
 
             user.Name = dto.Name;
             user.Surname = dto.Surname;
 
             user.RoleId = dto.RoleId;
 
-            if (dto.RoleId == 3)
+            if (dto.RoleId == 2)
             {
                 user.OgrenciNo = dto.OgrenciNo;
             }
@@ -302,19 +365,19 @@ namespace BusinessLogicLayer.Concretes
 
         public async Task<Result<UserModel>> DeleteAsync(int id)
         {
-            var user = await _userRepository.GetAsync(a=>a.Id == id);
+            var user = await _userRepository.GetAsync(a => a.Id == id);
 
             if (user == null)
                 return new Result<UserModel>(false, "Kullanıcı bulunamadı.");
 
             await _userRepository.DeleteAsync(user);
 
-            return new Result<UserModel>(true,"Kullanıcı silindi.");
+            return new Result<UserModel>(true, "Kullanıcı silindi.");
         }
 
         public async Task<Result<UserPasswordResetDto>> ResetPasswordAsync(UserPasswordResetDto dto)
         {
-            var user = await _userRepository.GetAsync(a=>a.Id == dto.Id);
+            var user = await _userRepository.GetAsync(a => a.Id == dto.Id);
 
             if (user == null)
                 return new Result<UserPasswordResetDto>(false, "Kullanıcı bulunamadı.");
@@ -326,7 +389,7 @@ namespace BusinessLogicLayer.Concretes
 
             await _userRepository.UpdateAsync(user);
 
-            return new Result<UserPasswordResetDto>(true,"Şifre başarıyla sıfırlandı.");
+            return new Result<UserPasswordResetDto>(true, "Şifre başarıyla sıfırlandı.");
         }
 
         private string NormalizePhone(string phone)
@@ -365,8 +428,12 @@ namespace BusinessLogicLayer.Concretes
                 return new Result<UserModel>(false, "Kullanıcı bulunamadı.");
 
             // Sadece gönderilen alanları güncelle
-            if (!string.IsNullOrWhiteSpace(model.FullName))
-                existing.FullName = model.FullName.Trim();
+            if (!string.IsNullOrWhiteSpace(model.Username))
+                existing.UserName = model.Username.Trim();
+            if (!string.IsNullOrWhiteSpace(model.Name))
+                existing.Name = model.Name.Trim();
+            if (!string.IsNullOrWhiteSpace(model.Surname))
+                existing.Surname = model.Surname.Trim();
 
             if (!string.IsNullOrWhiteSpace(model.Phone))
                 existing.Phone = model.Phone.Trim();
@@ -378,7 +445,7 @@ namespace BusinessLogicLayer.Concretes
                 if (userNameControl != null)
                     return new Result<UserModel>(false, "Bu telefon numarası başka bir kullanıcıda kayıtlı.");
             }
-            
+
 
             existing.UpdatedAt = DateTime.Now;
 
@@ -412,8 +479,8 @@ namespace BusinessLogicLayer.Concretes
         {
             Result<List<UserModel>> result;
 
-            List<User> users = _userRepository.GetAsList(x=>x.RoleId == 3);
-            if(users != null && users.Count > 0)
+            List<User> users = _userRepository.GetAsList(x => x.RoleId == 3);
+            if (users != null && users.Count > 0)
             {
                 List<UserModel> usersModel = _mapper.Map<List<UserModel>>(users);
                 result = new Result<List<UserModel>>(true, usersModel, "Kullanıcılar Getirildi.");

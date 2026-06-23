@@ -1,6 +1,8 @@
-﻿using Core.ResultType;
+﻿using Core.Paging;
+using Core.ResultType;
 using DataTransferObject.Home;
 using DataTransferObject.SoruUser;
+using DataTransferObject.SoruUser.Excel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,9 @@ namespace BusinessLogicLayer.Abstracts
         Result<SoruUserDTO> GetById(int id);
         Result<List<SoruUserDTO>> GetAll();
         Result<MobileCompetitionHomeDTO> GetMobileCompetitionHome(int userId);
-        Result<List<UserAnswerReportDTO>> GetUserAnswerReports();
+        //Result<List<UserAnswerReportDTO>> GetUserAnswerReports();
+        Result<UserAnswerExcelExportDTO> GetUserAnswerExcelExportData();
         Result<DashboardDTO> GetDashboardData();
+        Result<IPaginate<UserAnswerReportDTO>> GetUserAnswerReports(UserAnswerReportRequestDTO request);
     }
 }

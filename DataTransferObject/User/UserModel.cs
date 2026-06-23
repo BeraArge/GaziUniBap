@@ -25,8 +25,6 @@ namespace DataTransferObject.User
         public string Username { get; set; }
         public string? OgrenciNo { get; set; }
         public string? Phone { get; set; }
-        public string? FullName { get; set; }
-        public string? BirthDate { get; set; }
         public bool SimulasyonTamamlandiMi { get; set; } = false;
         public bool CozumlemeTamamlandiMi { get; set; } = false;
         public int? ToplamPuan { get; set; }
