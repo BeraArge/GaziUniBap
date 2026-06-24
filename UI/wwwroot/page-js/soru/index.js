@@ -9,6 +9,11 @@
             currentPage: 1,
             pageSize: 5,
             videoTranscript: "",
+            onBilgilendirmeEditor: null,
+            onBilgilendirme: {
+                id: 0,
+                onBilgilendirmeMetni: ""
+            },
         }
     },
 
@@ -37,10 +42,118 @@
         }
     },
     async mounted() {
+        await this.getOnBilgilendirme();
+        this.$nextTick(() => {
+            setTimeout(() => {
+                this.initCKEditor();
+            }, 300);
+        });
         await this.getAll();
     },
 
     methods: {
+        initCKEditor() {
+            if (typeof CKEDITOR === "undefined") {
+                console.error("CKEDITOR yüklenmemiş.");
+                return;
+            }
+
+            const el = document.getElementById("editor1");
+
+            if (!el) {
+                console.error("editor1 textarea bulunamadı.");
+                return;
+            }
+
+            if (CKEDITOR.instances.editor1) {
+                CKEDITOR.instances.editor1.destroy(true);
+            }
+
+            CKEDITOR.replace("editor1", {
+                height: 350,
+                removePlugins: "easyimage,cloudservices,exportpdf",
+                toolbar: [
+                    { name: "document", items: ["Source", "Preview"] },
+                    { name: "basicstyles", items: ["Bold", "Italic", "Underline", "-", "RemoveFormat"] },
+                    { name: "paragraph", items: ["NumberedList", "BulletedList", "-", "JustifyLeft", "JustifyCenter", "JustifyRight"] },
+                    { name: "links", items: ["Link", "Unlink"] },
+                    { name: "insert", items: ["Table", "HorizontalRule", "SpecialChar"] },
+                    { name: "styles", items: ["Format", "Font", "FontSize"] },
+                    { name: "colors", items: ["TextColor", "BGColor"] },
+                    { name: "tools", items: ["Maximize"] }
+                ]
+            });
+
+            CKEDITOR.instances.editor1.on("instanceReady", async () => {
+                await this.getOnBilgilendirme();
+            });
+
+            CKEDITOR.instances.editor1.on("change", () => {
+                this.onBilgilendirme.onBilgilendirmeMetni =
+                    CKEDITOR.instances.editor1.getData();
+            });
+        },
+        async getOnBilgilendirme() {
+            try {
+                const response = await fetch("/OnBilgilendirme/GetOnBilgilendirme");
+                const result = await response.json();
+
+                if (result.success || result.isSuccess) {
+                    this.onBilgilendirme = result.data || {
+                        id: 0,
+                        onBilgilendirmeMetni: ""
+                    };
+
+                    const html = this.onBilgilendirme.onBilgilendirmeMetni || "";
+
+                    if (CKEDITOR.instances.editor1) {
+                        CKEDITOR.instances.editor1.setData(html);
+                    }
+                }
+            } catch (error) {
+                console.error("Ön bilgilendirme getirilemedi:", error);
+            }
+        },
+        async saveOnBilgilendirme() {
+            try {
+                const editorData = CKEDITOR.instances.editor1
+                    ? CKEDITOR.instances.editor1.getData()
+                    : "";
+
+                this.onBilgilendirme.onBilgilendirmeMetni = editorData;
+
+                const response = await fetch("/OnBilgilendirme/SaveOnBilgilendirme", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(this.onBilgilendirme)
+                });
+
+                const result = await response.json();
+
+                Swal.fire({
+                    icon: (result.success || result.isSuccess) ? "success" : "error",
+                    title: (result.success || result.isSuccess) ? "Başarılı" : "Hata",
+                    text: result.message,
+                    confirmButtonColor: "#087c8f"
+                });
+
+                if (result.success || result.isSuccess) {
+                    this.onBilgilendirme = result.data;
+                }
+
+            } catch (error) {
+                console.error(error);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Ön bilgilendirme kaydedilirken hata oluştu.",
+                    confirmButtonColor: "#087c8f"
+                });
+            }
+        }, 
         changePage(page) {
             if (page < 1 || page > this.totalPages) {
                 return;
