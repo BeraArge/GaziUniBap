@@ -1,2 +1,2 @@
 # GaziUniBap
-Merve Hoca
+Merve Kırşan
