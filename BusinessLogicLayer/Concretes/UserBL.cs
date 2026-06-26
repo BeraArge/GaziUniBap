@@ -113,6 +113,19 @@ namespace BusinessLogicLayer.Concretes
             await _userRepository.UpdateAsync(user);
             return new Result<bool>(true, "Güncelleme Başarılı"); ;
         }
+        public async Task<Result<bool>> UpdateCozumlemeDurum(int userId)
+        {
+            var user = await _userRepository.GetAsync(a => a.Id == userId);
+
+            if (user == null)
+                return new Result<bool>(false, "Kullanıcı Bulunamadı");
+
+            user.CozumlemeTamamlandiMi = true;
+
+
+            await _userRepository.UpdateAsync(user);
+            return new Result<bool>(true, "Güncelleme Başarılı"); ;
+        }
         public Result<UserModel> GetById(int id)
         {
             Result<UserModel> result;
@@ -240,23 +253,26 @@ namespace BusinessLogicLayer.Concretes
 
             return new Result<UserListDto>(true, dto);
         }
-
         public async Task<Result<UserCreateDto>> CreateAsync(UserCreateDto dto)
         {
-            var normalizedPhone = NormalizePhone(dto.Phone);
+            var phone = dto.Phone?.Trim();
 
-            if (!IsValidPhone(normalizedPhone))
-                return new Result<UserCreateDto>(false, "Telefon numarası geçersiz. 5XXXXXXXXX formatında giriniz.");
+            if (!IsValidPhone(phone))
+                return new Result<UserCreateDto>(false, "Telefon numarası 0 ile başlayan 11 haneli olmalıdır.");
 
-
-            var existingUser = await _userRepository.GetAsync(a => a.Phone == normalizedPhone);
+            var existingUser = await _userRepository.GetAsync(x => x.Phone == phone);
 
             if (existingUser != null)
                 return new Result<UserCreateDto>(false, "Bu telefon numarası ile kayıtlı kullanıcı zaten var.");
 
+            if (dto.Password != dto.PasswordRepeat)
+                return new Result<UserCreateDto>(false, "Şifre ve şifre tekrarı uyuşmalıdır.");
+
+            HashingHelper.CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
+
             var user = new User
             {
-                Phone = normalizedPhone,
+                Phone = phone,
 
                 UserName = dto.UserName,
 
@@ -269,7 +285,6 @@ namespace BusinessLogicLayer.Concretes
 
                 RoleId = dto.RoleId,
 
-
                 ToplamPuan = 0,
 
                 SimulasyonTamamlandiMi = false,
@@ -279,14 +294,11 @@ namespace BusinessLogicLayer.Concretes
                 OnamApproved = false,
                 IlkGiris = false,
 
-                DeviceToken = null
+                DeviceToken = null,
+
+                PasswordHash = hash,
+                PasswordSalt = salt
             };
-            if (dto.Password == dto.PasswordRepeat)
-            {
-                HashingHelper.CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
-                user.PasswordHash = hash;
-                user.PasswordSalt = salt;
-            }
 
             await _userRepository.AddAsync(user);
 
@@ -295,44 +307,33 @@ namespace BusinessLogicLayer.Concretes
                 "Kullanıcı başarıyla oluşturuldu."
             );
         }
+
         public async Task<Result<UserUpdateDto>> UpdateAsync(UserUpdateDto dto)
         {
             var user = await _userRepository.GetAsync(x => x.Id == dto.Id);
 
             if (user == null)
-                return new Result<UserUpdateDto>(
-                    false,
-                    "Kullanıcı bulunamadı."
-                );
+                return new Result<UserUpdateDto>(false, "Kullanıcı bulunamadı.");
 
-            var normalizedPhone = NormalizePhone(dto.Phone);
+            var phone = dto.Phone?.Trim();
 
-            if (!IsValidPhone(normalizedPhone))
-                return new Result<UserUpdateDto>(
-                    false,
-                    "Telefon numarası geçersiz."
-                );
+            if (!IsValidPhone(phone))
+                return new Result<UserUpdateDto>(false, "Telefon numarası 0 ile başlayan 11 haneli olmalıdır.");
 
             var phoneOwner = await _userRepository.GetAsync(x =>
-                x.Phone == normalizedPhone &&
+                x.Phone == phone &&
                 x.Id != dto.Id);
 
             if (phoneOwner != null)
-                return new Result<UserUpdateDto>(
-                    false,
-                    "Bu telefon numarası başka bir kullanıcı tarafından kullanılmaktadır."
-                );
-
-            user.Phone = normalizedPhone;
+                return new Result<UserUpdateDto>(false, "Bu telefon numarası başka bir kullanıcı tarafından kullanılmaktadır.");
+            user.Phone = phone;
 
             user.UserName = dto.UserName;
 
             user.Name = dto.Name;
             user.Surname = dto.Surname;
 
-            user.RoleId = dto.RoleId;
-
-            if (dto.RoleId == 2)
+            if (user.RoleId == 2)
             {
                 user.OgrenciNo = dto.OgrenciNo;
             }
@@ -341,26 +342,21 @@ namespace BusinessLogicLayer.Concretes
                 user.OgrenciNo = null;
             }
 
-            /*
-             * AŞAĞIDAKİLER DOKUNULMUYOR
-             *
-             * ToplamPuan
-             * SimulasyonTamamlandiMi
-             * CozumlemeTamamlandiMi
-             * DeviceToken
-             * KvkkApproved
-             * OnamApproved
-             * IlkGiris
-             * PasswordHash
-             * PasswordSalt
-             */
-
             await _userRepository.UpdateAsync(user);
 
             return new Result<UserUpdateDto>(
                 true,
                 "Kullanıcı güncellendi."
             );
+        }
+        private bool IsValidPhone(string phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone))
+                return false;
+
+            return phone.All(char.IsDigit)
+                && phone.Length == 11
+                && phone.StartsWith("0");
         }
 
         public async Task<Result<UserModel>> DeleteAsync(int id)
@@ -390,26 +386,6 @@ namespace BusinessLogicLayer.Concretes
             await _userRepository.UpdateAsync(user);
 
             return new Result<UserPasswordResetDto>(true, "Şifre başarıyla sıfırlandı.");
-        }
-
-        private string NormalizePhone(string phone)
-        {
-            if (string.IsNullOrWhiteSpace(phone))
-                return null;
-
-            phone = new string(phone.Where(char.IsDigit).ToArray());
-
-            if (phone.StartsWith("0"))
-                phone = phone.Substring(1);
-
-            if (!phone.StartsWith("90"))
-                phone = "90" + phone;
-
-            return phone;
-        }
-        private bool IsValidPhone(string phone)
-        {
-            return phone != null && phone.Length == 12 && phone.StartsWith("90");
         }
 
 

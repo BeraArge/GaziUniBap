@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Abstracts
         Task<Result<UserPasswordResetDto>> ResetPasswordAsync(UserPasswordResetDto dto);
         Task<Result<IPaginate<UserListDto>>> GetAllAsync(UserListRequestDto request);
 
-
+        Task<Result<bool>> UpdateCozumlemeDurum(int userId);
 
 
         Task<Result<bool>> UpdateProfileAsync(UpdateProfileDTO dto);

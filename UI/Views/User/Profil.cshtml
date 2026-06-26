@@ -6,16 +6,16 @@
 
 <style>
     :root {
-        --lg-primary: #087c8f;
-        --lg-secondary: #6fbd63;
-        --lg-soft: #eef9f5;
-        --lg-dark: #2f3a4a;
-        --lg-muted: #8b95a7;
-        --lg-border: #e4eaf1;
+        --lg-primary: #C2410C;
+        --lg-secondary: #FB923C;
+        --lg-soft: #FFF3E8;
+        --lg-dark: #2D2A28;
+        --lg-muted: #7A6D67;
+        --lg-border: #F2DDD0;
     }
 
     body {
-        background: linear-gradient(135deg, #f7fcfa 0%, #eef9f5 100%);
+        background: linear-gradient(135deg, #FFF9F4 0%, #FFF3E8 100%);
     }
 
     .profile-page {
@@ -29,9 +29,9 @@
         border-radius: 28px;
         padding: 32px;
         margin-bottom: 28px;
-        background: linear-gradient(135deg, #087c8f 0%, #28a49a 48%, #6fbd63 100%);
+        background: linear-gradient(135deg, #C2410C 0%, #EA580C 48%, #FB923C 100%);
         color: #fff;
-        box-shadow: 0 18px 45px rgba(8, 124, 143, .22);
+        box-shadow: 0 18px 45px rgba(194,65,12,.24);
     }
 
         .profile-hero::after {
@@ -65,7 +65,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 12px 30px rgba(0,0,0,.12);
+        box-shadow: 0 14px 30px rgba(194,65,12,.14);
     }
 
         .hero-logo-mark img {
@@ -78,7 +78,7 @@
         border: 0;
         border-radius: 26px;
         background: rgba(255,255,255,.92);
-        box-shadow: 0 14px 35px rgba(31,45,61,.08);
+        box-shadow: 0 16px 36px rgba(194,65,12,.08);
     }
 
     .lg-card-header {
@@ -106,13 +106,13 @@
         height: 96px;
         border-radius: 24px;
         margin: 0 auto 16px;
-        background: linear-gradient(135deg, rgba(8,124,143,.12), rgba(111,189,99,.18));
+        background: linear-gradient(135deg, rgba(194,65,12,.12), rgba(251,146,60,.18));
         color: var(--lg-primary);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 42px;
-        box-shadow: 0 12px 30px rgba(8,124,143,.18);
+        box-shadow: 0 12px 30px rgba(194,65,12,.18);
     }
 
     .profile-name {
@@ -142,7 +142,7 @@
         align-items: flex-start;
         padding: 14px 15px;
         border-radius: 18px;
-        background: #fbfdff;
+        background: #FFFCF8;
         border: 1px solid var(--lg-border);
     }
 
@@ -176,12 +176,12 @@
         border: 1px solid var(--lg-border);
         padding: 12px 15px;
         min-height: 48px;
-        background-color: #fbfdff;
+        background-color: #FFFCF8;
     }
 
         .lg-input:focus {
             border-color: var(--lg-primary);
-            box-shadow: 0 0 0 .18rem rgba(8,124,143,.12);
+            box-shadow: 0 0 0 .18rem rgba(194,65,12,.14);
         }
 
     .form-label {
@@ -202,14 +202,14 @@
         color: #fff;
         font-weight: 600;
         background: linear-gradient(135deg, var(--lg-primary), var(--lg-secondary));
-        box-shadow: 0 10px 22px rgba(8,124,143,.22);
+        box-shadow: 0 12px 26px rgba(194,65,12,.22);
         transition: .25s ease;
     }
 
         .btn-lymph:hover {
             color: #fff;
             transform: translateY(-1px);
-            box-shadow: 0 14px 28px rgba(8,124,143,.28);
+            box-shadow: 0 16px 30px rgba(194,65,12,.28);
         }
 
     .btn-soft {
@@ -218,7 +218,7 @@
         font-weight: 600;
         background: #fff;
         color: var(--lg-primary);
-        border: 1px solid #dfe8ef;
+        border: 1px solid #F1D5C3;
     }
 
         .btn-soft:hover {
@@ -232,8 +232,8 @@
         padding: 11px 24px;
         color: #fff;
         font-weight: 600;
-        background: linear-gradient(135deg, #f0ad4e, #d98c19);
-        box-shadow: 0 10px 22px rgba(217,140,25,.18);
+        background: linear-gradient(135deg, #C2410C, #FB923C);
+        box-shadow: 0 12px 26px rgba(194,65,12,.22);
     }
 
         .btn-warning-soft:hover {
@@ -244,9 +244,9 @@
     .lg-alert {
         display: flex;
         align-items: center;
-        background: linear-gradient(135deg, rgba(8,124,143,0.08), rgba(111,189,99,0.12));
-        border: 1px solid rgba(111,189,99,0.25);
-        color: #2f6f5f;
+        background: linear-gradient(135deg, rgba(194,65,12,.08), rgba(251,146,60,.12));
+        border: 1px solid rgba(194,65,12,.18);
+        color: #A54813;
         border-radius: 16px;
         padding: 12px 14px;
         font-size: 14px;
@@ -260,14 +260,14 @@
     }
 
     .nav-tabs {
-        border-bottom: 1px solid #dfe8ef;
+        border-bottom: 1px solid #F1D5C3;
         gap: 8px;
     }
 
         .nav-tabs .nav-link {
             border: 1px solid transparent;
             border-radius: 16px 16px 0 0;
-            color: #637083;
+            color: #7A6D67;
             font-weight: 600;
             padding: 12px 16px;
         }
@@ -275,12 +275,12 @@
             .nav-tabs .nav-link.active {
                 background: var(--lg-soft);
                 color: var(--lg-primary);
-                border-color: #dfe8ef;
+                border-color: #F1D5C3;
                 border-bottom-color: var(--lg-soft);
             }
 
     .password-box {
-        background: #fbfdff;
+        background: #FFFCF8;
         border: 1px solid var(--lg-border);
         border-radius: 22px;
         padding: 20px;
@@ -306,7 +306,6 @@
         }
     }
 </style>
-
 <div id="app" class="profile-page mb-5 mt-1">
 
     <div class="profile-hero">
@@ -320,9 +319,6 @@
                 </p>
             </div>
 
-            <div class="hero-logo-mark d-none d-md-flex">
-                <img src="~/theme/velzon/assets/images/logo-dark.png" alt="logo" />
-            </div>
         </div>
     </div>
 
@@ -337,7 +333,7 @@
                     </div>
 
                     <div class="profile-name">
-                        {{ edit.fullName || '-' }}
+                        {{ getFullName() || '-' }}
                     </div>
 
                     <div class="profile-subtitle">
@@ -345,25 +341,38 @@
                     </div>
 
                     <div class="info-list">
+                        <div class="info-list">
 
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fa fa-id-card"></i>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fa fa-user"></i>
+                                </div>
+                                <div>
+                                    <strong>Ad</strong>
+                                    <span>{{ edit.name || '-' }}</span>
+                                </div>
                             </div>
-                            <div>
-                                <strong>Ad Soyad</strong>
-                                <span>{{ edit.fullName || '-' }}</span>
-                            </div>
-                        </div>
 
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fa fa-phone"></i>
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fa fa-user"></i>
+                                </div>
+                                <div>
+                                    <strong>Soyad</strong>
+                                    <span>{{ edit.surname || '-' }}</span>
+                                </div>
                             </div>
-                            <div>
-                                <strong>Telefon</strong>
-                                <span>{{ edit.phone || '-' }}</span>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fa fa-phone"></i>
+                                </div>
+                                <div>
+                                    <strong>Telefon</strong>
+                                    <span>{{ edit.phone || '-' }}</span>
+                                </div>
                             </div>
+
                         </div>
 
                     </div>
@@ -431,12 +440,23 @@
                                 <div class="col-md-6">
                                     <label class="form-label">
                                         <i class="fa fa-user"></i>
-                                        Ad Soyad
+                                        Ad
                                     </label>
                                     <input type="text"
                                            class="form-control lg-input"
-                                           v-model.trim="edit.fullName"
-                                           placeholder="Ad soyad girin" />
+                                           v-model.trim="edit.name"
+                                           placeholder="Adınızı girin" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fa fa-user"></i>
+                                        Soyad
+                                    </label>
+                                    <input type="text"
+                                           class="form-control lg-input"
+                                           v-model.trim="edit.surname"
+                                           placeholder="Soyadınızı girin" />
                                 </div>
 
                                 <div class="col-md-6">
@@ -549,7 +569,9 @@
         {
                 id = Model.Id,
                 rolId = Model.RolId,
-                fullName = Model.FullName,
+                userName = Model.Username,
+                Name = Model.Name,
+                surname = Model.Surname,
                 phone = Model.Phone,
         }));
 </script>

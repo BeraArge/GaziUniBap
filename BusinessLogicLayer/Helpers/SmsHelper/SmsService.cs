@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Helpers.SmsHelper
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("X-Organik-Auth", organikHaberlesme.XOrganikAuth);
 
-            string upperMessage = $"Bu mesaj LymphGuide Sistemi tarafından gönderilmiştir. Yeni şifreniz: {message} olarak belirlenmiştir. Sağlıklı günler dileriz.";
+            string upperMessage = $"Bu mesaj GuvenSim Sistemi tarafından gönderilmiştir. Yeni şifreniz: {message} olarak belirlenmiştir. Sağlıklı günler dileriz.";
 
             //string upperMessage = message;
 

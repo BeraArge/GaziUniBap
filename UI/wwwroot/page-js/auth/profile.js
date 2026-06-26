@@ -11,8 +11,11 @@
             edit: {
                 id: 0,
                 roleId: 0,
+                rolId: 0,
                 name: "",
                 surname: "",
+                fullName: "",
+                phone: "",
                 email: "",
                 username: ""
             },
@@ -25,86 +28,92 @@
         };
     },
 
-    async mounted() {
+    mounted() {
         if (window.__initialProfile) {
+            const p = window.__initialProfile;
+
             this.edit = {
                 ...this.edit,
-                ...window.__initialProfile,
-            };
+                ...p,
 
+                roleId: p.roleId || p.rolId || 0,
+                rolId: p.rolId || p.roleId || 0,
+
+                name: p.name || p.Name || "",
+                surname: p.surname || p.Surname || "",
+                fullName: p.fullName || p.FullName || "",
+                phone: p.phone || p.Phone || ""
+            };
         }
     },
 
     methods: {
+        getFullName() {
+            const name = this.edit.name || "";
+            const surname = this.edit.surname || "";
+
+            const fullName = `${name} ${surname}`.trim();
+
+            return fullName || this.edit.fullName || "";
+        },
+
         showAlert(type, message) {
             this.alert.show = true;
             this.alert.class = (type === "success") ? "alert-success" : "alert-danger";
             this.alert.message = message || "";
             setTimeout(() => this.alert.show = false, 10000);
         },
-        editPhoneInput(e) {
-            let digits = (e.target.value || "").replace(/\D/g, "");
-            if (digits.length > 11) digits = digits.slice(0, 11);
 
-            const formatted = this.formatPhone(digits);
-            this.edit.phone = formatted;
-
-            if (e.target.value !== formatted) e.target.value = formatted;
-        },
-        formatPhone(digits) {
-            if (!digits) return "";
-
-            const d1 = digits.slice(0, 1);       
-            const d2 = digits.slice(1, 4);       
-            const d3 = digits.slice(4, 7);       
-            const d4 = digits.slice(7, 9);       
-            const d5 = digits.slice(9, 11);      
-
-            let result = d1;
-
-            if (d2) result += " (" + d2;
-            if (d2.length === 3) result += ")";
-            if (d3) result += " " + d3;
-            if (d4) result += " " + d4;
-            if (d5) result += " " + d5;
-
-            return result;
-        }, 
         formatPhone(e) {
-            let value = e.target.value;
+            let value = e.target.value || "";
 
-            // Sadece sayı bırak
-            value = value.replace(/\D/g, '');
+            value = value.replace(/\D/g, "");
 
-            // Maksimum 11 karakter
-            value = value.substring(0, 11);
+            if (value.length > 11) {
+                value = value.substring(0, 11);
+            }
 
             this.edit.phone = value;
         },
+
         async saveProfile() {
+            if (!this.edit.name || this.edit.name.trim() === "") {
+                this.showAlert("error", "Ad zorunludur.");
+                return;
+            }
+
+            if (!this.edit.surname || this.edit.surname.trim() === "") {
+                this.showAlert("error", "Soyad zorunludur.");
+                return;
+            }
+
+            if (!this.edit.phone || this.edit.phone.length !== 11) {
+                this.showAlert("error", "Telefon numarası 11 haneli olmalıdır.");
+                return;
+            }
 
             this.isSavingEdit = true;
-            try {
-                if (this.edit.phone.length !== 11) {
-                    this.showAlert("Telefon numarası 11 haneli olmalıdır.", "error");
-                    return;
-                }
-                const json = await SendPostRequest("/User/UpdateProfile", this.edit);
-                console.log(json)
-                if (!json.isSuccess && json.success === false) { 
-                    this.showAlert("error", json.message || "Profil güncellenemedi.");
-                    return;
-                }
 
-                const ok = (json.success === true) || (json.isSuccess === true);
+            try {
+                const payload = {
+                    ...this.edit,
+                    fullName: this.getFullName()
+                };
+                const json = await SendPostRequest("/User/UpdateProfile", payload);
+
+                console.log("burda", json)
+                const ok = json.success === true || json.isSuccess === true;
+
                 if (!ok) {
                     this.showAlert("error", json.message || "Profil güncellenemedi.");
                     return;
                 }
 
+                this.edit.fullName = this.getFullName();
+
                 this.showAlert("success", json.message || "Profil güncellendi.");
             } catch (e) {
-                console.log(e)
+                console.log(e);
                 this.showAlert("error", "Sunucuya erişilemedi.");
             } finally {
                 this.isSavingEdit = false;
@@ -122,22 +131,26 @@
                 this.showAlert("error", "Mevcut şifre ve yeni şifre zorunludur.");
                 return;
             }
+
             if (this.password.newPassword !== this.password.newPasswordRepeat) {
                 this.showAlert("error", "Yeni şifre tekrar ile aynı olmalıdır.");
                 return;
             }
 
             this.isSavingPassword = true;
-            try { 
+
+            try {
                 const res = await SendPostRequest("/User/UpdatePassword", this.password);
-                if (res.isSuccess==false) {
+
+                if (res.isSuccess === false || res.success === false) {
                     this.showAlert("error", res.message || "Şifre değiştirilemedi.");
                     return;
                 }
+
                 this.showAlert("success", res.message || "Şifre güncellendi.");
                 this.resetPasswordForm();
             } catch (ee) {
-                console.log(ee)
+                console.log(ee);
                 this.showAlert("error", "Sunucuya erişilemedi.");
             } finally {
                 this.isSavingPassword = false;

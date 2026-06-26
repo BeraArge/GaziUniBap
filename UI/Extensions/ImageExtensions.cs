@@ -1,7 +1,9 @@
 ﻿using BusinessLogicLayer.Abstracts;
+using DataTransferObject.SoruUser.Excel;
 using DataTransferObject.User;
 using Entity;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 using System.ComponentModel;
 using System.Drawing;
 using System.Net.Http.Headers;
@@ -109,6 +111,67 @@ namespace UI.Extensions
             }
 
             return filedetail;
+        }
+        public MemoryStream UserAnswerReportsExcelDocument(UserAnswerExcelExportDTO data)
+        {
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+            {
+                AddWorksheet(package, data.Summary, "Özet");
+                AddWorksheet(package, data.UserReports, "Kullanıcı Bazlı Rapor");
+                AddWorksheet(package, data.Details, "Cevap Detayları");
+
+                var memoryStream = new MemoryStream();
+
+                package.SaveAs(memoryStream);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                return memoryStream;
+            }
+        }
+        private void AddWorksheet<TModel>(
+            ExcelPackage package,
+            List<TModel> models,
+            string worksheetName) where TModel : class, new()
+        {
+            var worksheet = package.Workbook.Worksheets.Add(worksheetName);
+            var properties = typeof(TModel).GetProperties();
+
+            for (int i = 0; i < properties.Length; i++)
+            {
+                worksheet.Cells[1, i + 1].Value = properties[i].Name;
+                worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+                worksheet.Cells[1, i + 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                worksheet.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(8, 124, 143));
+                worksheet.Cells[1, i + 1].Style.Font.Color.SetColor(System.Drawing.Color.White);
+            }
+
+            int row = 2;
+
+            foreach (var model in models)
+            {
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    var value = properties[i].GetValue(model);
+
+                    worksheet.Cells[row, i + 1].Value = value;
+
+                    if (value is DateTime)
+                    {
+                        worksheet.Cells[row, i + 1].Style.Numberformat.Format = "dd.MM.yyyy HH:mm";
+                    }
+                }
+
+                row++;
+            }
+
+            if (worksheet.Dimension != null)
+            {
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+                worksheet.View.FreezePanes(2, 1);
+                worksheet.Cells[worksheet.Dimension.Address].AutoFilter = true;
+            }
         }
     }
 }

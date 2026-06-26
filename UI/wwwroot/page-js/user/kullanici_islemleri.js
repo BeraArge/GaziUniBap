@@ -1,17 +1,18 @@
-﻿
-
-const vm = Vue.createApp({
+﻿const vm = Vue.createApp({
     data() {
         return {
             users: [],
-
             roles: [
-                { id: 2, name: "Admin" },
-                { id: 3, name: "Kullanıcı" }
+                { id: 2, name: "Öğrenci" },
+                { id: 3, name: "Admin" }
             ],
-
+            pagination: {
+                page: 0,
+                size: 10,
+                count: 0,
+                pages: 0
+            },
             form: this.emptyForm(),
-
             filters: {
                 search: "",
                 roleId: ""
@@ -21,23 +22,7 @@ const vm = Vue.createApp({
 
     computed: {
         filteredUsers() {
-            const search = (this.filters.search || "").toLowerCase();
-
-            return this.users.filter(user => {
-                const matchSearch =
-                    !search ||
-                    (user.fullName || "").toLowerCase().includes(search) ||
-                    (user.phone || "").toLowerCase().includes(search) ||
-                    (user.ogrenciNo || "").toLowerCase().includes(search) ||
-                    (user.roleName || "").toLowerCase().includes(search);
-
-                const matchRole =
-                    !this.filters.roleId ||
-                    user.roleId == this.filters.roleId ||
-                    user.rolId == this.filters.roleId;
-
-                return matchSearch && matchRole;
-            });
+            return this.users;
         }
     },
 
@@ -53,20 +38,44 @@ const vm = Vue.createApp({
                 rolId: "",
                 name: "",
                 surname: "",
-                fullName: "",
+                username: "",
                 phone: "",
                 birthDate: "",
                 ogrenciNo: "",
                 password: "123123Aa"
             };
-        }, 
+        },
+
+        getSelectedRoleId() {
+            return Number(this.form.roleId || this.form.rolId || 0);
+        },
 
         isStudentRole() {
-            return Number(this.form.roleId || this.form.rolId) === 2;
+            return this.getSelectedRoleId() === 2;
         },
 
         isAdminRole() {
-            return Number(this.form.roleId || this.form.rolId) === 1;
+            return this.getSelectedRoleId() === 3;
+        },
+
+        getRoleId(user) {
+            return Number(user.roleId || user.rolId || user.RoleId || 0);
+        },
+
+        isAdmin(user) {
+            return this.getRoleId(user) === 3 ||
+                (user.roleName || "").toLowerCase() === "admin";
+        },
+
+        isStudent(user) {
+            return this.getRoleId(user) === 2;
+        },
+
+        getRoleName(user) {
+            if (user.roleName) return user.roleName;
+
+            const role = this.roles.find(x => x.id === this.getRoleId(user));
+            return role ? role.name : "-";
         },
 
         showSuccess(message) {
@@ -101,21 +110,11 @@ const vm = Vue.createApp({
                 cancelButtonColor: "#d33"
             });
         },
-
         formatPhone(e) {
             let value = e.target.value || "";
-
             value = value.replace(/\D/g, "");
 
-            if (value.startsWith("0")) {
-                value = value.substring(1);
-            }
-
-            if (value.length > 10) {
-                value = value.substring(0, 10);
-            }
-
-            this.form.phone = value;
+            this.form.phone = value.substring(0, 11);
         },
 
         formatDisplayPhone(phone) {
@@ -132,29 +131,6 @@ const vm = Vue.createApp({
             return `${p.substring(0, 3)} ${p.substring(3, 6)} ${p.substring(6, 8)} ${p.substring(8, 10)}`;
         },
 
-        getRoleId(user) {
-            return user.roleId || user.rolId;
-        },
-
-        isAdmin(user) {
-            return this.getRoleId(user) == 1 ||
-                (user.roleName || "").toLowerCase() === "admin";
-        },
-
-        isStudent(user) {
-            console.log("evetr")
-            return this.getRoleId(user) == 2;
-        },
-
-        getRoleName(user) {
-            if (user.roleName) return user.roleName;
-
-            const roleId = this.getRoleId(user);
-            const role = this.roles.find(x => x.id == roleId);
-
-            return role ? role.name : "-";
-        },
-
         getInitials(name) {
             if (!name) return "?";
 
@@ -166,14 +142,39 @@ const vm = Vue.createApp({
                 .join("")
                 .toUpperCase();
         },
-
         async getUsers() {
             try {
-                const response = await fetch("/User/GetUsers");
+                const params = new URLSearchParams();
+
+                params.append("page", this.pagination.page);
+                params.append("size", this.pagination.size);
+
+                if (this.filters.search) {
+                    params.append("search", this.filters.search);
+                }
+
+                if (this.filters.roleId) {
+                    params.append("roleId", this.filters.roleId);
+                }
+
+                const response = await fetch(`/User/GetUsersPaginated?${params.toString()}`);
                 const result = await response.json();
 
                 if (result.isSuccess || result.success) {
-                    this.users = result.data || [];
+                    const data = result.data;
+
+                    if (Array.isArray(data)) {
+                        this.users = data;
+                        this.pagination.count = data.length;
+                        this.pagination.pages = 0;
+                        this.pagination.page = 0;
+                    } else {
+                        this.users = data.items || data.Items || [];
+                        this.pagination.count = data.count || data.Count || 0;
+                        this.pagination.pages = data.pages || data.Pages || 0;
+                        this.pagination.page = data.index || data.Index || 0;
+                        this.pagination.size = data.size || data.Size || 10;
+                    }
                 } else {
                     await this.showError(result.message || "Kullanıcılar getirilemedi.");
                 }
@@ -181,8 +182,17 @@ const vm = Vue.createApp({
                 console.error(err);
                 await this.showError("Kullanıcılar getirilirken bir hata oluştu.");
             }
+        }, changePage(page) {
+            if (page < 0 || page >= this.pagination.pages) return;
+
+            this.pagination.page = page;
+            this.getUsers();
         },
 
+        async applyFilters() {
+            this.pagination.page = 0;
+            await this.getUsers();
+        },
         validateForm() {
             if (!this.form.name || this.form.name.trim() === "") {
                 return "Ad zorunludur.";
@@ -192,14 +202,14 @@ const vm = Vue.createApp({
                 return "Soyad zorunludur.";
             }
 
+
             if (!this.form.phone || this.form.phone.trim() === "") {
                 return "Telefon numarası zorunludur.";
             }
 
-            if (this.form.phone.length !== 10) {
-                return "Telefon numarası 90 hariç 10 haneli olmalıdır.";
+            if (this.form.phone.length !== 11 || !this.form.phone.startsWith("0")) {
+                return "Telefon numarası 0 ile başlayan 11 haneli olmalıdır.";
             }
-
             if (!this.form.roleId) {
                 return "Rol alanı zorunludur.";
             }
@@ -208,34 +218,36 @@ const vm = Vue.createApp({
                 if (!this.form.ogrenciNo || this.form.ogrenciNo.trim() === "") {
                     return "Öğrenci numarası zorunludur.";
                 }
+                if (!this.form.username || this.form.username.trim() === "") {
+                    return "Kullanıcı adı zorunludur.";
+                }
             }
 
             return null;
         },
 
         createPayload() {
-            const roleId = Number(this.form.roleId);
-
+            const roleId = this.getSelectedRoleId();
             const fullName = `${this.form.name || ""} ${this.form.surname || ""}`.trim();
-
-            const payload = {
+            console.log(this.form)
+            return {
                 id: this.form.id,
                 rolId: roleId,
                 roleId: roleId,
 
                 name: this.form.name,
                 surname: this.form.surname,
+                username: this.form.username,
                 fullName: fullName,
 
                 phone: this.form.phone,
-                birthDate: roleId === 3 ? (this.form.birthDate || null) : null,
-                ogrenciNo: roleId === 3 ? (this.form.ogrenciNo || null) : null,
+
+                birthDate: roleId === 2 ? (this.form.birthDate || null) : null,
+                ogrenciNo: roleId === 2 ? (this.form.ogrenciNo || null) : null,
 
                 password: this.form.password || "123123Aa",
                 passwordRepeat: this.form.password || "123123Aa"
             };
-
-            return payload;
         },
 
         async saveUser() {
@@ -254,6 +266,7 @@ const vm = Vue.createApp({
 
             if (!this.form.id) {
                 payload.password = "123123Aa";
+                payload.passwordRepeat = "123123Aa";
             }
 
             try {
@@ -281,23 +294,22 @@ const vm = Vue.createApp({
         },
 
         editUser(user) {
+            const roleId = this.getRoleId(user);
             console.log(user)
             this.form = {
                 id: user.id,
 
-                roleId: user.roleId || user.rolId || "",
-                rolId: user.roleId || user.rolId || "",
+                roleId: roleId,
+                rolId: roleId,
 
-                name: user.name || "",
-                surname: user.surname || "",
-                fullName: user.fullName || "",
+                name: user.name || user.Name || "",
+                surname: user.surname || user.Surname || "",
+                username: user.userName || user.UserName || "",
 
-                phone: user.phone?.startsWith("90")
-                    ? user.phone.substring(2)
-                    : user.phone || "",
+                phone: user.phone || user.Phone || "",
 
-                birthDate: user.birthDate || "",
-                ogrenciNo: user.ogrenciNo || "",
+                birthDate: user.birthDate || user.BirthDate || "",
+                ogrenciNo: user.ogrenciNo || user.OgrenciNo || "",
 
                 password: ""
             };
@@ -338,7 +350,7 @@ const vm = Vue.createApp({
             const result = await Swal.fire({
                 icon: "warning",
                 title: "Şifre Resetleme",
-                html: `<b>${user.fullName || this.formatDisplayPhone(user.phone)}</b> kullanıcısı için yeni şifre giriniz.`,
+                html: `<b>${user.userName || this.formatDisplayPhone(user.phone)}</b> kullanıcısı için yeni şifre giriniz.`,
                 input: "password",
                 inputPlaceholder: "Yeni şifre",
                 inputValue: "123123Aa",
