@@ -318,10 +318,33 @@ namespace BusinessLogicLayer.Concretes
                 );
             }
 
-            var pagedReports = reports.ToPaginate(
-                index: request.Page,
-                size: request.Size, from: 0
-            );
+            var reportList = reports.ToList();
+
+            var summaryTotalUsers = reportList.Count;
+            var summaryTotalAnswers = reportList.Sum(x => x.TotalQuestion);
+            var summaryTotalScore = reportList.Sum(x => x.TotalScore); 
+            var summaryAverageScore = summaryTotalAnswers == 0
+    ? 0
+    : Math.Round((double)summaryTotalScore / summaryTotalAnswers, 2);
+            var summaryAverageSuccess = reportList.Count == 0
+                ? 0
+                : Math.Round(reportList.Average(x => x.SuccessRate), 2);
+
+            foreach (var item in reportList)
+            {
+                item.SummaryTotalUsers = summaryTotalUsers;
+                item.SummaryTotalAnswers = summaryTotalAnswers;
+                item.SummaryAverageScore = summaryAverageScore;
+                item.SummaryAverageSuccess = summaryAverageSuccess;
+            }
+
+            var pagedReports = reportList
+                .AsQueryable()
+                .ToPaginate(
+                    index: request.Page,
+                    size: request.Size,
+                    from: 0
+                );
 
             return new Result<IPaginate<UserAnswerReportDTO>>(
                 true,

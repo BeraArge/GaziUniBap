@@ -18,7 +18,10 @@ namespace DataTransferObject.SoruUser
         public string? Phone { get; set; }
         public string? OgrenciNo { get; set; }
         public int TotalScore { get; set; }
-
+        public int SummaryTotalUsers { get; set; }
+        public int SummaryTotalAnswers { get; set; }
+        public double SummaryAverageScore { get; set; }
+        public double SummaryAverageSuccess { get; set; }
         public double SuccessRate { get; set; }
         public List<CozumlemeSoruUserDTO> CozumlemeSorular { get; set; }
         public List<UserAnswerDetailDTO> Answers { get; set; }

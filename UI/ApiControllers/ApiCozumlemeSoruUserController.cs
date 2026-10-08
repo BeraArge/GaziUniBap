@@ -3,6 +3,7 @@ using BusinessLogicLayer.Concretes;
 using DataTransferObject.CozumlemeSoruUser;
 using DataTransferObject.User.Mobil;
 using Microsoft.AspNetCore.Mvc;
+using MSC.Extentions.ApiFilter;
 
 namespace UI.ApiControllers
 {
@@ -17,25 +18,11 @@ namespace UI.ApiControllers
             _cozumlemeSoruUserBL = cozumlemeSoruUserBL;
         }
         [HttpPost("AddCozumlemeCevap")]
+        [AuthorizeFilter]
         public IActionResult AddCozumlemeCevap([FromBody] CozumlemeSoruUserDTO model)
         {
             var res = _cozumlemeSoruUserBL.Add(model);
             return Ok(res);
-        }
-        [HttpPost("update-profile")]
-        public async Task<IActionResult> UpdateProfile(UpdateProfileDTO dto)
-        {
-            //var result = await _cozumlemeSoruUserBL.UpdateProfileAsync(dto);
-            //return Ok(result);
-            return Ok();
-        }
-
-        [HttpPost("update-password")]
-        public async Task<IActionResult> UpdatePassword(UpdatePasswordDTO dto)
-        {
-            //var result = await _cozumlemeSoruUserBL.UpdatePasswordAsync(dto);
-            //return Ok(result);
-            return Ok();
         }
     }
 }

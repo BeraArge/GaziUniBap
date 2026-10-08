@@ -29,6 +29,7 @@ namespace UI.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
         [HttpGet]
+        [AuthorizeFilter]
         public IActionResult GetDashboardData()
         {
             var res = _soruUserBL.GetDashboardData();

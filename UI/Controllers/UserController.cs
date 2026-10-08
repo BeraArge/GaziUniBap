@@ -31,12 +31,14 @@ namespace UI.Controllers
             return View(user);
         }
         [HttpPost]
+        [AuthorizeFilter]
         public IActionResult UpdateProfile([FromBody] UserModel model)   //profil güncelliyoruz
         {
             var res = _userBL.UpdateDetailed(model);
             return Ok(res);
         }
         [HttpPost]
+        [AuthorizeFilter]
         public IActionResult UpdatePassword([FromBody] PasswordModel model)  //şifre güncelliyoruz
         {
             var userid = GetUserId();
@@ -76,7 +78,13 @@ namespace UI.Controllers
             var result = await _userBL.GetAllAsync();
             return Json(result);
         }
-
+        [HttpGet]
+        [AuthorizeFilter]
+        public async Task<IActionResult> GetUsersPaginated([FromQuery] UserListRequestDto request)
+        {
+            var result = await _userBL.GetAllAsync(request);
+            return Ok(result);
+        }
         [HttpGet]
         [AuthorizeFilter]
         public async Task<IActionResult> GetUserById(int id)

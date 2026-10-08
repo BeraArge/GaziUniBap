@@ -13,7 +13,6 @@ namespace Entity
         public string Name { get; set; }
         public string Surname { get; set; }
         public string UserName { get; set; }//nickname
-        public string? FullName { get; set; }
         public string? OgrenciNo { get; set; }
         public string? Phone { get; set; }
         public byte[] PasswordHash { get; set; }

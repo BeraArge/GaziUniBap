@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Concretes;
 using DataTransferObject.User.KullaniciIslemleri;
 using Microsoft.AspNetCore.Mvc;
+using MSC.Extentions.ApiFilter;
 
 namespace UI.ApiControllers
 {
@@ -17,6 +18,7 @@ namespace UI.ApiControllers
         }
 
         [HttpGet("GetAllSorus")]
+        [AuthorizeFilter]
         public IActionResult GetAllSorus(int userId)
         {
             var res = _soruBL.GetMobileSorular(userId);

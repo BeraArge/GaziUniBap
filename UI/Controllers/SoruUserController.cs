@@ -1,5 +1,8 @@
 ﻿using BusinessLogicLayer.Abstracts;
+using DataTransferObject.SoruUser;
 using Microsoft.AspNetCore.Mvc;
+using MSC.Extentions.Filters;
+using UI.Extensions;
 
 namespace UI.Controllers
 {
@@ -13,16 +16,37 @@ namespace UI.Controllers
             _soruUserBL = soruUserBL;
             _env = env;
         }
-
+        [AuthorizeFilter]
         public IActionResult Index()
         {
             return View();
         }
         [HttpGet]
-        public IActionResult GetUserAnswerReports()
+        [AuthorizeFilter]
+        public IActionResult GetUserAnswerReports([FromQuery] UserAnswerReportRequestDTO request)
         {
-            var res = _soruUserBL.GetUserAnswerReports();
+            var res = _soruUserBL.GetUserAnswerReports(request);
             return Ok(res);
+        }
+        [HttpGet]
+        [AuthorizeFilter]
+        public IActionResult UserAnswerReportsExcel()
+        {
+            var result = _soruUserBL.GetUserAnswerExcelExportData();
+
+            if (!result.IsSuccess || result.Data == null)
+                return BadRequest(result.Message);
+            ImageExtensions extension = new ImageExtensions(_env);
+
+            var memoryStream = extension.UserAnswerReportsExcelDocument(result.Data);
+
+            var fileName = $"Cevap_Raporlari_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+
+            return File(
+                memoryStream,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                fileName
+            );
         }
     }
 }

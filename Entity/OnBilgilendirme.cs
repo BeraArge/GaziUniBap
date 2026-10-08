@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Core.DataAccess.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataTransferObject.OnBlgilendirme
+namespace Entity
 {
-    public class OnBilgilendirmeDTO
+    public class OnBilgilendirme : BaseEntity
     {
-        public int Id { get; set; }
         public string OnBilgilendirmeMetni { get; set; }
     }
 }

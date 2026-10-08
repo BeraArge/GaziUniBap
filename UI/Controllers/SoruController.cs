@@ -1,6 +1,7 @@
 ﻿using BusinessLogicLayer.Abstracts;
 using DataTransferObject.Soru;
 using Microsoft.AspNetCore.Mvc;
+using MSC.Extentions.Filters;
 using UI.Extensions;
 using UI.Filters;
 
@@ -17,11 +18,12 @@ namespace UI.Controllers
             _soruBL = soruBL;
             _env = env;
         }
-
+        [AuthorizeFilter]
         public IActionResult Index()
         {
             return View();
         }
+        [AuthorizeFilter]
         public IActionResult SoruGetAll()
         {
             var res = _soruBL.GetAll();
@@ -29,7 +31,7 @@ namespace UI.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        //[AuthorizeFilter]
+        [AuthorizeFilter]
         public async Task<IActionResult> AddSoru([FromForm] SoruDTO Soru)
         {
             ImageExtensions image = new(_env);
@@ -43,6 +45,7 @@ namespace UI.Controllers
             return Ok(res);
         }
         [HttpPost, ValidateAntiForgeryToken]
+        [AuthorizeFilter]
         public async Task<IActionResult> UpdateSoru([FromForm] SoruDTO Soru)
         {
             ImageExtensions image = new(_env);

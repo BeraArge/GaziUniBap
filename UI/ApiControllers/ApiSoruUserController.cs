@@ -3,6 +3,7 @@ using BusinessLogicLayer.Concretes;
 using DataTransferObject.SoruUser;
 using DataTransferObject.User.Mobil;
 using Microsoft.AspNetCore.Mvc;
+using MSC.Extentions.ApiFilter;
 
 namespace UI.ApiControllers
 {
@@ -17,27 +18,16 @@ namespace UI.ApiControllers
             _soruUserBL = soruUserBL;
         }
 
-        [HttpPost("update-profile")]
-        public async Task<IActionResult> UpdateProfile(UpdateProfileDTO dto)
-        {
-            //var result = await _cozumlemeSoruUserBL.UpdateProfileAsync(dto);
-            //return Ok(result);
-            return Ok();
-        }
         [HttpPost("add")]
+        [AuthorizeFilter]
         public IActionResult AddBulk([FromBody] SoruUserBulkDTO model)
         {
             var res = _soruUserBL.Add(model);
             return Ok(res);
         }
-        [HttpPost("update-password")]
-        public async Task<IActionResult> UpdatePassword(UpdatePasswordDTO dto)
-        {
-            //var result = await _cozumlemeSoruUserBL.UpdatePasswordAsync(dto);
-            //return Ok(result);
-            return Ok();
-        }
+
         [HttpGet("GetCompetitionHome")]
+        [AuthorizeFilter]
         public IActionResult GetCompetitionHome(int userId)
         {
             var res = _soruUserBL.GetMobileCompetitionHome(userId);

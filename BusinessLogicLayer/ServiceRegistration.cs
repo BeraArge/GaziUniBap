@@ -25,6 +25,7 @@ namespace BusinessLogicLayer
             services.AddScoped<ICozumlemeSoruUserBL, CozumlemeSoruUserBL>();
             services.AddScoped<ISoruUserBL, SoruUserBL>();
             services.AddScoped<ISoruBL, SoruBL>();
+            services.AddScoped<IOnBilgilendirmeBL,OnBilgilendirmeBL>();
             services.AddScoped<IOneTimePasswordService, SmsService>();
             return services;
         }
