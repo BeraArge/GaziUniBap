@@ -30,11 +30,23 @@ namespace UI.Controllers
             return Ok(res);
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
+        [RequestSizeLimit(209715200)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
         [AuthorizeFilter]
         public async Task<IActionResult> AddSoru([FromForm] SoruDTO Soru)
         {
+            if (Soru == null)
+            {
+                return BadRequest(new
+                {
+                    isSuccess = false,
+                    message = "Soru bilgileri Controller'a ulaşmadı."
+                });
+            }
+
             ImageExtensions image = new(_env);
+
             if (Soru.VideoFile != null)
             {
                 var file = await image.FileUpload(Soru.VideoFile, "videos");
@@ -59,5 +71,23 @@ namespace UI.Controllers
             var res = _soruBL.Update(Soru);
             return Ok(res);
         }
+
+
+        [HttpPost, ValidateAntiForgeryToken]
+        [AuthorizeFilter]
+        public IActionResult DeleteSoru([FromBody] int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(
+                    "Geçersiz içerik ID değeri."
+                );
+            }
+
+            var res = _soruBL.Delete(id);
+
+            return Ok(res);
+        }
+
     }
 }
