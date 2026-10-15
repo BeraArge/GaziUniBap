@@ -10,10 +10,13 @@ namespace Entity
 {
     public class Soru:BaseEntity
     {
+        public int BeklemeSuresi { get; set; } = 0;
+        public string? BildirimMetni { get; set; }
         public string VideoPath { get; set; }
         public string VideoTranscript { get; set; }
         public string Hedef { get; set; }
         public string OlcekMaddesi { get; set; }
+        public int? Order { get; set; }
         public string SoruMetni { get; set; }//soru metni
         [Column(TypeName = "jsonb")]
         public List<Dictionary<string,string>> Cevaplar { get; set; }//a,şık b,şık
