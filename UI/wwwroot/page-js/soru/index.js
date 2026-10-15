@@ -4,6 +4,7 @@
             questions: [],
             isUpdate: false,
             search: "",
+            icerikTuru: "videoSoru",
             form: this.emptyForm(),
             formAccordionOpen: false,
             currentPage: 1,
@@ -13,8 +14,8 @@
             onBilgilendirme: {
                 id: 0,
                 onBilgilendirmeMetni: ""
-            },
-        }
+            }
+        };
     },
 
     computed: {
@@ -27,6 +28,7 @@
                 (x.olcekMaddesi || "").toLowerCase().includes(searchText)
             );
         },
+
         totalPages() {
             return Math.ceil(this.filteredQuestions.length / this.pageSize) || 1;
         },
@@ -36,22 +38,32 @@
             return this.filteredQuestions.slice(start, start + this.pageSize);
         }
     },
+
     watch: {
         search() {
             this.currentPage = 1;
         }
     },
+
     async mounted() {
         await this.getOnBilgilendirme();
+
         this.$nextTick(() => {
             setTimeout(() => {
                 this.initCKEditor();
             }, 300);
         });
+
         await this.getAll();
     },
 
     methods: {
+        icerikTuruDegistir(tur) {
+            this.icerikTuru = tur;
+
+            // Alanlardaki verileri burada silmiyoruz.
+            // Kullanıcı yanlışlıkla tür değiştirirse bilgileri kaybolmasın.
+        },
         initCKEditor() {
             if (typeof CKEDITOR === "undefined") {
                 console.error("CKEDITOR yüklenmemiş.");
@@ -93,6 +105,7 @@
                     CKEDITOR.instances.editor1.getData();
             });
         },
+
         async getOnBilgilendirme() {
             try {
                 const response = await fetch("/OnBilgilendirme/GetOnBilgilendirme");
@@ -114,6 +127,7 @@
                 console.error("Ön bilgilendirme getirilemedi:", error);
             }
         },
+
         async saveOnBilgilendirme() {
             try {
                 const editorData = CKEDITOR.instances.editor1
@@ -153,7 +167,8 @@
                     confirmButtonColor: "#087c8f"
                 });
             }
-        }, 
+        },
+
         changePage(page) {
             if (page < 1 || page > this.totalPages) {
                 return;
@@ -161,19 +176,25 @@
 
             this.currentPage = page;
         },
+
         emptyForm() {
             return {
                 id: 0,
                 videoPath: "",
+                videoFile: null,
                 hedef: "",
                 olcekMaddesi: "",
                 videoTranscript: "",
                 soruMetni: "",
+                order: null,
+                beklemeSuresi: 0,
+                acikUcluMu: false,
+                bildirimMetni: "",
                 cevaplar: [
-                    { key: "A", value: "" },
-                    { key: "B", value: "" },
-                    { key: "C", value: "" },
-                    { key: "D", value: "" }
+                    { key: "A", value: "", explanation: "" },
+                    { key: "B", value: "", explanation: "" },
+                    { key: "C", value: "", explanation: "" },
+                    { key: "D", value: "", explanation: "" }
                 ],
                 dogruCevap: {
                     key: "",
@@ -197,46 +218,113 @@
                 console.error(error);
 
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Hata!',
-                    text: 'Listeleme sırasında hata oluştu.',
-                    confirmButtonColor: '#087c8f'
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Listeleme sırasında hata oluştu.",
+                    confirmButtonColor: "#087c8f"
                 });
             }
         },
 
         addAnswer() {
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const nextKey = letters[this.form.cevaplar.length] || "";
+
+            if (this.form.cevaplar.length >= letters.length) {
+                this.warning("En fazla 26 cevap şıkkı eklenebilir.");
+                return;
+            }
+
+            const nextKey = letters[this.form.cevaplar.length];
 
             this.form.cevaplar.push({
                 key: nextKey,
-                value: ""
+                value: "",
+                explanation: ""
             });
         },
 
         removeAnswer(index) {
+            if (this.form.cevaplar.length <= 2) {
+                this.warning("En az 2 cevap şıkkı olmalıdır.");
+                return;
+            }
+
+            const selectedAnswer = this.form.cevaplar.find(
+                x => x.key === this.form.dogruCevap.key
+            );
+
+            const removedAnswer = this.form.cevaplar[index];
+
             this.form.cevaplar.splice(index, 1);
+
+            this.reorderAnswerKeys();
+
+            if (removedAnswer === selectedAnswer) {
+                this.form.dogruCevap.key = "";
+            } else if (selectedAnswer) {
+                const newSelected = this.form.cevaplar.find(
+                    x => x === selectedAnswer
+                );
+
+                this.form.dogruCevap.key = newSelected
+                    ? newSelected.key
+                    : "";
+            }
         },
 
-        validateForm() {
-            //if (!this.form.videoPath || this.form.videoPath.trim() === "") {
-            //    this.warning("Video path zorunludur.");
-            //    return false;
-            //}
+        reorderAnswerKeys() {
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-            if (!this.form.soruMetni || this.form.soruMetni.trim() === "") {
+            this.form.cevaplar.forEach((answer, index) => {
+                answer.key = letters[index];
+            });
+        },
+
+
+
+
+        validateForm() {
+
+            const videoGerekli =
+                this.icerikTuru === "video" ||
+                this.icerikTuru === "videoSoru";
+
+            const soruGerekli =
+                this.icerikTuru === "soru" ||
+                this.icerikTuru === "videoSoru";
+
+            // Video gereken içeriklerde video kontrolü
+            if (videoGerekli) {
+
+                if (!this.form.videoFile && !this.form.videoPath?.trim()) {
+                    this.warning("Lütfen video dosyası seçiniz.");
+                    return false;
+                }
+            }
+
+            // Sadece video ise soru validasyonu uygulanmaz
+            if (!soruGerekli) {
+                return true;
+            }
+
+            if (!this.form.soruMetni?.trim()) {
                 this.warning("Soru metni zorunludur.");
                 return false;
             }
-
-            const validAnswers = this.form.cevaplar.filter(x =>
-                x.key && x.key.trim() !== "" &&
-                x.value && x.value.trim() !== ""
+            if (this.form.acikUcluMu) {
+                return true;
+            }
+            const cevaplar = this.form.cevaplar.filter(
+                x => !!x.value?.trim()
             );
 
-            if (validAnswers.length < 2) {
+            if (cevaplar.length < 2) {
                 this.warning("En az 2 cevap şıkkı girilmelidir.");
+                return false;
+            }
+
+            if (cevaplar.length !== this.form.cevaplar.length) {
+                this.warning("Tüm cevap şıklarını doldurunuz.");
                 return false;
             }
 
@@ -245,22 +333,40 @@
                 return false;
             }
 
-            const selectedAnswerExists = validAnswers.some(x => x.key === this.form.dogruCevap.key);
+            const dogruCevap = cevaplar.find(
+                x => x.key === this.form.dogruCevap.key
+            );
 
-            if (!selectedAnswerExists) {
-                this.warning("Seçilen doğru cevap, cevap şıkları içinde bulunmalıdır.");
+            if (!dogruCevap) {
+                this.warning("Geçerli bir doğru cevap seçiniz.");
                 return false;
+            }
+
+
+            for (const answer of cevaplar) {
+
+                if (answer.key !== this.form.dogruCevap.key &&
+                    !answer.explanation?.trim()) {
+
+                    this.warning(
+                        `${answer.key} şıkkı için yanlış cevap gerekçesi giriniz.`
+                    );
+
+                    return false;
+                }
             }
 
             return true;
         },
 
+
+
         warning(message) {
             Swal.fire({
-                icon: 'warning',
-                title: 'Uyarı',
+                icon: "warning",
+                title: "Uyarı",
                 text: message,
-                confirmButtonColor: '#087c8f'
+                confirmButtonColor: "#087c8f"
             });
         },
 
@@ -275,82 +381,94 @@
                 await this.add();
             }
         },
+
+
+
         createFormData() {
             const formData = new FormData();
-            console.log(this.form)
+
+            const videoVar = this.icerikTuru !== "soru";
+            const soruVar = this.icerikTuru !== "video";
+
             formData.append("Id", this.form.id || 0);
-            formData.append("VideoPath", this.form.videoPath || "");
-            formData.append("Hedef", this.form.hedef || "");
-            formData.append("OlcekMaddesi", this.form.olcekMaddesi || "");
-            formData.append("SoruMetni", this.form.soruMetni || "");
-            formData.append("VideoTranscript", this.form.videoTranscript || "");
-            this.form.cevaplar.forEach((answer, index) => {
-                formData.append(`Cevaplar[${index}][key]`, answer.key || "");
-                formData.append(`Cevaplar[${index}][value]`, answer.value || "");
-            });
 
-            formData.append("DogruCevap[key]", this.form.dogruCevap.key || "");
-            formData.append("DogruCevap[explanation]", this.form.dogruCevap.explanation || "");
+            formData.append(
+                "VideoPath",
+                videoVar ? (this.form.videoPath || "") : ""
+            );
 
-            if (this.form.videoFile) {
+            formData.append(
+                "VideoTranscript",
+                videoVar ? (this.form.videoTranscript || "") : ""
+            );
+
+            formData.append("Hedef", soruVar ? (this.form.hedef || "") : "");
+            formData.append("OlcekMaddesi", soruVar ? (this.form.olcekMaddesi || "") : "");
+            formData.append("SoruMetni", soruVar ? (this.form.soruMetni || "") : "");
+
+            formData.append("BeklemeSuresi", this.form.beklemeSuresi ?? 0);
+            formData.append("BildirimMetni", this.form.bildirimMetni || "");
+            if (this.form.order != null) {
+                formData.append("Order", this.form.order);
+            }
+            if (soruVar && !this.form.acikUcluMu) {
+                this.form.cevaplar.forEach((answer, index) => {
+                    formData.append(`Cevaplar[${index}][key]`, answer.key);
+                    formData.append(`Cevaplar[${index}][value]`, answer.value);
+
+                    formData.append(
+                        `Cevaplar[${index}][explanation]`,
+                        answer.key === this.form.dogruCevap.key
+                            ? ""
+                            : (answer.explanation || "")
+                    );
+                });
+                 
+                formData.append("DogruCevap[key]", this.form.dogruCevap.key);
+                formData.append("DogruCevap[explanation]", "");
+            }
+            if (soruVar && this.form.acikUcluMu) {
+                formData.append("DogruCevap[key]", "");
+                formData.append("DogruCevap[explanation]", "");
+            }
+            if (videoVar && this.form.videoFile) {
                 formData.append("VideoFile", this.form.videoFile);
             }
-
+            console.log(this.form)
             return formData;
         },
+
         handleVideoFile(event) {
             const file = event.target.files[0];
-
             this.form.videoFile = file || null;
         },
-        removeAnswer(index) {
-            if (this.form.cevaplar.length <= 2) {
-                this.warning("En az 2 cevap şıkkı olmalıdır.");
-                return;
-            }
 
-            const removedKey = this.form.cevaplar[index].key;
-
-            this.form.cevaplar.splice(index, 1);
-
-            this.reorderAnswerKeys();
-
-            if (this.form.dogruCevap.key === removedKey) {
-                this.form.dogruCevap.key = "";
-            }
-        },
-        reorderAnswerKeys() {
-            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-            this.form.cevaplar = this.form.cevaplar.map((answer, index) => {
-                return {
-                    key: letters[index],
-                    value: answer.value
-                };
-            });
-        },
         async add() {
             try {
-
-                let config = {
+                const config = {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'RequestVerificationToken': VerifyToken
+                        "RequestVerificationToken": VerifyToken
                     }
                 };
-                const url = '/Soru/AddSoru'
-                var data = this.createFormData();
-                startLoader()
-                console.log(data)
-                let result = await SendPostRequest(url, data, config);
-                console.log(result)
-                //const result = await response.json();
+                const url = "/Soru/AddSoru";
+                const data = this.createFormData();
 
+                startLoader();
+                console.log(data);
+                console.log("FormData içeriği:", [...data.entries()]);
+
+                const response = await axios.post(url, data, {
+                    headers: {
+                        "RequestVerificationToken": VerifyToken
+                    }
+                });
+
+                const result = response.data;
                 Swal.fire({
-                    icon: (result.success || result.isSuccess) ? 'success' : 'error',
-                    title: (result.success || result.isSuccess) ? 'Başarılı' : 'Hata',
+                    icon: (result.success || result.isSuccess) ? "success" : "error",
+                    title: (result.success || result.isSuccess) ? "Başarılı" : "Hata",
                     text: result.message,
-                    confirmButtonColor: '#087c8f'
+                    confirmButtonColor: "#087c8f"
                 });
 
                 if (result.success || result.isSuccess) {
@@ -362,20 +480,20 @@
                 console.error(error);
 
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Hata!',
-                    text: 'Ekleme sırasında hata oluştu.',
-                    confirmButtonColor: '#087c8f'
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Ekleme sırasında hata oluştu.",
+                    confirmButtonColor: "#087c8f"
                 });
             }
         },
+
         getFileName(path) {
             if (!path) return "-";
-
             return path.split("/").pop();
         },
+
         edit(item) {
-            console.log("edit item:", item);
             this.isUpdate = true;
 
             let cevaplar = item.cevaplar || [];
@@ -401,21 +519,34 @@
                 olcekMaddesi: item.olcekMaddesi || "",
                 soruMetni: item.soruMetni || "",
                 videoTranscript: item.videoTranscript || "",
+                beklemeSuresi: item.beklemeSuresi ?? 0,
+                bildirimMetni: item.bildirimMetni ?? "",
+                order: item.order ?? null,
                 cevaplar: cevaplar.length > 0
                     ? cevaplar.map((x, index) => ({
                         key: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[index],
-                        value: x.value || x.Value || ""
+                        value: x.value || x.Value || "",
+                        explanation: x.explanation || x.Explanation || ""
                     }))
                     : [
-                        { key: "A", value: "" },
-                        { key: "B", value: "" }
+                        { key: "A", value: "", explanation: "" },
+                        { key: "B", value: "", explanation: "" }
                     ],
+                acikUcluMu: !!item.soruMetni?.trim() &&
+                    cevaplar.length === 0,
                 dogruCevap: {
                     key: dogruCevap.key || dogruCevap.Key || "",
-                    explanation: dogruCevap.explanation || dogruCevap.Explanation || ""
+                    explanation: dogruCevap.explanation ||
+                        dogruCevap.Explanation || ""
                 }
             };
+            const videoVar = !!item.videoPath;
+            const soruVar = !!item.soruMetni?.trim();
 
+            this.icerikTuru =
+                videoVar && soruVar ? "videoSoru" :
+                    videoVar ? "video" :
+                        "soru";
             this.formAccordionOpen = true;
 
             this.$nextTick(() => {
@@ -432,24 +563,24 @@
 
         async update() {
             try {
-                let config = {
+                const config = {
                     headers: {
-                        'RequestVerificationToken': VerifyToken
+                        "RequestVerificationToken": VerifyToken
                     }
                 };
 
-                const url = '/Soru/UpdateSoru';
+                const url = "/Soru/UpdateSoru";
                 const data = this.createFormData();
 
                 startLoader();
 
-                let result = await SendPostRequest(url, data, config);
+                const result = await SendPostRequest(url, data, config);
 
                 Swal.fire({
-                    icon: (result.success || result.isSuccess) ? 'success' : 'error',
-                    title: (result.success || result.isSuccess) ? 'Başarılı' : 'Hata',
+                    icon: (result.success || result.isSuccess) ? "success" : "error",
+                    title: (result.success || result.isSuccess) ? "Başarılı" : "Hata",
                     text: result.message,
-                    confirmButtonColor: '#087c8f'
+                    confirmButtonColor: "#087c8f"
                 });
 
                 if (result.success || result.isSuccess) {
@@ -462,24 +593,25 @@
                 console.error(error);
 
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Hata!',
-                    text: 'Güncelleme sırasında hata oluştu.',
-                    confirmButtonColor: '#087c8f'
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Güncelleme sırasında hata oluştu.",
+                    confirmButtonColor: "#087c8f"
                 });
             }
         },
 
+
         async deleteItem(id) {
             const confirmResult = await Swal.fire({
-                title: 'Emin misiniz?',
-                text: 'Bu soru silinecektir.',
-                icon: 'warning',
+                title: "Emin misiniz?",
+                text: "Bu soru silinecektir.",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Evet, sil',
-                cancelButtonText: 'Vazgeç'
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Evet, sil",
+                cancelButtonText: "Vazgeç"
             });
 
             if (!confirmResult.isConfirmed) {
@@ -487,17 +619,16 @@
             }
 
             try {
-                const response = await fetch(`/Soru/Delete?id=${id}`, {
-                    method: "POST"
-                });
-
-                const result = await response.json();
+                const result = await SendPostRequest(
+                    "/Soru/DeleteSoru",
+                    id
+                );
 
                 Swal.fire({
-                    icon: (result.success || result.isSuccess) ? 'success' : 'error',
-                    title: (result.success || result.isSuccess) ? 'Başarılı' : 'Hata',
+                    icon: (result.success || result.isSuccess) ? "success" : "error",
+                    title: (result.success || result.isSuccess) ? "Başarılı" : "Hata",
                     text: result.message,
-                    confirmButtonColor: '#087c8f'
+                    confirmButtonColor: "#087c8f"
                 });
 
                 if (result.success || result.isSuccess) {
@@ -508,10 +639,10 @@
                 console.error(error);
 
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Hata!',
-                    text: 'Silme sırasında hata oluştu.',
-                    confirmButtonColor: '#087c8f'
+                    icon: "error",
+                    title: "Hata!",
+                    text: "Silme sırasında hata oluştu.",
+                    confirmButtonColor: "#087c8f"
                 });
             }
         },
@@ -520,6 +651,6 @@
             this.isUpdate = false;
             this.form = this.emptyForm();
             this.formAccordionOpen = false;
-        },
+        }
     }
 }).mount("#app");
