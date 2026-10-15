@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Abstracts;
+using Core.DataAccess.Repositories;
 using Core.Enums;
 using Core.ResultType;
 using DataAccessLayer.EntityFramework.Abstracts;
@@ -29,32 +30,94 @@ namespace BusinessLogicLayer.Concretes
             _soruUserRepository = soruUserRepository;
         }
 
+
         public Result<SoruDTO> Add(SoruDTO model)
         {
-            Result<SoruDTO> result;
-            if (model != null)
+            if (model == null)
             {
-
-                Soru addedSoru = _mapper.Map<Soru>(model);
-                _soruRepository.Add(addedSoru);
-
-                result = new Result<SoruDTO>(true, model, "Soru Eklendi.");
-                return result;
+                return new Result<SoruDTO>(
+                    false,
+                    "Soru eklenirken bir hata oluştu."
+                );
             }
-            result = new Result<SoruDTO>(false, "Soru Eklenirken Bir Hata Oluştu.");
-            return result;
+
+            // Mevcut içeriklerin en büyük Order değerini bul
+            var mevcutSorular = _soruRepository.GetAsList(x => true);
+
+            var maxOrder = mevcutSorular
+                .Select(x => x.Order ?? 0)
+                .DefaultIfEmpty(0)
+                .Max();
+
+            // DTO'yu Entity'ye dönüştür
+            Soru addedSoru = _mapper.Map<Soru>(model);
+
+            // Yeni içeriği otomatik olarak son sıraya ekle
+            addedSoru.Order = maxOrder + 1;
+
+            // Veritabanına kaydet
+            _soruRepository.Add(addedSoru);
+
+            // Oluşturulan sıra numarasını DTO'ya da aktar
+            model.Order = addedSoru.Order;
+
+            return new Result<SoruDTO>(
+                true,
+                model,
+                "İçerik başarıyla eklendi."
+            );
         }
+
+
 
         public Result<bool> Delete(int id)
         {
-            var entity = _soruRepository.Get(x => x.Id == id);
+            if (id <= 0)
+            {
+                return new Result<bool>(
+                    false,
+                    "Geçersiz içerik ID değeri."
+                );
+            }
 
-            if (entity == null)
-                return new Result<bool>(false, "Silinecek kayıt bulunamadı");
+            var soru = _soruRepository.Get(x => x.Id == id);
 
-            _soruRepository.Delete(entity);
-            return new Result<bool>(true, true, "Kayıt başarıyla silindi");
+            if (soru == null)
+            {
+                return new Result<bool>(
+                    false,
+                    "Silinecek içerik bulunamadı."
+                );
+            }
+
+            var silinenOrder = soru.Order;
+
+            // Önce içeriği sil
+            _soruRepository.Delete(soru);
+
+            // Silinen içeriğin sonrasındaki kayıtları
+            // bir sıra öne taşı
+            if (silinenOrder.HasValue)
+            {
+                var sonrakiSorular = _soruRepository
+                    .GetAsList(x => x.Order > silinenOrder.Value)
+                    .OrderBy(x => x.Order)
+                    .ToList();
+
+                foreach (var item in sonrakiSorular)
+                {
+                    item.Order = item.Order.Value - 1;
+                    _soruRepository.Update(item);
+                }
+            }
+
+            return new Result<bool>(
+                true,
+                true,
+                "İçerik başarıyla silindi."
+            );
         }
+
 
         public Result<List<SoruDTO>> GetAll()
         {
@@ -69,12 +132,16 @@ namespace BusinessLogicLayer.Concretes
             result = new Result<List<SoruDTO>>(false, "Soru Listesi Boş");
             return result;
         }
+
         public Result<MobileSoruListResponseDTO> GetMobileSorular(int userId)
         {
             var user = _userRepository.Get(x => x.Id == userId);
 
             if (user == null)
-                return new Result<MobileSoruListResponseDTO>(false, "Kullanıcı bulunamadı.");
+                return new Result<MobileSoruListResponseDTO>(
+                    false,
+                    "Kullanıcı bulunamadı."
+                );
 
             if (user.SimulasyonTamamlandiMi)
             {
@@ -84,11 +151,16 @@ namespace BusinessLogicLayer.Concretes
                 );
             }
 
-            var partBreakQuestionCount = (int)SimulationPartBreak.FirstPartQuestionCount;
+            var partBreakQuestionCount =
+                (int)SimulationPartBreak.FirstPartQuestionCount;
 
+            // İçerikleri Order alanına göre sıralıyoruz.
+            // Order değeri olmayan eski kayıtlar sona alınır.
+            // Aynı Order değerine sahip kayıtlar Id ile sıralanır.
             var tumSorular = _soruRepository
                 .GetAsList(x => true)
-                .OrderBy(x => x.Id)
+                .OrderBy(x => x.Order ?? int.MaxValue)
+                .ThenBy(x => x.Id)
                 .ToList();
 
             var cevaplananSoruSayisi = _soruUserRepository
@@ -97,7 +169,8 @@ namespace BusinessLogicLayer.Concretes
                 .Distinct()
                 .Count();
 
-            var ilkPartTamamlandiMi = cevaplananSoruSayisi >= partBreakQuestionCount;
+            var ilkPartTamamlandiMi =
+                cevaplananSoruSayisi >= partBreakQuestionCount;
 
             var gonderilecekSorular = ilkPartTamamlandiMi
                 ? tumSorular.Skip(partBreakQuestionCount).ToList()
@@ -107,13 +180,26 @@ namespace BusinessLogicLayer.Concretes
                 .Select((x, index) => new SoruDTO
                 {
                     Id = x.Id,
-                    VideoPath = x.VideoPath, 
+
+                    // İçerik sırası
+                    Order = x.Order,
+
+                    // Video bilgileri
+                    VideoPath = x.VideoPath,
                     VideoTranscript = x.VideoTranscript,
+
+                    // Soru bilgileri
                     Hedef = x.Hedef,
                     OlcekMaddesi = x.OlcekMaddesi,
                     SoruMetni = x.SoruMetni,
                     Cevaplar = x.Cevaplar,
-                    DogruCevap=x.DogruCevap,
+                    DogruCevap = x.DogruCevap,
+
+                    // Bekleme ve bildirim bilgileri
+                    BeklemeSuresi = x.BeklemeSuresi,
+                    BildirimMetni = x.BildirimMetni,
+
+                    // İlk partın son içeriğini işaretliyoruz
                     PartArasiMi = !ilkPartTamamlandiMi &&
                                   (index + 1) == partBreakQuestionCount
                 })
@@ -138,6 +224,7 @@ namespace BusinessLogicLayer.Concretes
                     : "Sorular listelendi."
             );
         }
+
         public Result<SoruDTO> GetById(int id)
         {
             var entity = _soruRepository.Get(x => x.Id == id);
@@ -168,6 +255,9 @@ namespace BusinessLogicLayer.Concretes
             entity.VideoTranscript = model.VideoTranscript;
             entity.DogruCevap = model.DogruCevap;
             entity.UpdatedAt = DateTime.Now;
+            entity.Order = model.Order;
+            entity.BeklemeSuresi = model.BeklemeSuresi;
+            entity.BildirimMetni = model.BildirimMetni;
 
             _soruRepository.Update(entity);
 

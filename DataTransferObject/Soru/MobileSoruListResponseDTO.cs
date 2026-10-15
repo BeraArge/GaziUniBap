@@ -8,6 +8,7 @@ namespace DataTransferObject.Soru
 {
     public class MobileSoruListResponseDTO
     {
+        public int Id { get; set; }
         public int UserId { get; set; }
         public int BaslangicIndex { get; set; }
         public int? BaslangicSoruId { get; set; }
