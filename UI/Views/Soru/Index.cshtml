@@ -3,6 +3,57 @@
 }
 
 <style>
+
+    .content-type-card {
+        min-height: 155px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 8px;
+        padding: 22px;
+        border: 2px solid #f2ddd0;
+        border-radius: 20px;
+        background: #fff;
+        color: #2d2a28;
+        text-align: left;
+        transition: all .2s ease;
+    }
+
+        .content-type-card i {
+            font-size: 26px;
+            color: #c2410c;
+        }
+
+        .content-type-card strong {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .content-type-card small {
+            font-size: 12px;
+            color: #7a6d67;
+            line-height: 1.5;
+        }
+
+        .content-type-card:hover {
+            border-color: #fb923c;
+            transform: translateY(-2px);
+        }
+
+        .content-type-card.active {
+            border-color: #c2410c;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            box-shadow: 0 12px 30px rgba(194, 65, 12, .12);
+        }
+
+            .content-type-card.active::after {
+                content: "✓ Seçili";
+                color: #c2410c;
+                font-size: 12px;
+                font-weight: 800;
+            }
+
     :root {
         --lg-primary: #C2410C;
         --lg-primary-dark: #9A3412;
@@ -541,6 +592,37 @@
             align-items: stretch;
         }
     }
+
+    .answer-editor {
+        border: 1px solid var(--lg-border);
+        border-radius: 18px;
+        background: rgba(255,255,255,.86);
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+        .answer-editor .answer-row {
+            margin-bottom: 8px;
+        }
+
+    .answer-explanation {
+        margin-left: 64px;
+    }
+
+    .answer-correct-note {
+        margin-left: 64px;
+        padding: 12px;
+        border-radius: 12px;
+        color: #166534;
+        background: #f0fdf4;
+        font-size: 13px;
+    }
+
+    @@media(max-width: 600px) {
+        .answer-explanation, .answer-correct-note {
+            margin-left: 0;
+        }
+    }
 </style>
 <div id="app" class="question-page mb-5 mt-1">
     @Html.AntiForgeryToken()
@@ -598,7 +680,7 @@
                         </h5>
 
                         <p class="section-desc">
-                            Video, hedef, ölçek maddesi, soru metni ve cevap şıklarını giriniz.
+                            Video, hedef, ölçek maddesi, soru metni, cevap şıkları ve yanlış yanıt gerekçelerini giriniz.
                         </p>
                     </div>
 
@@ -610,6 +692,64 @@
 
                 <div v-show="formAccordionOpen" class="glass-card-body">
                     <div class="mb-4">
+                        <label class="form-label mb-3">
+                            İçerik Türü
+                        </label>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <button type="button"
+                                        class="content-type-card w-100"
+                                        :class="{ active: icerikTuru === 'video' }"
+                                        @@click="icerikTuruDegistir('video')">
+
+                                    <i class="fa fa-video mb-2"></i>
+
+                                    <strong>Sadece Video</strong>
+
+                                    <small>
+                                        Soru olmadan video içeriği oluştur.
+                                    </small>
+                                </button>
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="button"
+                                        class="content-type-card w-100"
+                                        :class="{ active: icerikTuru === 'soru' }"
+                                        @@click="icerikTuruDegistir('soru')">
+
+                                    <i class="fa fa-circle-question mb-2"></i>
+
+                                    <strong>Sadece Soru</strong>
+
+                                    <small>
+                                        Video olmadan soru oluştur.
+                                    </small>
+                                </button>
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="button"
+                                        class="content-type-card w-100"
+                                        :class="{ active: icerikTuru === 'videoSoru' }"
+                                        @@click="icerikTuruDegistir('videoSoru')">
+
+                                    <i class="fa fa-clapperboard mb-2"></i>
+
+                                    <strong>Video + Soru</strong>
+
+                                    <small>
+                                        Video ve soruyu birlikte oluştur.
+                                    </small>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mb-4" v-if="icerikTuru !== 'soru'">
                         <label class="form-label">Video Dosyası</label>
 
                         <div class="upload-zone">
@@ -660,101 +800,176 @@
                                       v-model="form.videoTranscript"
                                       placeholder="Video bittikten sonra mobilde gösterilecek transcript metnini giriniz..."></textarea>
                         </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Bekleme Süresi (Saniye)</label>
+
+                                <input type="number"
+                                       class="form-control lg-input"
+                                       v-model.number="form.beklemeSuresi"
+                                       min="0"
+                                       step="1"
+                                       placeholder="Örn: 120" />
+                            </div>
+
+                            <div class="col-md-8">
+                                <label class="form-label">Bildirim Metni</label>
+
+                                <textarea class="form-control lg-input"
+                                          rows="3"
+                                          v-model="form.bildirimMetni"
+                                          placeholder="Örn: Hastanın pansuman saati gelmiştir. Saat: 21:00."></textarea>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Hedef</label>
-                        <textarea class="form-control lg-input"
-                                  rows="3"
-                                  v-model="form.hedef"
-                                  placeholder="Hedef metnini giriniz..."></textarea>
+                    <div class="mb-3" v-if="isUpdate">
+                        <label class="form-label">Order (İçerik Sırası)</label>
+
+                        <input type="number"
+                               class="form-control lg-input"
+                               min="1"
+                               step="1"
+                               v-model.number="form.order" />
+
+                        <small class="text-muted">
+                            İçeriğin senaryo içerisindeki sırasını belirler.
+                        </small>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Ölçek Maddesi</label>
-                        <textarea class="form-control lg-input"
-                                  rows="3"
-                                  v-model="form.olcekMaddesi"
-                                  placeholder="Ölçek maddesini giriniz..."></textarea>
-                    </div>
+                    <div v-if="icerikTuru !== 'video'">
+                        <div class="mb-3">
+                            <label class="form-label">Hedef</label>
+                            <textarea class="form-control lg-input"
+                                      rows="3"
+                                      v-model="form.hedef"
+                                      placeholder="Hedef metnini giriniz..."></textarea>
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">Soru Metni</label>
-                        <textarea class="form-control lg-input"
-                                  rows="5"
-                                  v-model="form.soruMetni"
-                                  placeholder="Soru metnini giriniz..."></textarea>
-                    </div>
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <label class="form-label mb-1">Cevap Şıkları</label>
-                                <div class="mini-muted">
-                                    Şık harfleri otomatik oluşturulur. En az 2 cevap şıkkı olmalıdır.
+                        <div class="mb-3">
+                            <label class="form-label">Ölçek Maddesi</label>
+                            <textarea class="form-control lg-input"
+                                      rows="3"
+                                      v-model="form.olcekMaddesi"
+                                      placeholder="Ölçek maddesini giriniz..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Soru Metni</label>
+                            <textarea class="form-control lg-input"
+                                      rows="5"
+                                      v-model="form.soruMetni"
+                                      placeholder="Soru metnini giriniz..."></textarea>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="acikUcluSoru"
+                                   v-model="form.acikUcluMu" />
+
+                            <label class="form-check-label fw-bold" for="acikUcluSoru">
+                                Açık Uçlu Soru
+                            </label>
+                        </div>
+
+                        <div class="mb-4" v-if="!form.acikUcluMu">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <label class="form-label mb-1">Cevap Şıkları</label>
+                                    <div class="mini-muted">
+                                        Şık harfleri otomatik oluşturulur. En az 2 cevap şıkkı olmalıdır.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div v-for="(answer, index) in form.cevaplar"
-                             :key="index"
-                             class="answer-row">
 
-                            <div class="answer-letter">
-                                {{ answer.key }}
+                            <div v-for="(answer, index) in form.cevaplar"
+                                 :key="index"
+                                 class="answer-editor"
+                                 :style="form.dogruCevap.key === answer.key
+         ? 'border:2px solid #198754;background:#f0fdf4;'
+         : ''">
+
+                                <div class="answer-row">
+
+                                    <div class="answer-letter">
+                                        {{ answer.key }}
+                                    </div>
+
+                                    <input class="form-control lg-input answer-input"
+                                           v-model="answer.value"
+                                           :placeholder="answer.key + ' şıkkının cevap metni'" />
+
+                                    <button class="answer-remove-btn"
+                                            type="button"
+                                            @@click="removeAnswer(index)"
+                                            :disabled="form.cevaplar.length <= 2">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+
+                                </div>
+
+                                <!-- Doğru cevap seçimi -->
+                                <div class="form-check mb-3 ms-2">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="dogruCevapSecimi"
+                                           :id="'dogruCevap_' + index"
+                                           :value="answer.key"
+                                           v-model="form.dogruCevap.key" />
+
+                                    <label class="form-check-label fw-bold"
+                                           :for="'dogruCevap_' + index">
+                                        Doğru cevap olarak işaretle
+                                    </label>
+                                </div>
+
+                                <!-- Doğru cevap -->
+                                <div v-if="form.dogruCevap.key === answer.key"
+                                     class="answer-correct-note">
+
+                                    <i class="fa fa-check-circle me-1"></i>
+                                    Bu şık doğru cevap olarak seçildi.
+
+                                </div>
+
+                                <!-- Yanlış cevap -->
+                                <div v-else class="answer-explanation">
+
+                                    <label class="form-label">
+                                        {{ answer.key }} Şıkkı - Yanlış Cevap Gerekçesi
+                                    </label>
+
+                                    <textarea class="form-control lg-input"
+                                              rows="3"
+                                              v-model="answer.explanation"
+                                              :placeholder="answer.key + ' şıkkının neden yanlış olduğunu açıklayın...'"></textarea>
+
+                                </div>
+
                             </div>
 
-                            <input class="form-control lg-input answer-input"
-                                   v-model="answer.value"
-                                   :placeholder="answer.key + ' şıkkının cevap metni'" />
 
-                            <button class="answer-remove-btn"
+                            <button class="answer-add-row"
                                     type="button"
-                                    @@click="removeAnswer(index)"
-                                    :disabled="form.cevaplar.length <= 2">
-                                <i class="fa fa-trash"></i>
+                                    @@click="addAnswer">
+                                <div class="answer-letter">
+                                    <i class="fa fa-plus"></i>
+                                </div>
+
+                                <span>Yeni şık ekle</span>
                             </button>
                         </div>
-
-                        <button class="answer-add-row"
-                                type="button"
-                                @@click="addAnswer">
-                            <div class="answer-letter">
-                                <i class="fa fa-plus"></i>
-                            </div>
-
-                            <span>Yeni şık ekle</span>
-                        </button>
-                    </div>
-
-                    <div class="mb-3 mt-4">
-                        <label class="form-label">Doğru Cevap</label>
-
-                        <select class="form-control lg-input"
-                                v-model="form.dogruCevap.key">
-                            <option value="">Doğru cevabı seçiniz</option>
-
-                            <option v-for="answer in form.cevaplar"
-                                    :key="answer.key"
-                                    :value="answer.key"
-                                    :disabled="!answer.value">
-                                {{ answer.key }} - {{ answer.value || 'Cevap metni girilmedi' }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label">Doğru Cevap Açıklaması</label>
-                        <textarea class="form-control lg-input"
-                                  rows="3"
-                                  v-model="form.dogruCevap.explanation"
-                                  placeholder="Doğru cevabın açıklamasını giriniz..."></textarea>
                     </div>
 
                     <button class="btn btn-lymph w-100"
                             type="button"
                             @@click="save">
                         <i class="fa fa-check-circle me-1"></i>
-                        {{ isUpdate ? 'Soruyu Güncelle' : 'Soru Oluştur' }}
+                        {{ isUpdate ? 'İçeriği Güncelle' : 'İçeriği Kaydet' }}
                     </button>
 
                     <button v-if="isUpdate"
@@ -766,131 +981,177 @@
 
                 </div>
             </div>
-        </div>
+            <br />
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <h5 class="section-title">
+                        <i class="fa fa-list-check"></i>
+                        Soru Listesi
+                    </h5>
 
-        <div class="glass-card">
-            <div class="glass-card-header">
-                <h5 class="section-title">
-                    <i class="fa fa-list-check"></i>
-                    Soru Listesi
-                </h5>
+                    <p class="section-desc">
+                        Eklenen soruları görüntüleyin, düzenleyin veya silin.
+                    </p>
+                </div>
 
-                <p class="section-desc">
-                    Eklenen soruları görüntüleyin, düzenleyin veya silin.
-                </p>
+                <div class="glass-card-body">
+
+                    <div class="search-wrap mb-4">
+                        <i class="fa fa-search"></i>
+                        <input class="form-control lg-input"
+                               v-model="search"
+                               placeholder="Soru, hedef veya ölçek maddesine göre ara..." />
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table question-table">
+
+                            <thead>
+                                <tr>
+                                    <th>İçerik Türü</th>
+                                    <th>İçerik Bilgisi</th>
+                                    <th>Hedef</th>
+                                    <th>Bekleme Süresi</th>
+                                    <th>Doğru Cevap</th>
+                                    <th class="text-end">İşlemler</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody>
+
+                                <tr v-for="item in pagedQuestions" :key="item.id">
+
+                                    <td>
+                                        <span class="question-pill"
+                                              v-if="item.videoPath && item.soruMetni">
+                                            <i class="fa fa-clapperboard me-1"></i>
+                                            Video + Soru
+                                        </span>
+
+                                        <span class="question-pill"
+                                              v-else-if="item.videoPath">
+                                            <i class="fa fa-video me-1"></i>
+                                            Video
+                                        </span>
+
+                                        <span class="question-pill" v-else>
+                                            <i class="fa fa-circle-question me-1"></i>
+                                            Soru
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="question-text"
+                                             v-if="item.soruMetni">
+                                            {{ item.soruMetni }}
+                                        </div>
+
+                                        <div v-else-if="item.videoPath">
+                                            <div class="fw-bold">
+                                                <i class="fa fa-film me-1"></i>
+                                                Video İçeriği
+                                            </div>
+
+                                            <div class="mini-muted">
+                                                {{ getFileName(item.videoPath) }}
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="table-long-text">
+                                            {{ item.hedef || 'Belirtilmedi' }}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span v-if="item.beklemeSuresi > 0">
+                                            {{ item.beklemeSuresi }} saniye
+                                        </span>
+
+                                        <span v-else class="text-muted">
+                                            Bekleme yok
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span v-if="item.soruMetni"
+                                              class="question-pill">
+                                            <i class="fa fa-check me-1"></i>
+                                            {{ item.dogruCevap?.key || '-' }}
+                                        </span>
+
+                                        <span v-else class="text-muted">
+                                            Soru bulunmuyor
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <div class="d-flex justify-content-end flex-wrap gap-2">
+
+                                            <button class="btn btn-sm btn-light rounded-pill px-3"
+                                                    type="button"
+                                                    @@click="edit(item)">
+                                                <i class="fa fa-pen me-1"></i>
+                                                Düzenle
+                                            </button>
+
+                                            <button class="btn btn-sm btn-danger rounded-pill px-3"
+                                                    type="button"
+                                                    @@click="deleteItem(item.id)">
+                                                <i class="fa fa-trash me-1"></i>
+                                                Sil
+                                            </button>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr v-if="pagedQuestions.length === 0">
+                                    <td colspan="5" class="text-center text-muted py-5">
+                                        <i class="fa fa-circle-info me-1"></i>
+                                        Henüz soru bulunamadı.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination-wrap" v-if="totalPages > 1">
+                        <button class="page-btn"
+                                type="button"
+                                @@click="changePage(currentPage - 1)"
+                                :disabled="currentPage === 1">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+
+                        <button v-for="page in totalPages"
+                                :key="page"
+                                type="button"
+                                class="page-btn"
+                                :class="{ active: currentPage === page }"
+                                @@click="changePage(page)">
+                            {{ page }}
+                        </button>
+
+                        <button class="page-btn"
+                                type="button"
+                                @@click="changePage(currentPage + 1)"
+                                :disabled="currentPage === totalPages">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                </div>
             </div>
 
-            <div class="glass-card-body">
-
-                <div class="search-wrap mb-4">
-                    <i class="fa fa-search"></i>
-                    <input class="form-control lg-input"
-                           v-model="search"
-                           placeholder="Soru, hedef veya ölçek maddesine göre ara..." />
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table question-table">
-                        <thead>
-                            <tr>
-                                <th>Soru</th>
-                                <th>Hedef</th>
-                                <th>Ölçek Maddesi</th>
-                                <th>Doğru Cevap</th>
-                                <th class="text-end">İşlemler</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr v-for="item in pagedQuestions" :key="item.id">
-                                <td>
-                                    <div class="question-text">
-                                        {{ item.soruMetni || '-' }}
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <div class="table-long-text">
-                                        {{ item.hedef || '-' }}
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <div class="table-long-text">
-                                        {{ item.olcekMaddesi || '-' }}
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <span class="question-pill">
-                                        <i class="fa fa-check"></i>
-                                        {{ item.dogruCevap && item.dogruCevap.key ? item.dogruCevap.key : '-' }}
-                                    </span>
-                                </td>
-
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end flex-wrap gap-2">
-                                        <button class="btn btn-sm btn-light rounded-pill px-3"
-                                                type="button"
-                                                @@click="edit(item)">
-                                            <i class="fa fa-pen me-1"></i>
-                                            Düzenle
-                                        </button>
-
-                                        <button class="btn btn-sm btn-danger rounded-pill px-3"
-                                                type="button"
-                                                @@click="deleteItem(item.id)">
-                                            <i class="fa fa-trash me-1"></i>
-                                            Sil
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <tr v-if="pagedQuestions.length === 0">
-                                <td colspan="5" class="text-center text-muted py-5">
-                                    <i class="fa fa-circle-info me-1"></i>
-                                    Henüz soru bulunamadı.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="pagination-wrap" v-if="totalPages > 1">
-                    <button class="page-btn"
-                            type="button"
-                            @@click="changePage(currentPage - 1)"
-                            :disabled="currentPage === 1">
-                        <i class="fa fa-chevron-left"></i>
-                    </button>
-
-                    <button v-for="page in totalPages"
-                            :key="page"
-                            type="button"
-                            class="page-btn"
-                            :class="{ active: currentPage === page }"
-                            @@click="changePage(page)">
-                        {{ page }}
-                    </button>
-
-                    <button class="page-btn"
-                            type="button"
-                            @@click="changePage(currentPage + 1)"
-                            :disabled="currentPage === totalPages">
-                        <i class="fa fa-chevron-right"></i>
-                    </button>
-                </div>
-
-            </div>
         </div>
-
     </div>
-</div>
 
-@section Scripts {
-    <script src="~/ckeditor4/ckeditor.js"></script>
+    @section Scripts {
+        <script src="~/ckeditor4/ckeditor.js"></script>
 
 
-    <script src="~/page-js/soru/index.js"></script>
-}
+        <script src="~/page-js/soru/index.js"></script>
+    }
