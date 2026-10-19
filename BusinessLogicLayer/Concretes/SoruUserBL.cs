@@ -37,16 +37,23 @@ namespace BusinessLogicLayer.Concretes
             _userRepository = userRepository;
         }
 
+
         private void CheckAndCompleteSimulation(int userId)
         {
-            var totalQuestionCount = _soruRepository.GetAsList(x => true).Count;
+            // Yalnızca cevap gerektiren soruların ID'leri.
+            var cevaplanacakSoruIds = _soruRepository
+                .GetAsList(x => true)
+                .Where(x => !string.IsNullOrWhiteSpace(x.SoruMetni))
+                .Select(x => x.Id)
+                .ToHashSet();
 
-            var userAnswers = _soruUserRepository.GetAsList(x => x.UserId == userId);
+            // Kullanıcının kayıtlı cevapları.
+            var userAnswers = _soruUserRepository
+                .GetAsList(x => x.UserId == userId);
 
-            var userAnsweredQuestionCount = userAnswers
+            var cevaplananSoruIds = userAnswers
                 .Select(x => x.SoruId)
-                .Distinct()
-                .Count();
+                .ToHashSet();
 
             var totalScore = userAnswers.Sum(x => x.Puan ?? 0);
 
@@ -57,7 +64,9 @@ namespace BusinessLogicLayer.Concretes
 
             user.ToplamPuan = totalScore;
 
-            if (totalQuestionCount > 0 && userAnsweredQuestionCount >= totalQuestionCount)
+            // Tüm cevap gerektiren soruların cevapları kayıtlıysa tamamla.
+            if (cevaplanacakSoruIds.Count > 0 &&
+                cevaplanacakSoruIds.All(id => cevaplananSoruIds.Contains(id)))
             {
                 user.SimulasyonTamamlandiMi = true;
             }
@@ -66,6 +75,7 @@ namespace BusinessLogicLayer.Concretes
 
             _userRepository.Update(user);
         }
+
         public Result<List<SoruUserDTO>> Add(SoruUserBulkDTO model)
         {
             if (model.UserId <= 0)
@@ -75,6 +85,24 @@ namespace BusinessLogicLayer.Concretes
                 return new Result<List<SoruUserDTO>>(false, "Cevap listesi boş olamaz.");
 
             var partBreakQuestionCount = (int)SimulationPartBreak.FirstPartQuestionCount;
+
+            // Senaryo içeriklerini gerçek oynatılma sırasına göre al.
+            var siraliSorular = _soruRepository
+                .GetAsList(x => true)
+                .OrderBy(x => x.Order ?? int.MaxValue)
+                .ThenBy(x => x.Id)
+                .ToList();
+
+            // İlk bölümdeki senaryo adımlarını belirle.
+            var ilkPartSorulari = siraliSorular
+                .Take(partBreakQuestionCount)
+                .ToList();
+
+            // İlk bölümde cevap gerektiren soruların ID'lerini al.
+            var ilkPartCevaplanacakSoruIds = ilkPartSorulari
+                .Where(x => !string.IsNullOrWhiteSpace(x.SoruMetni))
+                .Select(x => x.Id)
+                .ToHashSet();
 
             var totalQuestionCount = _soruRepository.GetAsList(x => true).Count;
 
@@ -89,13 +117,33 @@ namespace BusinessLogicLayer.Concretes
                 .Distinct()
                 .ToList();
 
-            var totalAfterSave = existingAnsweredQuestionIds
+            // Daha önce kaydedilmiş ve şimdi gönderilen cevapların ID'leri.
+            var toplamCevaplananIds = existingAnsweredQuestionIds
                 .Union(incomingQuestionIds)
-                .Count();
+                .ToHashSet();
+
+            // İlk bölümde cevap gerektiren bütün sorular cevaplandı mı?
+            var ilkPartCevaplariTamam =
+                ilkPartCevaplanacakSoruIds.All(id =>
+                    toplamCevaplananIds.Contains(id));
+
+            // Tüm senaryoda cevap gerektiren soruların ID'leri.
+            var tumCevaplanacakSoruIds = siraliSorular
+                .Where(x => !string.IsNullOrWhiteSpace(x.SoruMetni))
+                .Select(x => x.Id)
+                .ToHashSet();
+
+            // Tüm cevap gerektiren sorular tamamlandı mı?
+            var tumCevaplarTamam =
+                tumCevaplanacakSoruIds.All(id =>
+                    toplamCevaplananIds.Contains(id));
 
             var isFirstPartSubmit = existingAnsweredQuestionIds.Count == 0;
-            var isBreakSubmit = totalAfterSave == partBreakQuestionCount;
-            var isFinalSubmit = totalAfterSave == totalQuestionCount;
+            var isBreakSubmit =
+    ilkPartCevaplariTamam &&
+    !tumCevaplarTamam &&
+    toplamCevaplananIds.SetEquals(ilkPartCevaplanacakSoruIds);
+            var isFinalSubmit = tumCevaplarTamam;
 
             if (isFirstPartSubmit && !isBreakSubmit && !isFinalSubmit)
             {
@@ -128,16 +176,28 @@ namespace BusinessLogicLayer.Concretes
                 if (soru == null)
                     return new Result<List<SoruUserDTO>>(false, $"Soru bulunamadı. SoruId: {cevap.SoruId}");
 
-                var dogruCevapKey = soru.DogruCevap != null && soru.DogruCevap.ContainsKey("key")
-                    ? soru.DogruCevap["key"]
+                var verilenCevap = cevap.VerilenCevap.Trim();
+
+                var dogruCevap = soru.DogruCevap != null &&
+                                 soru.DogruCevap.TryGetValue("key", out var key)
+                    ? key?.Trim() ?? ""
                     : "";
 
-                var verilenCevap = cevap.VerilenCevap.Trim();
-                var dogruCevap = dogruCevapKey.Trim();
+                // Açık uçlu soru: soru metni var, ancak cevap şıkları yok.
+                var acikUcluMu =
+                    !string.IsNullOrWhiteSpace(soru.SoruMetni) &&
+                    (soru.Cevaplar == null || !soru.Cevaplar.Any());
 
-                var puan = string.Equals(verilenCevap, dogruCevap, StringComparison.OrdinalIgnoreCase)
+                // Açık uçlu sorularda boş cevap kontrolü yukarıda yapıldığı için
+                // gönderilen her geçerli cevap 10 puan alır.
+                var puan = acikUcluMu
                     ? 10
-                    : 0;
+                    : string.Equals(
+                        verilenCevap,
+                        dogruCevap,
+                        StringComparison.OrdinalIgnoreCase)
+                        ? 10
+                        : 0;
                 _soruUserRepository.ClearTracking();
                 var eskiCevap = _soruUserRepository.Get(x =>
                     x.SoruId == cevap.SoruId &&

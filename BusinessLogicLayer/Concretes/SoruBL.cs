@@ -163,14 +163,26 @@ namespace BusinessLogicLayer.Concretes
                 .ThenBy(x => x.Id)
                 .ToList();
 
-            var cevaplananSoruSayisi = _soruUserRepository
+            // Kullanıcının kaydedilmiş cevaplarının soru ID'leri.
+            var cevaplananSoruIds = _soruUserRepository
                 .GetAsList(x => x.UserId == userId)
                 .Select(x => x.SoruId)
                 .Distinct()
-                .Count();
+                .ToHashSet();
 
+            var cevaplananSoruSayisi = cevaplananSoruIds.Count;
+
+            // İlk 7 senaryo adımındaki cevap gerektiren sorular.
+            var ilkPartSoruIds = tumSorular
+                .Take(partBreakQuestionCount)
+                .Where(x => !string.IsNullOrWhiteSpace(x.SoruMetni))
+                .Select(x => x.Id)
+                .ToHashSet();
+
+            // İlk bölümdeki bütün soruların cevapları kaydedilmiş mi?
             var ilkPartTamamlandiMi =
-                cevaplananSoruSayisi >= partBreakQuestionCount;
+                ilkPartSoruIds.Count > 0 &&
+                ilkPartSoruIds.All(id => cevaplananSoruIds.Contains(id));
 
             var gonderilecekSorular = ilkPartTamamlandiMi
                 ? tumSorular.Skip(partBreakQuestionCount).ToList()
