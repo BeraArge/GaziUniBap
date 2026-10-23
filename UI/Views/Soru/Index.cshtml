@@ -623,6 +623,35 @@
             margin-left: 0;
         }
     }
+
+    .content-filter-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border: 1px solid #f2ddd0;
+        border-radius: 14px;
+        background: #fff;
+        color: #9a3412;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+        .content-filter-btn:hover {
+            background: #fff7ed;
+            border-color: #fb923c;
+            transform: translateY(-1px);
+        }
+
+        .content-filter-btn.active {
+            background: linear-gradient(135deg, #c2410c, #fb923c);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(194, 65, 12, .20);
+        }
+
 </style>
 <div id="app" class="question-page mb-5 mt-1">
     @Html.AntiForgeryToken()
@@ -986,7 +1015,7 @@
                 <div class="glass-card-header">
                     <h5 class="section-title">
                         <i class="fa fa-list-check"></i>
-                        Soru Listesi
+                        İçerik Listesi
                     </h5>
 
                     <p class="section-desc">
@@ -996,11 +1025,57 @@
 
                 <div class="glass-card-body">
 
-                    <div class="search-wrap mb-4">
-                        <i class="fa fa-search"></i>
-                        <input class="form-control lg-input"
-                               v-model="search"
-                               placeholder="Soru, hedef veya ölçek maddesine göre ara..." />
+                    <div class="row g-3 mb-4 align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label">İçerik Ara</label>
+                            <div class="search-wrap">
+                                <i class="fa fa-search"></i>
+                                <input class="form-control lg-input"
+                                       v-model="search"
+                                       placeholder="Soru, hedef veya ölçek maddesine göre ara..." />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="listContentFilter">İçerik Türü</label>
+
+
+                                <div class="d-flex flex-wrap gap-2">
+
+                                    <button type="button"
+                                            class="content-filter-btn"
+                                            :class="{ active: icerikFiltresi === 'tumu' }"
+                                            @@click="icerikFiltresi = 'tumu'">
+                                        <i class="fa fa-layer-group me-2"></i>
+                                        Tümü
+                                    </button>
+
+                                    <button type="button"
+                                            class="content-filter-btn"
+                                            :class="{ active: icerikFiltresi === 'video' }"
+                                            @@click="icerikFiltresi = 'video'">
+                                        <i class="fa fa-video me-2"></i>
+                                        Sadece Video
+                                    </button>
+
+                                    <button type="button"
+                                            class="content-filter-btn"
+                                            :class="{ active: icerikFiltresi === 'soru' }"
+                                            @@click="icerikFiltresi = 'soru'">
+                                        <i class="fa fa-circle-question me-2"></i>
+                                        Sadece Soru
+                                    </button>
+
+                                    <button type="button"
+                                            class="content-filter-btn"
+                                            :class="{ active: icerikFiltresi === 'videoSoru' }"
+                                            @@click="icerikFiltresi = 'videoSoru'">
+                                        <i class="fa fa-clapperboard me-2"></i>
+                                        Video + Soru
+                                    </button>
+
+                                </div>
+
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -1109,7 +1184,7 @@
                                 </tr>
 
                                 <tr v-if="pagedQuestions.length === 0">
-                                    <td colspan="5" class="text-center text-muted py-5">
+                                    <td colspan="6" class="text-center text-muted py-5">
                                         <i class="fa fa-circle-info me-1"></i>
                                         Henüz soru bulunamadı.
                                     </td>
@@ -1126,14 +1201,17 @@
                             <i class="fa fa-chevron-left"></i>
                         </button>
 
-                        <button v-for="page in totalPages"
-                                :key="page"
-                                type="button"
-                                class="page-btn"
-                                :class="{ active: currentPage === page }"
-                                @@click="changePage(page)">
-                            {{ page }}
-                        </button>
+                        <template v-for="page in visiblePages" :key="page">
+                            <span v-if="typeof page === 'string'"
+                                  class="d-inline-flex align-items-center px-1 text-muted">…</span>
+                            <button v-else
+                                    type="button"
+                                    class="page-btn"
+                                    :class="{ active: currentPage === page }"
+                                    @@click="changePage(page)">
+                                {{ page }}
+                            </button>
+                        </template>
 
                         <button class="page-btn"
                                 type="button"

@@ -375,18 +375,19 @@
             }
 
             try {
-                const response = await fetch("/User/ResetPassword", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
+                console.log("ResetPassword isteği gönderiliyor:", {
+                    id: user.id,
+                    newPassword: result.value
+                });
+                const resetResult = await SendPostRequest(
+                    "/User/ResetPassword",
+                    {
                         id: user.id,
                         newPassword: result.value
-                    })
-                });
+                    }
+                );
 
-                const resetResult = await response.json();
+                console.log("ResetPassword API yanıtı:", resetResult);
 
                 if (resetResult.isSuccess || resetResult.success) {
                     await this.showSuccess(resetResult.message || "Şifre başarıyla sıfırlandı.");
@@ -395,8 +396,12 @@
                     await this.showError(resetResult.message || "Şifre sıfırlanamadı.");
                 }
             } catch (err) {
-                console.error(err);
-                await this.showError("Şifre sıfırlama sırasında bir hata oluştu.");
+                console.error("Şifre sıfırlama hatası:", err);
+                console.error("Hata mesajı:", err.message);
+
+                await this.showError(
+                    err.message || "Şifre sıfırlama sırasında bir hata oluştu."
+                );
             }
         },
 
