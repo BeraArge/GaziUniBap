@@ -18,6 +18,7 @@ namespace BusinessLogicLayer.Abstracts
         Result<bool> Delete(int id);
         Result<SoruUserDTO> GetById(int id);
         Result<List<SoruUserDTO>> GetAll();
+        Result<bool> CompleteSimulation(int userId);
         Result<MobileCompetitionHomeDTO> GetMobileCompetitionHome(int userId);
         //Result<List<UserAnswerReportDTO>> GetUserAnswerReports();
         Result<UserAnswerExcelExportDTO> GetUserAnswerExcelExportData();

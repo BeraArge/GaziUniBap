@@ -13,7 +13,6 @@ namespace DataTransferObject.Soru
         public int BaslangicIndex { get; set; }
         public int? BaslangicSoruId { get; set; }
         public int CevaplananSoruSayisi { get; set; }
-        public int PartBreakQuestionCount { get; set; }
         public bool IlkPartTamamlandiMi { get; set; }
         public bool SimulasyonTamamlandiMi { get; set; }
         public int KalanSoruSayisi { get; set; }

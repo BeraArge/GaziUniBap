@@ -37,45 +37,6 @@ namespace BusinessLogicLayer.Concretes
             _userRepository = userRepository;
         }
 
-
-        private void CheckAndCompleteSimulation(int userId)
-        {
-            // Yalnızca cevap gerektiren soruların ID'leri.
-            var cevaplanacakSoruIds = _soruRepository
-                .GetAsList(x => true)
-                .Where(x => !string.IsNullOrWhiteSpace(x.SoruMetni))
-                .Select(x => x.Id)
-                .ToHashSet();
-
-            // Kullanıcının kayıtlı cevapları.
-            var userAnswers = _soruUserRepository
-                .GetAsList(x => x.UserId == userId);
-
-            var cevaplananSoruIds = userAnswers
-                .Select(x => x.SoruId)
-                .ToHashSet();
-
-            var totalScore = userAnswers.Sum(x => x.Puan ?? 0);
-
-            var user = _userRepository.Get(x => x.Id == userId);
-
-            if (user == null)
-                return;
-
-            user.ToplamPuan = totalScore;
-
-            // Tüm cevap gerektiren soruların cevapları kayıtlıysa tamamla.
-            if (cevaplanacakSoruIds.Count > 0 &&
-                cevaplanacakSoruIds.All(id => cevaplananSoruIds.Contains(id)))
-            {
-                user.SimulasyonTamamlandiMi = true;
-            }
-
-            user.UpdatedAt = DateTime.Now;
-
-            _userRepository.Update(user);
-        }
-
         public Result<List<SoruUserDTO>> Add(SoruUserBulkDTO model)
         {
             if (model.UserId <= 0)
@@ -122,10 +83,6 @@ namespace BusinessLogicLayer.Concretes
                 .Union(incomingQuestionIds)
                 .ToHashSet();
 
-            // İlk bölümde cevap gerektiren bütün sorular cevaplandı mı?
-            var ilkPartCevaplariTamam =
-                ilkPartCevaplanacakSoruIds.All(id =>
-                    toplamCevaplananIds.Contains(id));
 
             // Tüm senaryoda cevap gerektiren soruların ID'leri.
             var tumCevaplanacakSoruIds = siraliSorular
@@ -140,26 +97,7 @@ namespace BusinessLogicLayer.Concretes
 
             var isFirstPartSubmit = existingAnsweredQuestionIds.Count == 0;
             var isBreakSubmit =
-    ilkPartCevaplariTamam &&
-    !tumCevaplarTamam &&
-    toplamCevaplananIds.SetEquals(ilkPartCevaplanacakSoruIds);
-            var isFinalSubmit = tumCevaplarTamam;
-
-            if (isFirstPartSubmit && !isBreakSubmit && !isFinalSubmit)
-            {
-                return new Result<List<SoruUserDTO>>(
-                    false,
-                    $"{partBreakQuestionCount} soru tamamlanmadan cevaplar kaydedilemez."
-                );
-            }
-
-            if (!isFirstPartSubmit && !isFinalSubmit)
-            {
-                return new Result<List<SoruUserDTO>>(
-                    false,
-                    "Kalan tüm sorular tamamlanmadan cevaplar kaydedilemez."
-                );
-            }
+    !tumCevaplarTamam && toplamCevaplananIds.SetEquals(ilkPartCevaplanacakSoruIds);
 
             var savedList = new List<SoruUserDTO>();
 
@@ -236,7 +174,6 @@ namespace BusinessLogicLayer.Concretes
                 }
             }
 
-            CheckAndCompleteSimulation(model.UserId);
 
             return new Result<List<SoruUserDTO>>(
                 true,
@@ -738,6 +675,34 @@ namespace BusinessLogicLayer.Concretes
                 true,
                 dashboard,
                 "Dashboard verileri listelendi."
+            );
+        }
+        public Result<bool> CompleteSimulation(int userId)
+        {
+            if (userId <= 0)
+                return new Result<bool>(false, "Kullanıcı bilgisi zorunludur.");
+
+            var user = _userRepository.Get(x => x.Id == userId);
+
+            if (user == null)
+                return new Result<bool>(false, "Kullanıcı bulunamadı.");
+
+            if (user.SimulasyonTamamlandiMi)
+                return new Result<bool>(
+                    true,
+                    true,
+                    "Simülasyon zaten tamamlanmış."
+                );
+
+            user.SimulasyonTamamlandiMi = true;
+            user.UpdatedAt = DateTime.Now;
+
+            _userRepository.Update(user);
+
+            return new Result<bool>(
+                true,
+                true,
+                "Simülasyon başarıyla tamamlandı."
             );
         }
         public Result<MobileCompetitionHomeDTO> GetMobileCompetitionHome(int userId)
