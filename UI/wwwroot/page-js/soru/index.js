@@ -10,6 +10,7 @@
             currentPage: 1,
             pageSize: 5,
             videoTranscript: "",
+            icerikFiltresi: "tumu",
             onBilgilendirmeEditor: null,
             onBilgilendirme: {
                 id: 0,
@@ -20,31 +21,81 @@
 
     computed: {
         filteredQuestions() {
-            const searchText = this.search.toLowerCase();
+            const searchText = this.search.trim().toLocaleLowerCase("tr-TR");
 
-            return this.questions.filter(x =>
-                (x.soruMetni || "").toLowerCase().includes(searchText) ||
-                (x.hedef || "").toLowerCase().includes(searchText) ||
-                (x.olcekMaddesi || "").toLowerCase().includes(searchText)
-            );
+            return this.questions.filter(item => {
+                const videoVar = !!item.videoPath?.trim();
+                const soruVar = !!item.soruMetni?.trim();
+
+                let turUyuyor = true;
+
+                if (this.icerikFiltresi === "video") {
+                    turUyuyor = videoVar && !soruVar;
+                } else if (this.icerikFiltresi === "soru") {
+                    turUyuyor = soruVar && !videoVar;
+                } else if (this.icerikFiltresi === "videoSoru") {
+                    turUyuyor = videoVar && soruVar;
+                }
+
+                const aramaUyuyor =
+                    (item.soruMetni || "").toLocaleLowerCase("tr-TR").includes(searchText) ||
+                    (item.hedef || "").toLocaleLowerCase("tr-TR").includes(searchText) ||
+                    (item.olcekMaddesi || "").toLocaleLowerCase("tr-TR").includes(searchText);
+
+                return turUyuyor && aramaUyuyor;
+            });
         },
 
         totalPages() {
-            return Math.ceil(this.filteredQuestions.length / this.pageSize) || 1;
+            return Math.max(1, Math.ceil(this.filteredQuestions.length / this.pageSize));
         },
 
         pagedQuestions() {
             const start = (this.currentPage - 1) * this.pageSize;
             return this.filteredQuestions.slice(start, start + this.pageSize);
+        },
+
+        visiblePages() {
+            const total = this.totalPages;
+            const current = this.currentPage;
+            const pages = [];
+
+            const start = Math.max(1, Math.min(current - 2, total - 4));
+            const end = Math.min(total, start + 4);
+
+            if (start > 1) {
+                pages.push(1);
+
+                if (start > 2) {
+                    pages.push("...");
+                }
+            }
+
+            for (let page = start; page <= end; page++) {
+                pages.push(page);
+            }
+
+            if (end < total) {
+                if (end < total - 1) {
+                    pages.push("…");
+                }
+
+                pages.push(total);
+            }
+
+            return pages;
         }
     },
 
     watch: {
         search() {
             this.currentPage = 1;
+        },
+
+        icerikFiltresi() {
+            this.currentPage = 1;
         }
     },
-
     async mounted() {
         await this.getOnBilgilendirme();
 
@@ -170,6 +221,8 @@
         },
 
         changePage(page) {
+            if (typeof page !== "number") return;
+
             if (page < 1 || page > this.totalPages) {
                 return;
             }

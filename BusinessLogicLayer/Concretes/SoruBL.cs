@@ -184,9 +184,7 @@ namespace BusinessLogicLayer.Concretes
                 ilkPartSoruIds.Count > 0 &&
                 ilkPartSoruIds.All(id => cevaplananSoruIds.Contains(id));
 
-            var gonderilecekSorular = ilkPartTamamlandiMi
-                ? tumSorular.Skip(partBreakQuestionCount).ToList()
-                : tumSorular;
+            var gonderilecekSorular = tumSorular;
 
             var data = gonderilecekSorular
                 .Select((x, index) => new SoruDTO
@@ -221,7 +219,6 @@ namespace BusinessLogicLayer.Concretes
             {
                 UserId = userId,
                 CevaplananSoruSayisi = cevaplananSoruSayisi,
-                PartBreakQuestionCount = partBreakQuestionCount,
                 IlkPartTamamlandiMi = ilkPartTamamlandiMi,
                 SimulasyonTamamlandiMi = false,
                 KalanSoruSayisi = data.Count,

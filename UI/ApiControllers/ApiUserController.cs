@@ -25,7 +25,6 @@ namespace UI.ApiControllers
             return Ok(result);
         }
         [HttpPost("Add")]
-        [AuthorizeFilter]
         public async Task<IActionResult> Add(UserCreateDto dto)
         {
             dto.RoleId = 2;

@@ -33,5 +33,13 @@ namespace UI.ApiControllers
             var res = _soruUserBL.GetMobileCompetitionHome(userId);
             return Ok(res);
         }
+
+        [HttpPost("CompleteSimulation")]
+        [AuthorizeFilter]
+        public IActionResult CompleteSimulation(int userId)
+        {
+            var res = _soruUserBL.CompleteSimulation(userId);
+            return Ok(res);
+        }
     }
 }

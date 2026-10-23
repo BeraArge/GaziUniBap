@@ -28,25 +28,52 @@ namespace BusinessLogicLayer.Concretes
             _userRepository = userRepository;
             _mapper = mapper;
         }
+
         public Result<UserModel> GetByPhone(SendSmsModel model)
         {
-            Result<UserModel> result;
-
-            if (string.IsNullOrEmpty(model.Phone))
+            if (model == null || string.IsNullOrWhiteSpace(model.Phone))
             {
-                result = new Result<UserModel>(false, "Lütfen sms gönderilecek telefon numarasının girişini yapınız.");
-                return result;
+                return new Result<UserModel>(
+                    false,
+                    "Lütfen SMS gönderilecek telefon numarasını giriniz.");
             }
-            User user = _userRepository.GetAsync(w => w.Phone == model.Phone).GetAwaiter().GetResult();
+
+            string phone = model.Phone.Trim();
+
+            // Başındaki 0 varsa kaldır
+            if (phone.StartsWith("0"))
+                phone = phone.Substring(1);
+
+            // Türkiye telefon numarası kontrolü
+            if (phone.Length != 10 || !phone.All(char.IsDigit))
+            {
+                return new Result<UserModel>(
+                    false,
+                    "Lütfen geçerli bir telefon numarası giriniz.");
+            }
+
+            // Hem 0'lı hem 0'sız kayıtları destekle
+            string phoneWithZero = "0" + phone;
+
+            User user = _userRepository.GetAsync(
+                w => w.Phone == phoneWithZero || w.Phone == phone
+            ).GetAwaiter().GetResult();
+
             if (user == null)
             {
-                result = new Result<UserModel>(false, "Kullanıcı bulunamadı");
-                return result;
+                return new Result<UserModel>(
+                    false,
+                    "Kullanıcı bulunamadı");
             }
+
             UserModel usermodel = _mapper.Map<UserModel>(user);
-            result = new Result<UserModel>(true, usermodel, "İşlem başarılı");
-            return result;
+
+            return new Result<UserModel>(
+                true,
+                usermodel,
+                "İşlem başarılı");
         }
+
         public Result<UserModel> UpdatePasswordForSms(string newPass, int userId)
         {
             Result<UserModel> result;
